@@ -1,0 +1,4 @@
+﻿message Payment {
+  double amount = 1;
+  string currency = 2;
+}

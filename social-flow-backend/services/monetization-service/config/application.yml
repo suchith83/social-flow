@@ -1,0 +1,4 @@
+﻿stripe:
+  apiKey: sk_test_...
+aws:
+  region: us-west-2

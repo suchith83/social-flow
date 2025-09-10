@@ -1,0 +1,18 @@
+﻿// Standard Event Schema from PDF
+message Event {
+    string eventId = 1;
+    string eventType = 2;
+    string timestamp = 3;
+    string source = 4;
+    string version = 5;
+    string userId = 6;
+    string sessionId = 7;
+    message Data {
+        // Specific data fields
+    }
+    Data data = 8;
+    message Metadata {
+        // Metadata fields
+    }
+    Metadata metadata = 9;
+}

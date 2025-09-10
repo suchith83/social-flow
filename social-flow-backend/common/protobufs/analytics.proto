@@ -1,0 +1,4 @@
+﻿message Metrics {
+  int64 views = 1;
+  int64 likes = 2;
+}

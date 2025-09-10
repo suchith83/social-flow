@@ -1,0 +1,10 @@
+﻿plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "com.stripe:stripe-java:22.0.0"
+    implementation "com.amazonaws:aws-java-sdk-paypal:1.12.600"
+    // more for payments
+}

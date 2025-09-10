@@ -1,0 +1,5 @@
+﻿message User {
+  string id = 1;
+  string username = 2;
+  // more fields
+}

@@ -1,0 +1,1 @@
+﻿ES_HOST = 'localhost'

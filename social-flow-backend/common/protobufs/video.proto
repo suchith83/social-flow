@@ -1,0 +1,5 @@
+﻿message Video {
+  string id = 1;
+  string title = 2;
+  // more
+}

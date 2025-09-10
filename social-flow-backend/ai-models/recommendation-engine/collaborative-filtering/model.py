@@ -1,0 +1,2 @@
+﻿class CollaborativeFiltering:
+    # TODO: Model
