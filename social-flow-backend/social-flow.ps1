@@ -1,4 +1,4 @@
-# PowerShell script to create the complete backend architecture for Social Flow
+# PowerShell script to create the complete backend architecture for Social Flow which is a Twitter + YouTube like platform
 # This script creates all directories and files as per the provided structure
 # For files with detailed specifications in the PDF, basic code skeletons are added based on the descriptions
 # Extended with more depth, AWS integrations, security, scalability, ads, payments, view counts, etc.
