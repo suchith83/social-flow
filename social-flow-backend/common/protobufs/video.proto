@@ -1,5 +1,36 @@
-﻿message Video {
+﻿syntax = "proto3";
+
+package socialflow.video;
+
+option go_package = "github.com/socialflow/common/protobufs;protobufs";
+option java_package = "com.socialflow.common.protobufs.video";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+import "user.proto";
+
+// Video visibility enum
+enum Visibility {
+  VISIBILITY_UNSPECIFIED = 0;
+  PUBLIC = 1;
+  PRIVATE = 2;
+  UNLISTED = 3;
+}
+
+// Core video object
+message Video {
   string id = 1;
   string title = 2;
-  // more
+  string description = 3;
+  string url = 4;
+  string thumbnail_url = 5;
+  Visibility visibility = 6;
+  string uploader_id = 7;
+  int64 view_count = 8;
+  int64 like_count = 9;
+  int64 comment_count = 10;
+  socialflow.common.Status status = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
 }

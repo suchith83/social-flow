@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package socialflow.comment;
+
+option go_package = "github.com/socialflow/common/protobufs;protobufs";
+option java_package = "com.socialflow.common.protobufs.comment";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+message Comment {
+  string id = 1;
+  string user_id = 2;
+  string video_id = 3;
+  string content = 4;
+  int64 like_count = 5;
+  socialflow.common.Status status = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}

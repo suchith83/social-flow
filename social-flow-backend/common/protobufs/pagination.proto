@@ -1,5 +1,21 @@
-﻿message Pagination {
+﻿syntax = "proto3";
+
+package socialflow.pagination;
+
+option go_package = "github.com/socialflow/common/protobufs;protobufs";
+option java_package = "com.socialflow.common.protobufs.pagination";
+option java_multiple_files = true;
+
+// Pagination object for requests
+message PaginationRequest {
+  int32 page = 1;   // Page number starting from 1
+  int32 limit = 2;  // Items per page
+}
+
+// Pagination metadata in responses
+message PaginationResponse {
   int32 page = 1;
   int32 limit = 2;
-  int64 total = 3;
+  int64 total = 3;   // Total items count
+  int32 total_pages = 4;
 }

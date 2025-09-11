@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package socialflow.notification;
+
+option go_package = "github.com/socialflow/common/protobufs;protobufs";
+option java_package = "com.socialflow.common.protobufs.notification";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+enum NotificationType {
+  NOTIFICATION_TYPE_UNSPECIFIED = 0;
+  NEW_VIDEO = 1;
+  NEW_COMMENT = 2;
+  NEW_LIKE = 3;
+  NEW_FOLLOWER = 4;
+}
+
+message Notification {
+  string id = 1;
+  string user_id = 2;
+  NotificationType type = 3;
+  string reference_id = 4; // Video/comment/etc
+  bool read = 5;
+  socialflow.common.Status status = 6;
+  google.protobuf.Timestamp created_at = 7;
+}

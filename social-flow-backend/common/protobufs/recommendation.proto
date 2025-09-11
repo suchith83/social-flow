@@ -1,3 +1,12 @@
-﻿message Recommendation {
-  repeated string video_ids = 1;
+﻿syntax = "proto3";
+
+package socialflow.recommendation;
+
+option go_package = "github.com/socialflow/common/protobufs;protobufs";
+option java_package = "com.socialflow.common.protobufs.recommendation";
+option java_multiple_files = true;
+
+// Recommendation result for personalized feeds
+message Recommendation {
+  repeated string video_ids = 1; // Ordered list of recommended video IDs
 }

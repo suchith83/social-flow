@@ -1,4 +1,14 @@
-﻿message Error {
-  string code = 1;
-  string message = 2;
+﻿syntax = "proto3";
+
+package socialflow.errors;
+
+option go_package = "github.com/socialflow/common/protobufs;protobufs";
+option java_package = "com.socialflow.common.protobufs.errors";
+option java_multiple_files = true;
+
+// Generic error response for gRPC and REST
+message Error {
+  string code = 1;       // Machine-readable error code
+  string message = 2;    // Human-readable error message
+  repeated string details = 3; // Additional context or stack trace
 }

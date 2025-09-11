@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package socialflow.ads;
+
+option go_package = "github.com/socialflow/common/protobufs;protobufs";
+option java_package = "com.socialflow.common.protobufs.ads";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+
+enum AdType {
+  AD_TYPE_UNSPECIFIED = 0;
+  VIDEO_AD = 1;
+  BANNER_AD = 2;
+  SPONSORED_POST = 3;
+}
+
+message Ad {
+  string id = 1;
+  string advertiser_id = 2;
+  AdType type = 3;
+  string media_url = 4;
+  string target_url = 5;
+  google.protobuf.Timestamp start_time = 6;
+  google.protobuf.Timestamp end_time = 7;
+  int64 impressions = 8;
+  int64 clicks = 9;
+}
