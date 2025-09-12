@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/validation/validation_error_schema.json",
+  "title": "ValidationError",
+  "description": "Standardized validation error payload returned by APIs and validation middleware.",
+  "type": "object",
+  "required": ["error_id", "code", "message", "timestamp", "fields"],
+  "properties": {
+    "error_id": { "type": "string", "format": "uuid", "description": "Unique id to trace this validation error." },
+    "code": { "type": "string", "description": "Machine-readable error code (e.g., validation.username.invalid_chars)." },
+    "message": { "type": "string", "description": "Human-friendly error message." },
+    "details": {
+      "type": "object",
+      "description": "Optional additional details for debugging; should not contain PII when returned to clients.",
+      "additionalProperties": true
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "fields": {
+      "type": "array",
+      "description": "Fields affected by the validation error.",
+      "items": {
+        "type": "object",
+        "required": ["field", "rejected_value", "reasons"],
+        "properties": {
+          "field": { "type": "string" },
+          "rejected_value": { "type": ["string", "number", "null", "object", "array"] },
+          "reasons": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of rule_ids or human reasons why the field was rejected."
+          },
+          "suggestion": { "type": "string", "description": "Optional suggestion to fix the problem." }
+        }
+      }
+    },
+    "request_id": { "type": ["string", "null"], "description": "Correlation ID for the incoming request." }
+  },
+  "additionalProperties": false
+}

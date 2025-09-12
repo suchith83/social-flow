@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/analytics/engagement_schema.json",
+  "title": "EngagementMetrics",
+  "description": "Schema for tracking user engagement metrics for posts, videos, and ads.",
+  "type": "object",
+  "required": ["content_id", "timestamp", "metrics"],
+  "properties": {
+    "content_id": { "type": "string", "description": "Unique ID of the content" },
+    "timestamp": { "type": "string", "format": "date-time", "description": "Snapshot time" },
+    "metrics": {
+      "type": "object",
+      "required": ["likes", "comments", "shares", "click_through_rate"],
+      "properties": {
+        "likes": { "type": "integer", "minimum": 0 },
+        "comments": { "type": "integer", "minimum": 0 },
+        "shares": { "type": "integer", "minimum": 0 },
+        "watch_time_seconds": { "type": "integer", "minimum": 0 },
+        "click_through_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "engagement_rate": {
+          "type": "number",
+          "description": "Engagement rate = (likes + comments + shares) / views"
+        }
+      }
+    }
+  }
+}

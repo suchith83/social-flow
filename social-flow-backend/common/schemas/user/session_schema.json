@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/user/session_schema.json",
+  "title": "UserSession",
+  "description": "Represents a user session (web/mobile). Designed for session store and active device listing.",
+  "type": "object",
+  "required": ["session_id", "user_id", "created_at", "device_info"],
+  "additionalProperties": false,
+  "properties": {
+    "session_id": { "type": "string", "description": "Opaque session id (prefer short, unique token).", "minLength": 8 },
+    "user_id": { "type": "string", "format": "uuid" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "last_seen_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": ["string", "null"], "format": "date-time" },
+    "device_info": {
+      "type": "object",
+      "required": ["user_agent", "device"],
+      "properties": {
+        "user_agent": { "type": "string" },
+        "device": { "type": "string", "description": "mobile|desktop|tablet|tv|bot" },
+        "os": { "type": "string" },
+        "browser": { "type": "string" },
+        "ip_address": { "type": "string", "format": "ipv4" },
+        "location_hint": { "type": "string", "description": "Country/region string from geo-ip"}
+      }
+    },
+    "auth_method": { "type": "string", "description": "How session was authenticated (password, oauth, mfa, sso)" },
+    "scopes": { "type": "array", "items": { "type": "string" }, "description": "Scopes associated with this session token." },
+    "revoked": { "type": "boolean", "default": false },
+    "revoked_at": { "type": ["string", "null"], "format": "date-time" }
+  }
+}

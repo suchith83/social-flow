@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/video/video_asset_schema.json",
+  "title": "VideoAsset",
+  "description": "Representation of a stored video asset or derivative (master file, encoded renditions).",
+  "type": "object",
+  "required": ["asset_id", "video_id", "storage_path", "container", "bitrate_kbps", "width", "height", "filesize_bytes", "created_at", "role"],
+  "additionalProperties": false,
+  "properties": {
+    "asset_id": { "type": "string", "format": "uuid" },
+    "video_id": { "type": "string", "format": "uuid" },
+    "storage_provider": { "type": "string", "description": "Object store or CDN provider (s3, gcs, azure, cdn-edge)" },
+    "storage_path": { "type": "string", "description": "URI/Key to the object (e.g., s3://bucket/key or /cdn/asset/..)." },
+    "container": { "type": "string", "description": "Container/format (mp4, mkv, mov, webm)." },
+    "codec": { "type": "string", "description": "Video codec (h264, h265, vp9, av1)." },
+    "audio_codec": { "type": ["string", "null"], "description": "Audio codec (aac, opus, mp3)." },
+    "bitrate_kbps": { "type": "number", "minimum": 0 },
+    "width": { "type": "integer", "minimum": 0 },
+    "height": { "type": "integer", "minimum": 0 },
+    "filesize_bytes": { "type": "integer", "minimum": 0 },
+    "duration_seconds": { "type": "number", "minimum": 0 },
+    "role": { "type": "string", "enum": ["master", "proxy", "rendition", "thumbnail", "subtitle"], "description": "Role of this asset." },
+    "encryption": {
+      "type": "object",
+      "description": "Optional encryption metadata if asset is encrypted at rest / for DRM.",
+      "properties": {
+        "encrypted": { "type": "boolean" },
+        "scheme": { "type": ["string", "null"] },
+        "key_id": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "checksum": { "type": ["string", "null"], "description": "Optional checksum (sha256/base64) for integrity verification." },
+    "created_at": { "type": "string", "format": "date-time" },
+    "transcoded_from": { "type": ["string", "null"], "description": "asset_id of the source if this was produced by a transcoder." },
+    "tags": { "type": "array", "items": { "type": "string" }, "default": [] }
+  }
+}

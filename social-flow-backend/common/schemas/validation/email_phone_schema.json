@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/validation/email_phone_schema.json",
+  "title": "EmailPhoneHelpers",
+  "description": "Helpers for email and phone validation. Email regex is intentionally permissive; use combined checks (regex + MX + disposable-check).",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "object",
+      "required": ["pattern_ref", "mx_check_required", "disposable_check"],
+      "properties": {
+        "pattern_ref": { "type": "string", "description": "Reference key to regex_patterns_schema (e.g., email_basic)." },
+        "mx_check_required": { "type": "boolean", "default": false },
+        "disposable_check": { "type": "string", "enum": ["none", "soft", "strict"], "default": "soft" },
+        "normalize_case": { "type": "boolean", "default": true },
+        "normalize_gmail_aliases": { "type": "boolean", "default": true }
+      }
+    },
+    "phone": {
+      "type": "object",
+      "required": ["pattern_ref", "e164_required"],
+      "properties": {
+        "pattern_ref": { "type": "string", "description": "Reference key to regex_patterns_schema for phones (e164_phone)." },
+        "e164_required": { "type": "boolean", "default": true },
+        "country_hint": { "type": ["string", "null"], "description": "Default country code hint for parsing unprefixed numbers." }
+      }
+    }
+  },
+  "additionalProperties": false
+}

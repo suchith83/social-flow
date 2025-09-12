@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/analytics/retention_schema.json",
+  "title": "UserRetention",
+  "description": "Tracks user retention, session length, churn metrics over time.",
+  "type": "object",
+  "required": ["user_id", "retention_period", "active_days", "session_stats"],
+  "properties": {
+    "user_id": { "type": "string" },
+    "retention_period": {
+      "type": "string",
+      "enum": ["D1", "D7", "D30", "D90"],
+      "description": "Retention period (Day 1, 7, 30, 90)"
+    },
+    "active_days": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of days user was active in given period"
+    },
+    "session_stats": {
+      "type": "object",
+      "properties": {
+        "avg_session_length": { "type": "number", "description": "Average session length in minutes" },
+        "max_session_length": { "type": "number", "description": "Maximum session length in minutes" },
+        "total_sessions": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "churn_probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Predicted probability user will churn"
+    }
+  }
+}

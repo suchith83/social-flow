@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/video/live_stream_schema.json",
+  "title": "LiveStream",
+  "description": "Metadata for live streaming sessions including ingestion endpoints, status and moderation flags.",
+  "type": "object",
+  "required": ["stream_id", "uploader_id", "created_at", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "stream_id": { "type": "string", "format": "uuid" },
+    "uploader_id": { "type": "string", "format": "uuid" },
+    "title": { "type": "string", "maxLength": 300 },
+    "description": { "type": "string", "maxLength": 3000 },
+    "ingest_endpoint": { "type": "string", "description": "RTMP/SRT/WebRTC ingest URL or key." },
+    "playback_manifest": { "type": ["string", "null"], "description": "HLS/DASH manifest URL for live playback." },
+    "status": { "type": "string", "enum": ["created", "live", "ended", "archived", "failed"], "default": "created" },
+    "started_at": { "type": ["string", "null"], "format": "date-time" },
+    "ended_at": { "type": ["string", "null"], "format": "date-time" },
+    "concurrent_viewers": { "type": "integer", "minimum": 0, "default": 0 },
+    "is_recording_enabled": { "type": "boolean", "default": true },
+    "recording_asset_id": { "type": ["string", "null"], "description": "asset_id of recorded VOD if available." },
+    "moderation_state": {
+      "type": "object",
+      "properties": {
+        "auto_moderation": { "type": "string", "enum": ["pass", "flagged", "hold"], "default": "pass" },
+        "human_review": { "type": ["string", "null"], "description": "human verdict if any" }
+      },
+      "additionalProperties": false
+    },
+    "metadata": { "type": "object", "additionalProperties": true }
+  }
+}

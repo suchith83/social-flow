@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/video/playlist_schema.json",
+  "title": "Playlist",
+  "description": "Playlist or collection of videos with ordering and metadata for UI and APIs.",
+  "type": "object",
+  "required": ["playlist_id", "owner_id", "title", "created_at", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "playlist_id": { "type": "string", "format": "uuid" },
+    "owner_id": { "type": "string", "format": "uuid" },
+    "title": { "type": "string", "maxLength": 300 },
+    "description": { "type": "string", "maxLength": 2000 },
+    "visibility": { "type": "string", "enum": ["public", "unlisted", "private"], "default": "public" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["video_id", "position", "added_at"],
+        "properties": {
+          "video_id": { "type": "string", "format": "uuid" },
+          "position": { "type": "integer", "minimum": 0 },
+          "added_at": { "type": "string", "format": "date-time" },
+          "note": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "last_modified": { "type": "string", "format": "date-time" },
+    "metadata": { "type": "object", "additionalProperties": true }
+  }
+}

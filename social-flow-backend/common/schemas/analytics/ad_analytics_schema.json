@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socialflow.com/schemas/analytics/ad_analytics_schema.json",
+  "title": "AdAnalytics",
+  "description": "Schema for capturing ad performance metrics (impressions, clicks, conversions, revenue).",
+  "type": "object",
+  "required": ["ad_id", "campaign_id", "timestamp", "impressions", "clicks"],
+  "properties": {
+    "ad_id": { "type": "string" },
+    "campaign_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "impressions": { "type": "integer", "minimum": 0 },
+    "clicks": { "type": "integer", "minimum": 0 },
+    "conversions": { "type": "integer", "minimum": 0 },
+    "ctr": { "type": "number", "minimum": 0, "maximum": 1 },
+    "conversion_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "revenue": { "type": "number", "minimum": 0, "description": "Revenue generated in USD" }
+  }
+}
