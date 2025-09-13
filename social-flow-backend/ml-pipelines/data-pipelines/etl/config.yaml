@@ -1,0 +1,13 @@
+# config.yaml
+source:
+  type: "file"
+  path: "data/raw/customers.csv"
+
+transform:
+  null_strategy: "fill_zero"
+
+target:
+  type: "s3"
+  bucket: "my-etl-bucket"
+  key: "processed/customers.parquet"
+  format: "parquet"

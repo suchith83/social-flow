@@ -1,0 +1,13 @@
+# config.yaml
+offline_store:
+  type: "parquet"
+  path: "feature_store/offline/features.parquet"
+
+online_store:
+  type: "redis"
+  host: "localhost"
+  port: 6379
+  db: 0
+
+registry:
+  path: "feature_store/feature_registry.json"

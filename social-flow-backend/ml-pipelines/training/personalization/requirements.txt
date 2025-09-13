@@ -1,0 +1,10 @@
+# Python dependencies for personalization
+# ============================
+# File: requirements.txt
+# ============================
+torch
+tqdm
+mlflow
+numpy
+pandas
+scikit-learn

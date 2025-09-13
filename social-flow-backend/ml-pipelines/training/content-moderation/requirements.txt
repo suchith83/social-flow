@@ -1,0 +1,10 @@
+# Python dependencies for content-moderation
+# ============================
+# File: requirements.txt
+# ============================
+torch
+transformers
+mlflow
+scikit-learn
+tqdm
+numpy

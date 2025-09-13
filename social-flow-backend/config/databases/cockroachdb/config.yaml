@@ -1,0 +1,16 @@
+﻿# YAML configuration for cluster nodes, credentials, and SSL
+# CockroachDB cluster configuration
+database:
+  name: socialflow_db
+  user: socialflow_user
+  password: strong_password_here
+  pool:
+    min: 5
+    max: 20
+  nodes:
+    - host: cockroach-node-1.local
+      port: 26257
+    - host: cockroach-node-2.local
+      port: 26257
+    - host: cockroach-node-3.local
+      port: 26257

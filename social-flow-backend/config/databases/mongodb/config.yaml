@@ -1,0 +1,49 @@
+﻿# MongoDB cluster settings, auth, TLS, pool tuning
+# MongoDB cluster configuration
+mongodb:
+  # Logical app database name
+  database: socialflow_db
+
+  # Authentication details - prefer using secrets manager in production
+  user: socialflow_user
+  password: very_strong_password_here
+
+  # Replica-set aware nodes
+  nodes:
+    - host: mongo-node-1.local
+      port: 27017
+    - host: mongo-node-2.local
+      port: 27017
+    - host: mongo-node-3.local
+      port: 27017
+
+  # Replica set name (if using replica set)
+  replica_set: rs0
+
+  # TLS/SSL options - set to true in production when certificates configured
+  tls: true
+  tlsCAFile: /etc/ssl/mongo/ca.pem
+  tlsCertificateKeyFile: /etc/ssl/mongo/client.pem
+
+  # Connection pool and retry tuning
+  pool:
+    maxPoolSize: 200
+    minPoolSize: 5
+    maxIdleTimeMS: 300000
+    connectTimeoutMS: 10000
+    serverSelectionTimeoutMS: 5000
+    socketTimeoutMS: 15000
+    retryWrites: true
+    retryReads: true
+
+  # Monitoring and backup
+  backup:
+    dump_dir: /var/backups/mongo
+    retention_days: 30
+    s3_bucket: s3://socialflow-mongo-backups
+
+  # App-level defaults
+  defaults:
+    read_preference: primaryPreferred
+    write_concern: w1
+    journal: true
