@@ -1,0 +1,47 @@
+{
+  "dashboard_name": "Operations Monitoring Dashboard",
+  "refresh_interval_seconds": 20,
+  "data_window_minutes": 15,
+  "backends": {
+    "prometheus": {
+      "enabled": true,
+      "endpoint": "http://prometheus.local:9090",
+      "query_timeout_seconds": 5
+    },
+    "cloudwatch": {
+      "enabled": false
+    }
+  },
+  "widgets": [
+    {
+      "type": "timeseries",
+      "title": "Aggregate CPU Utilization (%)",
+      "metric": "node_cpu_seconds_total:rate:avg",
+      "thresholds": { "warning": 70, "critical": 90 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Used (%)",
+      "metric": "node_memory_Active_bytes:percent",
+      "thresholds": { "warning": 75, "critical": 92 }
+    },
+    {
+      "type": "gauge",
+      "title": "Disk Pressure (IOPS)",
+      "metric": "disk_iops",
+      "thresholds": { "warning": 5000, "critical": 12000 }
+    },
+    {
+      "type": "counter",
+      "title": "Open Incidents (past 24h)",
+      "metric": "incidents_open_count",
+      "thresholds": { "warning": 5, "critical": 15 }
+    },
+    {
+      "type": "heatmap",
+      "title": "Network Latency Distribution (ms)",
+      "metric": "network_latency_ms",
+      "thresholds": { "warning": 100, "critical": 250 }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "dashboard_name": "Security Monitoring Dashboard",
+  "refresh_interval_seconds": 45,
+  "lookback_minutes": 30,
+  "backends": {
+    "siem": {
+      "enabled": true,
+      "endpoint": "https://siem.local/api",
+      "api_key_env": "SIEM_API_KEY"
+    },
+    "ids": {
+      "enabled": true,
+      "endpoint": "https://ids.local/api",
+      "api_key_env": "IDS_API_KEY"
+    },
+    "vuln_scanner": {
+      "enabled": false
+    }
+  },
+  "widgets": [
+    {
+      "type": "counter",
+      "title": "High Severity Alerts (last 30m)",
+      "metric": "alerts.high",
+      "thresholds": { "warning": 5, "critical": 15 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Failed Logins (per minute)",
+      "metric": "auth.failed_logins",
+      "thresholds": { "warning": 50, "critical": 200 }
+    },
+    {
+      "type": "list",
+      "title": "Top Suspicious IPs",
+      "metric": "suspicious_ips"
+    },
+    {
+      "type": "gauge",
+      "title": "Vulnerabilities Open (critical)",
+      "metric": "vulns.critical_open",
+      "thresholds": { "warning": 10, "critical": 50 }
+    }
+  ],
+  "response_playbooks": {
+    "suspicious_ip": "isolate_host && enrich_whois && notify_security_team",
+    "brute_force": "block_ip && notify_oncall && create_incident"
+  }
+}

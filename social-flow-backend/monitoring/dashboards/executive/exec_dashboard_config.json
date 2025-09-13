@@ -1,0 +1,30 @@
+{
+  "dashboard_name": "Executive Monitoring Dashboard",
+  "refresh_interval_seconds": 60,
+  "widgets": [
+    {
+      "type": "timeseries",
+      "title": "Daily Revenue ($)",
+      "metric": "business_revenue_daily",
+      "thresholds": { "warning": 10000, "critical": 5000 }
+    },
+    {
+      "type": "counter",
+      "title": "Active Users",
+      "metric": "users_active_daily",
+      "thresholds": { "warning": 2000, "critical": 1000 }
+    },
+    {
+      "type": "percentage",
+      "title": "Conversion Rate (%)",
+      "metric": "conversion_rate",
+      "thresholds": { "warning": 2.0, "critical": 1.0 }
+    },
+    {
+      "type": "availability",
+      "title": "Service Uptime (%)",
+      "metric": "system_uptime_percentage",
+      "thresholds": { "warning": 99.5, "critical": 98.0 }
+    }
+  ]
+}
