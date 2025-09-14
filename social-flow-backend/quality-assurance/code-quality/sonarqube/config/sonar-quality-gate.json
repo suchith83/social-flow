@@ -1,0 +1,35 @@
+{
+  "name": "Enterprise Default Gate",
+  "conditions": [
+    {
+      "metric": "new_code_coverage",
+      "operator": "LT",
+      "errorThreshold": "80"
+    },
+    {
+      "metric": "coverage",
+      "operator": "LT",
+      "errorThreshold": "70"
+    },
+    {
+      "metric": "new_bugs",
+      "operator": "GT",
+      "errorThreshold": "0"
+    },
+    {
+      "metric": "new_vulnerabilities",
+      "operator": "GT",
+      "errorThreshold": "0"
+    },
+    {
+      "metric": "new_security_hotspots",
+      "operator": "GT",
+      "errorThreshold": "0"
+    },
+    {
+      "metric": "new_duplicated_lines_density",
+      "operator": "GT",
+      "errorThreshold": "3"
+    }
+  ]
+}

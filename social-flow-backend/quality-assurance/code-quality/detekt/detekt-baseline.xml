@@ -1,0 +1,10 @@
+<!-- Detekt baseline file -->
+<?xml version="1.0" encoding="UTF-8"?>
+<SmellBaseline>
+    <!--
+        Baseline suppresses existing issues so you can focus only on NEW ones.
+        Useful for gradual adoption in large legacy projects.
+    -->
+    <ManuallySuppressedIssues></ManuallySuppressedIssues>
+    <CurrentIssues></CurrentIssues>
+</SmellBaseline>
