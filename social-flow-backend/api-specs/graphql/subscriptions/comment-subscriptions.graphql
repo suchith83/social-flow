@@ -1,0 +1,76 @@
+"""
+Comment-related subscriptions: new comments, replies, moderation events on comments,
+and live editing/deletion notifications for threaded conversations.
+"""
+
+scalar DateTime
+scalar JSON
+
+type Subscription {
+  """
+  New comments for a post or video. Use parentId to watch replies.
+  """
+  newComment(input: NewCommentSubscriptionInput!): CommentEvent!
+
+  """
+  Replies to a specific comment (threaded).
+  """
+  newReply(input: NewReplySubscriptionInput!): CommentEvent!
+
+  """
+  Comment edit/delete notifications.
+  """
+  commentModerationEvent(input: CommentModerationSubscriptionInput!): CommentModerationEvent!
+}
+
+input NewCommentSubscriptionInput {
+  postId: ID
+  videoId: ID
+  authorIds: [ID!]             # optional filter to only get comments from certain users
+  minLikes: Int = 0
+  includeContent: Boolean = true
+  subscriptionToken: String
+}
+
+input NewReplySubscriptionInput {
+  parentCommentId: ID!
+  includeContent: Boolean = true
+  subscriptionToken: String
+}
+
+input CommentModerationSubscriptionInput {
+  moderatorId: ID!             # moderators subscribe to moderation queue
+  severity: [ReportSeverity!]
+  subscriptionToken: String
+}
+
+type CommentEvent {
+  eventType: CommentEventType!
+  comment: Comment
+  occurredAt: DateTime!
+  metadata: JSON
+}
+
+enum CommentEventType {
+  CREATED
+  UPDATED
+  DELETED
+  PINNED
+  UNPINNED
+}
+
+type CommentModerationEvent {
+  commentId: ID!
+  action: ModerationAction!
+  reason: String
+  actedBy: ID!
+  actedAt: DateTime!
+  metadata: JSON
+}
+
+enum ModerationAction {
+  REMOVED
+  HIDDEN
+  FLAGGED
+  RESTORED
+}

@@ -1,0 +1,123 @@
+"""
+Admin & moderation queries: reports, moderation queue, user audit logs.
+Access to these queries should be tightly scoped to admin/moderator roles.
+"""
+type Query {
+  """
+  Fetch moderation reports with filters and pagination.
+  """
+  reports(input: ReportsQueryInput!): ReportConnection!
+
+  """
+  Fetch a single report by id.
+  """
+  reportById(reportId: ID!): Report
+
+  """
+  Fetch audit logs (actions performed by admins) for a user or system area.
+  """
+  auditLogs(input: AuditLogQueryInput!): AuditLogConnection!
+
+  """
+  Fetch moderation queue summary (counts per severity/status).
+  """
+  moderationQueueSummary: ModerationSummary!
+}
+
+input ReportsQueryInput {
+  first: Int = 20
+  after: String
+  status: ReportStatus
+  severity: ReportSeverity
+  reportedAfter: DateTime
+  reportedBefore: DateTime
+  contentType: ContentType
+  assignedTo: ID
+  sort: ReportSort = NEWEST
+}
+
+enum ReportSort {
+  NEWEST
+  OLDEST
+  MOST_SEVERE
+  MOST_FLAGGED
+}
+
+type ReportConnection {
+  edges: [ReportEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ReportEdge {
+  cursor: String!
+  node: Report!
+}
+
+type Report {
+  id: ID!
+  reporterId: ID!
+  contentId: ID!
+  contentType: ContentType!
+  reason: String!
+  details: String
+  severity: ReportSeverity!
+  status: ReportStatus!
+  createdAt: DateTime!
+  assignedTo: ID
+  metadata: JSON
+}
+
+enum ReportSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ReportStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+input AuditLogQueryInput {
+  first: Int = 20
+  after: String
+  userId: ID
+  actionType: String
+  startDate: DateTime
+  endDate: DateTime
+}
+
+type AuditLogConnection {
+  edges: [AuditLogEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type AuditLogEdge {
+  cursor: String!
+  node: AuditLog!
+}
+
+type AuditLog {
+  id: ID!
+  actorId: ID!
+  targetId: ID
+  action: String!
+  details: JSON
+  timestamp: DateTime!
+}
+
+type ModerationSummary {
+  totalOpenReports: Int!
+  totalInReview: Int!
+  bySeverity: [SeverityCount!]!
+}
+
+type SeverityCount {
+  severity: ReportSeverity!
+  count: Int!
+}

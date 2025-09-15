@@ -1,0 +1,92 @@
+"""
+Video queries: fetch single video, channels, playlists, search, recommendations and trending.
+Includes support for watch history / resume positions via metadata.
+"""
+type Query {
+  videoById(videoId: ID!): Video
+
+  """
+  Fetch videos uploaded by a channel (userId).
+  """
+  channelVideos(channelId: ID!, first: Int = 20, after: String, filter: VideoFilter, sort: VideoSort = NEWEST): VideoConnection!
+
+  """
+  Search videos across title, description, tags, captions.
+  """
+  searchVideos(input: SearchVideosInput!): VideoConnection!
+
+  """
+  Get trending videos (global or regional).
+  """
+  trendingVideos(region: String = "global", first: Int = 20, after: String): VideoConnection!
+
+  """
+  Personalized recommendations for a user.
+  """
+  recommendedVideos(userId: ID!, first: Int = 20, after: String): VideoConnection!
+}
+
+input SearchVideosInput {
+  query: String!
+  first: Int = 20
+  after: String
+  filter: VideoFilter
+  sort: VideoSort = RELEVANCE
+}
+
+input VideoFilter {
+  tags: [String!]
+  minViews: Int
+  minLikes: Int
+  uploadedAfter: DateTime
+  uploadedBefore: DateTime
+  visibility: VideoVisibility
+  durationLessThanSeconds: Int
+  durationGreaterThanSeconds: Int
+}
+
+enum VideoSort {
+  NEWEST
+  OLDEST
+  MOST_VIEWED
+  MOST_LIKED
+  RELEVANCE
+  TRENDING
+}
+
+type VideoConnection {
+  edges: [VideoEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type VideoEdge {
+  cursor: String!
+  node: Video!
+}
+
+type Video {
+  id: ID!
+  uploader: User!
+  title: String!
+  description: String
+  videoUrl: String!
+  thumbnailUrl: String
+  tags: [String!]
+  views: Int!
+  likes: Int!
+  dislikes: Int!
+  commentsCount: Int!
+  visibility: VideoVisibility!
+  durationSeconds: Int
+  createdAt: DateTime!
+  updatedAt: DateTime
+  metadata: JSON               # used for resume positions, captions availability, etc.
+}
+
+enum VideoVisibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+  MEMBERS_ONLY
+}

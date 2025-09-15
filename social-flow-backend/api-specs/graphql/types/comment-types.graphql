@@ -1,0 +1,26 @@
+"""
+Comment model supports nested threading via parentId and denormalized quick counts.
+Reply lists should be fetched with a separate connection to avoid deep nesting cost.
+"""
+
+type Comment implements Identifiable & Content {
+  id: ID!
+  author: User!
+  content: String!
+  parentId: ID
+  postId: ID
+  videoId: ID
+  likesCount: Int!
+  repliesCount: Int!
+  edited: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  metadata: JSON
+  # we intentionally do NOT include replies in this type to avoid unlimited nesting
+}
+
+type CommentPayload {
+  comment: Comment
+  warnings: [String!]
+  errors: [Error!]
+}

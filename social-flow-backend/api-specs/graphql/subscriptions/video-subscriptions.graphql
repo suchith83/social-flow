@@ -1,0 +1,117 @@
+"""
+Subscriptions for videos: new uploads, processing status, view count spikes, live stream events.
+Includes support for video transcoding status and HLS stream readiness.
+"""
+
+scalar DateTime
+scalar JSON
+
+type Subscription {
+  """
+  A new video was uploaded and processed (or partially processed).
+  """
+  videoUploaded(input: VideoUploadedSubscriptionInput!): VideoEvent!
+
+  """
+  Video processing/transcoding status updates (e.g., QUEUED, PROCESSING, READY, FAILED).
+  """
+  videoProcessingStatus(input: VideoProcessingStatusInput!): VideoProcessingEvent!
+
+  """
+  Live stream start/stop notifications for a channel.
+  """
+  liveStreamStatusChanged(input: LiveStreamStatusInput!): LiveStreamEvent!
+
+  """
+  Notifications about view count or engagement spikes for creators.
+  """
+  videoEngagementSpike(input: VideoEngagementSpikeInput!): VideoEngagementEvent!
+}
+
+input VideoUploadedSubscriptionInput {
+  channelId: ID
+  tags: [String!]
+  visibility: VideoVisibility = PUBLIC
+  minViewsThreshold: Int = 0
+  subscriptionToken: String
+}
+
+input VideoProcessingStatusInput {
+  videoId: ID!
+  subscribeToStages: [ProcessingStage!] = [QUEUED, PROCESSING, READY, FAILED]
+  subscriptionToken: String
+}
+
+enum ProcessingStage {
+  QUEUED
+  PROCESSING
+  READY
+  FAILED
+  PARTIAL_READY   # some renditions ready (e.g., low-res)
+}
+
+type VideoEvent {
+  eventType: VideoEventType!
+  video: Video
+  occurredAt: DateTime!
+  metadata: JSON
+}
+
+enum VideoEventType {
+  UPLOADED
+  UPDATED
+  DELETED
+  PUBLISHED
+  UNPUBLISHED
+}
+
+type VideoProcessingEvent {
+  videoId: ID!
+  stage: ProcessingStage!
+  details: String
+  progressPercent: Float
+  updatedAt: DateTime!
+  metadata: JSON
+}
+
+input LiveStreamStatusInput {
+  channelId: ID!
+  subscribeTo: [LiveStreamStatus!] = [STARTED, ENDED, ERROR]
+  subscriptionToken: String
+}
+
+enum LiveStreamStatus {
+  STARTED
+  ENDED
+  ERROR
+  METADATA_UPDATED
+}
+
+type LiveStreamEvent {
+  channelId: ID!
+  streamId: ID!
+  status: LiveStreamStatus!
+  title: String
+  startedAt: DateTime
+  endedAt: DateTime
+  viewers: Int
+  metadata: JSON
+}
+
+input VideoEngagementSpikeInput {
+  channelId: ID
+  minViewIncreasePercent: Float = 50.0
+  samplingWindowMinutes: Int = 5
+  subscriptionToken: String
+}
+
+type VideoEngagementEvent {
+  videoId: ID!
+  channelId: ID
+  previousViews: Int!
+  newViews: Int!
+  percentIncrease: Float!
+  windowMinutes: Int!
+  detectedAt: DateTime!
+  metadata: JSON
+}

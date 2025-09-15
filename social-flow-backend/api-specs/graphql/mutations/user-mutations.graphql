@@ -1,0 +1,71 @@
+"""
+User-related mutations: registration, authentication, profile management.
+"""
+type Mutation {
+  """
+  Register a new user.
+  Requires unique email and username.
+  """
+  registerUser(input: RegisterUserInput!): AuthPayload!
+
+  """
+  Login existing user and return JWT access + refresh tokens.
+  """
+  loginUser(input: LoginUserInput!): AuthPayload!
+
+  """
+  Update user profile info (bio, avatar, preferences).
+  """
+  updateUserProfile(input: UpdateUserProfileInput!): User!
+
+  """
+  Permanently delete a user account.
+  """
+  deleteUser(userId: ID!): DeleteResponse!
+}
+
+"""
+Input for registering a user.
+"""
+input RegisterUserInput {
+  username: String!
+  email: String!
+  password: String!
+  displayName: String
+}
+
+"""
+Input for logging in a user.
+"""
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
+"""
+Input for updating user profile.
+"""
+input UpdateUserProfileInput {
+  userId: ID!
+  displayName: String
+  bio: String
+  avatarUrl: String
+  preferences: JSON
+}
+
+"""
+Return type for auth operations.
+"""
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+"""
+Generic response for deletion.
+"""
+type DeleteResponse {
+  success: Boolean!
+  message: String
+}

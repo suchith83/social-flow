@@ -1,0 +1,111 @@
+"""
+Post queries: single post, feed endpoints, search, timelines, and pinned posts.
+Support cursor pagination and rich filtering (hashtags, mentions, media).
+"""
+type Query {
+  postById(postId: ID!): Post
+
+  """
+  Fetch a user's timeline (their posts) with cursor-based pagination.
+  """
+  userTimeline(userId: ID!, first: Int, after: String, filter: PostFilter, sort: PostSort = NEWEST): PostConnection!
+
+  """
+  Global home feed for an authenticated user.
+  Accepts personalization options (algorithmic vs chronological).
+  """
+  homeFeed(input: HomeFeedInput!): PostConnection!
+
+  """
+  Search posts by full-text, tags, or mentions.
+  """
+  searchPosts(input: SearchPostsInput!): PostConnection!
+
+  """
+  Get posts for a hashtag.
+  """
+  postsByHashtag(tag: String!, first: Int, after: String, sort: PostSort = HOT): PostConnection!
+}
+
+input HomeFeedInput {
+  userId: ID!                      # viewer id (for personalization)
+  first: Int = 20
+  after: String
+  algorithm: FeedAlgorithm = HYBRID
+  filter: PostFilter
+}
+
+enum FeedAlgorithm {
+  CHRONOLOGICAL
+  ALGORITHMIC
+  HYBRID
+}
+
+input SearchPostsInput {
+  query: String!
+  first: Int = 20
+  after: String
+  filter: PostFilter
+  sort: PostSort = RELEVANCE
+}
+
+input PostFilter {
+  hasMedia: Boolean
+  mediaType: MediaType
+  authorId: ID
+  minLikes: Int
+  minComments: Int
+  visibility: PostVisibility
+  postedAfter: DateTime
+  postedBefore: DateTime
+  tags: [String!]
+}
+
+enum PostSort {
+  NEWEST
+  OLDEST
+  MOST_LIKED
+  MOST_COMMENTED
+  RELEVANCE
+  HOT
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  OTHER
+}
+
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PostEdge {
+  cursor: String!
+  node: Post!
+}
+
+type Post {
+  id: ID!
+  author: User!
+  content: String!
+  mediaUrls: [String!]
+  tags: [String!]
+  visibility: PostVisibility!
+  likesCount: Int!
+  commentsCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  pinned: Boolean
+  metadata: JSON
+}
+
+enum PostVisibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+  FOLLOWERS_ONLY
+}

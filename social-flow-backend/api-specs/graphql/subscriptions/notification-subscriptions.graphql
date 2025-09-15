@@ -1,0 +1,83 @@
+"""
+General-purpose notification subscription for user-centric events:
+mentions, follows, reactions, direct messages, system alerts.
+This is typically the primary subscription clients open after authentication.
+"""
+
+scalar DateTime
+scalar JSON
+
+type Subscription {
+  """
+  All notifications for the authenticated user. Server must validate viewer's identity.
+  Use 'category' or 'types' to filter server-side to reduce bandwidth.
+  """
+  notifications(input: NotificationSubscriptionInput!): Notification!
+
+  """
+  Direct message (DM) events for a user or conversation.
+  """
+  directMessage(input: DirectMessageSubscriptionInput!): DirectMessageEvent!
+}
+
+input NotificationSubscriptionInput {
+  userId: ID!                         # subscriber user
+  categories: [NotificationCategory!] # e.g., MENTIONS, FOLLOWERS
+  muteLowerPriorityThan: NotificationPriority = LOW
+  batchWindowMs: Int = 200            # server-side batching window
+  subscriptionToken: String
+}
+
+enum NotificationCategory {
+  MENTIONS
+  REACTIONS
+  FOLLOWS
+  REPLIES
+  SYSTEM
+  SUBSCRIPTIONS
+  PAYMENTS
+}
+
+enum NotificationPriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+type Notification {
+  id: ID!
+  userId: ID!                        # recipient
+  category: NotificationCategory!
+  priority: NotificationPriority!
+  title: String
+  body: String
+  link: String                       # deep link to open in app
+  actorId: ID                        # who triggered it (if any)
+  createdAt: DateTime!
+  read: Boolean
+  metadata: JSON
+}
+
+input DirectMessageSubscriptionInput {
+  userId: ID!                         # subscriber
+  conversationId: ID                  # if provided, limit to single conversation
+  includeTypingEvents: Boolean = false
+  subscriptionToken: String
+}
+
+type DirectMessageEvent {
+  conversationId: ID!
+  messageId: ID
+  fromUserId: ID
+  toUserId: ID
+  content: String
+  sentAt: DateTime
+  typing: Boolean                     # true if it's a typing indicator
+  metadata: JSON
+}
+
+# Implementation note:
+# - All notification subscriptions should be authenticated and scoped per-user.
+# - Use presence/notification channels keyed by userId and region for efficiency.
+# - Provide server-side QoS and backpressure handling for mobile/web clients.

@@ -1,0 +1,34 @@
+"""
+Pagination primitives (Relay-style connection pattern).
+These are used everywhere (users, posts, videos, comments, subscriptions, invoices).
+The connection pattern helps with forward/backward pagination and cursor stability.
+"""
+
+"""
+Basic PageInfo for cursor pagination.
+"""
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: Cursor
+  endCursor: Cursor
+  # Optional server-supplied total pages hint (may be expensive to compute).
+  totalPagesHint: Int
+}
+
+"""
+Generic connection metadata for optimistic UI usage.
+"""
+type ConnectionMeta {
+  totalCount: Int
+  approximateCount: Boolean # true if totalCount is an approximation (fast index)
+}
+
+"""
+Helper union to attach to connections when needed.
+"""
+union ConnectionPayload = ConnectionMetaPayload
+
+type ConnectionMetaPayload {
+  meta: ConnectionMeta
+}

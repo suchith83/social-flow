@@ -1,0 +1,47 @@
+"""
+Comment queries: fetch comments for a post or video, threaded replies, and single comment lookup.
+Threaded comments support nested cursors or separate replies connection.
+"""
+type Query {
+  commentsForPost(postId: ID!, first: Int = 20, after: String, sort: CommentSort = NEWEST): CommentConnection!
+  commentsForVideo(videoId: ID!, first: Int = 20, after: String, sort: CommentSort = NEWEST): CommentConnection!
+
+  """
+  Fetch a single comment by id (useful for editing/viewing context).
+  """
+  commentById(commentId: ID!): Comment
+
+  """
+  Fetch replies to a comment (threaded).
+  """
+  commentReplies(commentId: ID!, first: Int = 20, after: String, sort: CommentSort = NEWEST): CommentConnection!
+}
+
+enum CommentSort {
+  NEWEST
+  OLDEST
+  MOST_LIKED
+}
+
+type CommentConnection {
+  edges: [CommentEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type CommentEdge {
+  cursor: String!
+  node: Comment!
+}
+
+type Comment {
+  id: ID!
+  author: User!
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  likes: Int!
+  parentId: ID
+  repliesCount: Int!
+  metadata: JSON
+}

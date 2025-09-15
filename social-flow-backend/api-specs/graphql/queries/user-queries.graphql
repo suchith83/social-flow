@@ -1,0 +1,86 @@
+"""
+User-related queries: fetch profile, search users, followers/following with pagination.
+"""
+scalar DateTime
+scalar JSON
+
+type Query {
+  """
+  Fetch a user's public profile by id or username.
+  Either userId or username must be provided; resolvers should validate.
+  """
+  user(userId: ID, username: String): User
+
+  """
+  Search users by text (username, displayName, bio). Supports filters and sorting.
+  Returns a connection for pagination.
+  """
+  searchUsers(input: SearchUsersInput!): UserConnection!
+
+  """
+  Fetch followers of a user with cursor-based pagination.
+  """
+  followers(userId: ID!, first: Int, after: String): UserConnection!
+
+  """
+  Fetch users that a given user is following with cursor-based pagination.
+  """
+  following(userId: ID!, first: Int, after: String): UserConnection!
+}
+
+# Search input for users
+input SearchUsersInput {
+  query: String!                  # text search
+  limit: Int = 20
+  offset: Int = 0
+  filter: UserFilter
+  sort: UserSort = RELEVANCE
+}
+
+input UserFilter {
+  verified: Boolean
+  minFollowers: Int
+  joinedAfter: DateTime
+  joinedBefore: DateTime
+}
+
+enum UserSort {
+  RELEVANCE
+  NEWEST
+  MOST_FOLLOWERS
+  MOST_POSTS
+}
+
+# Relay-style connection & edges
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# Minimal User type reference (expand in shared types)
+type User {
+  id: ID!
+  username: String!
+  displayName: String
+  bio: String
+  avatarUrl: String
+  verified: Boolean
+  followersCount: Int
+  followingCount: Int
+  postsCount: Int
+  createdAt: DateTime!
+  metadata: JSON
+}

@@ -1,0 +1,61 @@
+"""
+User presence & profile update subscriptions.
+Important: authenticate subscription transport and verify client is allowed to subscribe
+(e.g., userId === viewerId or viewer has subscription to that user's events).
+"""
+
+scalar DateTime
+scalar JSON
+
+type Subscription {
+  """
+  Real-time presence change for a given user.
+  Subscribe with: { userId: "..." } or subscribe to "all" presence (admin).
+  Events: ONLINE, OFFLINE, IDLE, DO_NOT_DISTURB
+  """
+  userPresenceChanged(input: UserPresenceSubscriptionInput!): UserPresenceEvent!
+
+  """
+  When a user's public profile is updated (bio, avatar, displayName).
+  Clients should filter to only receive updates they care about.
+  """
+  userProfileUpdated(input: UserProfileUpdatedInput!): UserProfileEvent!
+}
+
+input UserPresenceSubscriptionInput {
+  userId: ID!            # who to watch
+  includeStatus: [PresenceStatus!] = [ONLINE, OFFLINE, IDLE, DO_NOT_DISTURB]
+  # optional: subscription-wide filter token for server-side verification
+  subscriptionToken: String
+}
+
+enum PresenceStatus {
+  ONLINE
+  OFFLINE
+  IDLE
+  DO_NOT_DISTURB
+}
+
+type UserPresenceEvent {
+  userId: ID!
+  status: PresenceStatus!
+  lastActiveAt: DateTime
+  metadata: JSON
+}
+
+input UserProfileUpdatedInput {
+  userId: ID!
+  # fieldsMask allows the server to optimize payloads (e.g., ["bio","avatarUrl"])
+  fieldsMask: [String!]
+  subscriptionToken: String
+}
+
+type UserProfileEvent {
+  userId: ID!
+  updatedFields: [String!]!
+  user: User!
+  changedAt: DateTime!
+  metadata: JSON
+}
+
+# NOTE: Reuse User type from shared types. Authorization: enforce that only permitted clients can subscribe to private fields.

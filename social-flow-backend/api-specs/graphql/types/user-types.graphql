@@ -1,0 +1,68 @@
+"""
+User object and supporting inputs / payloads.
+This file contains advanced fields used by the app: social counts, badges, settings, and preferences.
+"""
+
+type User implements Identifiable & Actor {
+  id: ID!
+  username: String!
+  displayName: String
+  email: Email
+  bio: String
+  avatarUrl: URL
+  coverUrl: URL
+  location: String
+  website: URL
+  verified: Boolean
+  role: UserRole!
+  badges: [String!]           # opaque badge slugs (e.g., "creator:100k")
+  followersCount: Int!
+  followingCount: Int!
+  postsCount: Int!
+  videosCount: Int!
+  likesReceivedCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  lastActiveAt: DateTime
+  preferences: JSON           # client preferences (theme, language, feed mode)
+  metadata: JSON              # flexible storage for experimental features
+}
+
+"""
+Auth payload returned from login / register.
+"""
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+  expiresAt: DateTime!
+}
+
+"""
+Profile update input - use partial fields for patch semantics.
+"""
+input UpdateUserProfileInput {
+  userId: ID!
+  displayName: String
+  bio: String
+  avatarUrl: URL
+  coverUrl: URL
+  location: String
+  website: URL
+  preferences: JSON
+}
+
+"""
+User public summary used in lists and edges to reduce overfetching.
+"""
+type UserSummary {
+  id: ID!
+  username: String!
+  displayName: String
+  avatarUrl: URL
+  verified: Boolean
+  followersCount: Int
+  followingCount: Int
+  role: UserRole
+  metadata: JSON
+}

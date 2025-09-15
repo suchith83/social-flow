@@ -1,0 +1,70 @@
+"""
+Post (micro-post) model. Designed to handle text-first posts with optional attachments.
+Includes fields helpful for client-side incremental updates, optimistic UI, and moderation.
+"""
+
+type Post implements Identifiable & Content {
+  id: ID!
+  author: User!
+  contentType: ContentType!        # will be POST for posts
+  content: String!
+  excerpt: String                 # truncated preview computed by server
+  media: [Media!]                 # structured media objects (images, videos, files)
+  mediaUrls: [URL!]               # legacy convenience field, still populated
+  tags: [String!]                 # hashtags
+  mentions: [UserSummary!]        # denormalized mention summaries
+  visibility: PostVisibility!
+  pinned: Boolean!
+  edited: Boolean!
+  editHistoryCount: Int
+  likesCount: Int!
+  commentsCount: Int!
+  shareCount: Int!
+  reactionsBreakdown: [ReactionCount!]  # pre-aggregated reaction counts
+  createdAt: DateTime!
+  updatedAt: DateTime
+  metadata: JSON                  # for UI hints (language, extracted entities)
+}
+
+"""
+Media object to represent various attachments and their metadata.
+"""
+type Media {
+  id: ID!
+  url: URL!
+  mimeType: String
+  width: Int
+  height: Int
+  durationSeconds: Int
+  sizeBytes: Int
+  dominantColor: String
+  generatedThumbnails: [URL!]
+  metadata: JSON
+}
+
+"""
+Reaction count per type for a post or comment.
+"""
+type ReactionCount {
+  reaction: ReactionType!
+  count: Int!
+}
+
+"""
+Create/Update payloads when returning from mutation resolvers in addition to Post type.
+"""
+type PostPayload {
+  post: Post
+  warnings: [String!]    # non-fatal warnings (e.g., "some media failed to upload")
+  errors: [Error!]       # structured errors for the client
+}
+
+"""
+Generic Error type to standardize mutation responses / partial failures.
+"""
+type Error {
+  code: String!
+  message: String!
+  path: [String!]        # GraphQL path or domain path
+  details: JSON
+}
