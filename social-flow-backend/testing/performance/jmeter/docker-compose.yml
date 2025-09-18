@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  jmeter-master:
+    image: perf-jmeter:latest
+    build:
+      context: .
+    volumes:
+      - ./:/work
+    entrypoint: ["/usr/local/bin/jmeter-entrypoint.sh"]
+    command: ["jmeter", "-n", "-t", "test-plans/master-test-plan.jmx", "-l", "reports/master-results.jtl"]
+    environment:
+      - TZ=UTC
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+  # optionally add influxdb / grafana services for metrics storage & dashboards
+  # influx:
+  #   image: influxdb:1.8
+  #   ports: ["8086:8086"]

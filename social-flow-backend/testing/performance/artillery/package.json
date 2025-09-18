@@ -1,0 +1,25 @@
+{
+  "name": "artillery-performance-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Artillery performance test scenarios for the project (auth, API baseline, storage upload/download, multi-cloud failover).",
+  "scripts": {
+    "install-artillery": "npm install --no-audit --no-fund",
+    "test:auth": "artillery run --output reports/auth-report.json scripts/auth.yml",
+    "test:baseline": "artillery run --output reports/baseline-report.json scripts/baseline-api.yml",
+    "test:upload": "artillery run --output reports/upload-report.json scripts/storage-upload.yml",
+    "test:download": "artillery run --output reports/download-report.json scripts/storage-download.yml",
+    "test:failover": "artillery run --output reports/failover-report.json scripts/multi-cloud-failover.yml",
+    "report:auth": "artillery report --output reports/auth-report.html reports/auth-report.json",
+    "report:baseline": "artillery report --output reports/baseline-report.html reports/baseline-report.json",
+    "report:all": "npm run report:auth && npm run report:baseline"
+  },
+  "devDependencies": {
+    "artillery-core": "^2.0.0-27",
+    "artillery": "^2.0.0-27",
+    "dotenv": "^16.0.0"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

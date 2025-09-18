@@ -1,0 +1,47 @@
+name: Selenium E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      selenium:
+        image: selenium/hub:4.15.0-2025-01-01
+        ports:
+          - 4444:4444
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r testing/e2e/selenium/requirements.txt
+
+      - name: Start Selenium Grid (docker-compose)
+        run: |
+          docker compose -f testing/e2e/selenium/ci/docker-compose.selenium.yml up -d
+        # optional: wait for 4444 to be ready
+
+      - name: Run tests
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          E2E_BROWSER: chrome
+          REMOTE_URL: http://localhost:4444/wd/hub
+        run: |
+          pytest -q testing/e2e/selenium/tests --maxfail=1 -n 2
+
+      - name: Upload pytest HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: testing/e2e/selenium/reports

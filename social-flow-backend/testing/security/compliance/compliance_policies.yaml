@@ -1,0 +1,16 @@
+# =========================
+# File: testing/security/compliance/compliance_policies.yaml
+# =========================
+policies:
+  - id: GDPR-001
+    description: "User data must be deletable upon request (Right to Erasure)"
+    severity: high
+    applies_to: ["user-data", "api"]
+  - id: HIPAA-001
+    description: "All PHI must be encrypted in transit and at rest"
+    severity: critical
+    applies_to: ["database", "api"]
+  - id: SOC2-001
+    description: "Logging must capture all authentication failures"
+    severity: medium
+    applies_to: ["auth-service", "logging"]

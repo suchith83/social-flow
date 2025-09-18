@@ -1,0 +1,32 @@
+config:
+  target: "{{ baseUrl }}"
+  processor: "./helpers/fixtures.js"
+  phases:
+    - duration: 120
+      arrivalRate: 3
+      rampTo: 10
+scenarios:
+  - name: "Multi-cloud manager with failover simulation"
+    flow:
+      - get:
+          url: "/multi-cloud/provider"
+          expect:
+            - statusCode: 200
+      - function: "simulatePrimaryDown"   # calls test toggle endpoint to mark primary as down
+      - post:
+          url: "/multi-cloud/operate"
+          json:
+            action: "upload"
+            key: "failover-test-{{ $loopingIndex }}"
+      - get:
+          url: "/multi-cloud/status"
+          expect:
+            - statusCode: 200
+      - function: "restorePrimary"
+ensure:
+  - match: "$.summary.codes.5xx"
+    comparator: "<="
+    expected: 2
+  - match: "$.summary.latency.p95"
+    comparator: "<"
+    expected: 2500

@@ -1,0 +1,14 @@
+{
+  "name": "cypress-e2e-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:ci": "cypress run --record --parallel"
+  },
+  "devDependencies": {
+    "cypress": "^13.0.0",
+    "cypress-mochawesome-reporter": "^3.5.1"
+  }
+}

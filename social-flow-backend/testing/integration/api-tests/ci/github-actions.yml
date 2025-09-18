@@ -1,0 +1,51 @@
+name: API Integration Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:20.10.16
+        options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Build or pull API (example)
+        run: |
+          # build or pull your API container for tests
+          # docker pull your-api-image:pr-${{ github.head_ref }} || true
+          echo "Assume service is available externally or configure below"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r testing/integration/api-tests/requirements.txt
+
+      - name: Wait for API
+        run: |
+          # Optionally wait for the API to be healthy at API_BASE_URL
+          for i in {1..30}; do
+            if curl -sSf ${{ secrets.API_BASE_URL }} >/dev/null 2>&1; then
+              echo "API reachable"; break
+            fi
+            echo "Waiting for API..."
+            sleep 5
+          done
+
+      - name: Run tests
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          TEST_ADMIN_USERNAME: ${{ secrets.TEST_ADMIN_USERNAME }}
+          TEST_ADMIN_PASSWORD: ${{ secrets.TEST_ADMIN_PASSWORD }}
+        run: |
+          pytest -q testing/integration/api-tests/tests -n auto --maxfail=1

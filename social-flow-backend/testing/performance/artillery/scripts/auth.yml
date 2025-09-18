@@ -1,0 +1,58 @@
+config:
+  target: "{{ baseUrl }}"
+  processor: "./helpers/token-manager.js"
+  phases:
+    - duration: "{{ duration }}"
+      arrivalRate: 5         # spawn 5 new virtual user iterations per second
+      rampTo: 10
+  variables:
+    username: "{{ username }}"
+    password: "{{ password }}"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  tls:
+    rejectUnauthorized: false
+  payload:
+    # No CSV payload in basic auth scenario
+  engines:
+    http:
+      # optional: you can tune keepAlive and timeouts here
+      pool: 100
+scenarios:
+  - name: "Auth - token acquisition + protected endpoint check"
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            username: "{{ username }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+  - name: "Auth - token renew check"
+    flow:
+      - function: "refreshTokenIfNeeded"
+      - get:
+          url: "/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+# thresholds - fail the run if key SLAs violated
+ensure:
+  - match: "$.summary.requests.completed"
+    comparator: ">="
+    expected: 1
+  - match: "$.summary.latency.p95"
+    comparator: "<"
+    expected: 1000

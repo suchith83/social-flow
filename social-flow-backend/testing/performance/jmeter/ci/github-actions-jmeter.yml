@@ -1,0 +1,38 @@
+name: JMeter Performance Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build JMeter Docker image
+        run: |
+          docker build -t perf-jmeter:latest testing/performance/jmeter
+
+      - name: Run short JMeter smoke (auth baseline)
+        env:
+          base_url: ${{ secrets.BASE_URL }}
+          test_user: ${{ secrets.TEST_USER }}
+          test_password: ${{ secrets.TEST_PASSWORD }}
+        run: |
+          docker run --rm -v $PWD/testing/performance/jmeter:/work -w /work perf-jmeter:latest \
+            jmeter -n -t test-plans/master-test-plan.jmx -Jthreads_auth=5 -Jduration_auth=30 -Jthreads_baseline=5 -Jduration_baseline=30 -l reports/ci-results.jtl
+          # Generate HTML report
+          docker run --rm -v $PWD/testing/performance/jmeter:/work -w /work perf-jmeter:latest \
+            jmeter -g reports/ci-results.jtl -o reports/ci-html-report || true
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-reports
+          path: testing/performance/jmeter/reports

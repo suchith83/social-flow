@@ -1,0 +1,9 @@
+[tool.poetry]
+name = "database-tests"
+version = "0.1.0"
+description = "Integration tests for database layer"
+authors = ["Generated"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
