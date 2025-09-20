@@ -308,4 +308,4 @@ At Social Flow, we are committed to:
 
 **🔐 Security is everyone's responsibility. Together, we can build a safer digital environment.**
 
-*Last updated: December 2024*
+*Last updated: December 2025*

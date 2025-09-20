@@ -20,7 +20,7 @@ All responses follow this format:
   "success": true,
   "data": {},
   "message": "Success message",
-  "timestamp": "2024-01-01T00:00:00.000Z"
+  "timestamp": "2025-01-01T00:00:00.000Z"
 }
 ```
 
@@ -33,7 +33,7 @@ All responses follow this format:
     "message": "Error message",
     "details": {}
   },
-  "timestamp": "2024-01-01T00:00:00.000Z"
+  "timestamp": "2025-01-01T00:00:00.000Z"
 }
 ```
 

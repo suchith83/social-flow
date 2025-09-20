@@ -29,7 +29,7 @@ class EncryptionPolicy:
             "disk_encrypted": True,
             "cipher": "AES-GCM",
             "key_length": 256,
-            "key_last_rotation": "2024-01-01",
+            "key_last_rotation": "2025-01-01",
             "tls_min_version": "1.2"
         }
         Returns dict with findings and boolean 'compliant'

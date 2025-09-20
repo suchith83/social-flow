@@ -76,7 +76,7 @@ Register a new user account.
   "message": "User registered successfully. Please check your email for verification.",
   "user_id": "uuid",
   "verification_token": "verification_token_here",
-  "verification_expires_at": "2024-01-01T12:00:00Z"
+  "verification_expires_at": "2025-01-01T12:00:00Z"
 }
 ```
 
@@ -218,8 +218,8 @@ Authorization: Bearer <access_token>
   "cover_url": "https://cdn.socialflow.com/covers/uuid.jpg",
   "is_verified": true,
   "is_active": true,
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T12:00:00Z",
+  "created_at": "2025-01-01T00:00:00Z",
+  "updated_at": "2025-01-01T12:00:00Z",
   "stats": {
     "followers_count": 1250,
     "following_count": 300,
@@ -281,7 +281,7 @@ Authorization: Bearer <access_token>
     "https://s3.amazonaws.com/bucket/chunk_1",
     "https://s3.amazonaws.com/bucket/chunk_2"
   ],
-  "expires_at": "2024-01-01T13:00:00Z"
+  "expires_at": "2025-01-01T13:00:00Z"
 }
 ```
 
@@ -329,7 +329,7 @@ Authorization: Bearer <access_token>
   "video_id": "video_uuid",
   "status": "processing",
   "processing_job_id": "job_uuid",
-  "estimated_completion": "2024-01-01T12:05:00Z"
+  "estimated_completion": "2025-01-01T12:05:00Z"
 }
 ```
 
@@ -401,8 +401,8 @@ Get video details.
   "visibility": "public",
   "is_live": false,
   "status": "published",
-  "created_at": "2024-01-01T12:00:00Z",
-  "updated_at": "2024-01-01T12:00:00Z",
+  "created_at": "2025-01-01T12:00:00Z",
+  "updated_at": "2025-01-01T12:00:00Z",
   "stats": {
     "views": 1250,
     "likes": 45,
@@ -505,7 +505,7 @@ Authorization: Bearer <access_token>
       "duration": 300,
       "views": 1250,
       "likes": 45,
-      "created_at": "2024-01-01T12:00:00Z",
+      "created_at": "2025-01-01T12:00:00Z",
       "owner": {
         "id": "user_uuid",
         "username": "nirmalmina",
@@ -620,7 +620,7 @@ Authorization: Bearer <access_token>
   "chat_websocket_url": "wss://chat.socialflow.com/ws/stream_uuid",
   "status": "live",
   "viewer_count": 0,
-  "started_at": "2024-01-01T12:00:00Z"
+  "started_at": "2025-01-01T12:00:00Z"
 }
 ```
 
@@ -637,7 +637,7 @@ Authorization: Bearer <access_token>
 {
   "stream_id": "stream_uuid",
   "status": "ended",
-  "ended_at": "2024-01-01T13:00:00Z",
+  "ended_at": "2025-01-01T13:00:00Z",
   "duration": 3600,
   "total_viewers": 150,
   "peak_viewers": 75,
@@ -656,7 +656,7 @@ Get live stream details.
   "description": "Live streaming my gameplay",
   "status": "live",
   "viewer_count": 25,
-  "started_at": "2024-01-01T12:00:00Z",
+  "started_at": "2025-01-01T12:00:00Z",
   "owner": {
     "id": "user_uuid",
     "username": "nirmalmina",
@@ -718,7 +718,7 @@ Authorization: Bearer <access_token>
         "display_name": "Viewer One",
         "avatar_url": "https://cdn.socialflow.com/avatars/user_uuid.jpg"
       },
-      "joined_at": "2024-01-01T12:05:00Z",
+      "joined_at": "2025-01-01T12:05:00Z",
       "watch_duration": 300
     }
   ],
@@ -749,7 +749,7 @@ Authorization: Bearer <access_token>
   "message_id": "message_uuid",
   "message": "Hello everyone!",
   "type": "text",
-  "timestamp": "2024-01-01T12:05:00Z",
+  "timestamp": "2025-01-01T12:05:00Z",
   "user": {
     "id": "user_uuid",
     "username": "nirmalmina",
@@ -813,7 +813,7 @@ Authorization: Bearer <access_token>
     }
   ],
   "algorithm": "hybrid",
-  "generated_at": "2024-01-01T12:00:00Z"
+  "generated_at": "2025-01-01T12:00:00Z"
 }
 ```
 
@@ -920,7 +920,7 @@ Get trending content analysis.
     }
   ],
   "analysis_period": "24h",
-  "generated_at": "2024-01-01T12:00:00Z"
+  "generated_at": "2025-01-01T12:00:00Z"
 }
 ```
 
@@ -962,7 +962,7 @@ Authorization: Bearer <access_token>
   "currency": "USD",
   "payment_method": "stripe",
   "transaction_id": "txn_1234567890",
-  "created_at": "2024-01-01T12:00:00Z",
+  "created_at": "2025-01-01T12:00:00Z",
   "receipt_url": "https://pay.stripe.com/receipts/..."
 }
 ```
@@ -1106,7 +1106,7 @@ Authorization: Bearer <access_token>
       "amount": 1000,
       "currency": "USD",
       "description": "Video ad revenue",
-      "date": "2024-01-01T12:00:00Z"
+      "date": "2025-01-01T12:00:00Z"
     }
   ],
   "payouts": [
@@ -1115,7 +1115,7 @@ Authorization: Bearer <access_token>
       "amount": 50000,
       "currency": "USD",
       "status": "pending",
-      "scheduled_date": "2024-01-15T00:00:00Z"
+      "scheduled_date": "2025-01-15T00:00:00Z"
     }
   ]
 }
@@ -1155,7 +1155,7 @@ Authorization: Bearer <access_token>
         "user_id": "user_uuid"
       },
       "is_read": false,
-      "created_at": "2024-01-01T12:00:00Z"
+      "created_at": "2025-01-01T12:00:00Z"
     }
   ],
   "unread_count": 5,
@@ -1259,7 +1259,7 @@ Authorization: Bearer <access_token>
     "quality": "720p",
     "device_type": "mobile"
   },
-  "timestamp": "2024-01-01T12:00:00Z"
+  "timestamp": "2025-01-01T12:00:00Z"
 }
 ```
 
@@ -1385,7 +1385,7 @@ Search content (videos, posts).
       "duration": 300,
       "views": 1000,
       "likes": 50,
-      "created_at": "2024-01-01T12:00:00Z",
+      "created_at": "2025-01-01T12:00:00Z",
       "owner": {
         "id": "user_uuid",
         "username": "nirmalmina",
@@ -1588,7 +1588,7 @@ X-RateLimit-Reset: 1640995200
       "reason": "Invalid email format"
     },
     "request_id": "req_uuid",
-    "timestamp": "2024-01-01T12:00:00Z"
+    "timestamp": "2025-01-01T12:00:00Z"
   }
 }
 ```

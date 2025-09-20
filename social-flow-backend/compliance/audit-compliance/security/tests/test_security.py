@@ -72,7 +72,7 @@ class TestSecurityCompliance(unittest.TestCase):
             "disk_encrypted": True,
             "cipher": "AES-GCM",
             "key_length": 256,
-            "key_last_rotation": "2024-09-01T00:00:00",
+            "key_last_rotation": "2025-09-01T00:00:00",
             "tls_min_version": "1.2"
         }
         res = policy.evaluate_asset(metadata)

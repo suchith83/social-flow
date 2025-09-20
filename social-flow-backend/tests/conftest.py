@@ -289,7 +289,7 @@ async def test_view_count(db_session: AsyncSession, test_video: Video) -> ViewCo
     view_count = ViewCount(
         video_id=test_video.id,
         count=100,
-        date="2024-01-01",
+        date="2025-01-01",
     )
     db_session.add(view_count)
     await db_session.commit()

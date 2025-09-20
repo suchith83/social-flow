@@ -295,7 +295,7 @@ class TestMLService:
                 "model_id": "model_123",
                 "status": "completed",
                 "accuracy": 0.92,
-                "created_at": "2024-01-01T00:00:00Z",
+                "created_at": "2025-01-01T00:00:00Z",
             }
             
             result = await ml_service.get_model_status(model_id)

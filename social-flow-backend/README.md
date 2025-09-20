@@ -2005,7 +2005,7 @@ spec:
 pg_dump social_flow > backup_$(date +%Y%m%d).sql
 
 # Restore from backup
-psql social_flow < backup_20240101.sql
+psql social_flow < backup_20250101.sql
 ```
 
 #### **Disaster Recovery**
@@ -2118,7 +2118,7 @@ curl http://localhost:8000/health/external
 ```json
 {
   "status": "healthy",
-  "timestamp": "2024-01-01T12:00:00Z",
+  "timestamp": "2025-01-01T12:00:00Z",
   "version": "1.0.0",
   "uptime": 86400,
   "services": {
@@ -2181,7 +2181,7 @@ curl http://localhost:8000/metrics
 
 ```json
 {
-  "timestamp": "2024-01-01T12:00:00Z",
+  "timestamp": "2025-01-01T12:00:00Z",
   "level": "INFO",
   "service": "social-flow-backend",
   "request_id": "req-uuid-123",
@@ -2214,7 +2214,7 @@ curl http://localhost:8000/metrics
   "span_id": "span-uuid-456",
   "parent_span_id": "parent-span-uuid-789",
   "operation_name": "video_upload",
-  "start_time": "2024-01-01T12:00:00Z",
+  "start_time": "2025-01-01T12:00:00Z",
   "duration": 1500,
   "tags": {
     "user_id": "user-uuid-456",
@@ -2668,7 +2668,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🗺️ **Roadmap**
 
-### **🎯 2024 Q1 (January - March)**
+### **🎯 2025 Q1 (January - March)**
 - [ ] **Advanced AI Content Moderation**
   - Real-time content analysis
   - Multi-language support
@@ -2686,7 +2686,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
   - Mobile-specific endpoints
   - Offline support
 
-### **🚀 2024 Q2 (April - June)**
+### **🚀 2025 Q2 (April - June)**
 - [ ] **Blockchain Integration**
   - Creator payment verification
   - NFT marketplace integration
@@ -2704,7 +2704,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
   - VR/AR content support
   - Interactive streaming
 
-### **🌟 2024 Q3 (July - September)**
+### **🌟 2025 Q3 (July - September)**
 - [ ] **AI-Powered Content Creation**
   - Auto-generated thumbnails
   - Content suggestions

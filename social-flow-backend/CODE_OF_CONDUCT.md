@@ -267,5 +267,5 @@ If you have questions about this Code of Conduct or need clarification on any po
 **🤝 Together, we build a better community for everyone.**
 
 *Version: 2.1*  
-*Last Updated: December 2024*  
+*Last Updated: December 2025*  
 *Next Review: June 2025*
