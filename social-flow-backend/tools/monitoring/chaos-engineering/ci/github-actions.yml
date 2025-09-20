@@ -1,0 +1,24 @@
+name: Chaos Engineering Tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  chaos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: node scripts/run_experiment.js experiments/cpu_stress.json
+      - run: node scripts/run_experiment.js experiments/pod_kill.yml
+      - run: node scripts/report_generator.js reports/*.json
+      - name: Upload reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: chaos-reports
+          path: reports/

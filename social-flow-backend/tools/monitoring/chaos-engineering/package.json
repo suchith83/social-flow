@@ -1,0 +1,23 @@
+
+{
+  "name": "chaos-engineering-suite",
+  "version": "1.0.0",
+  "description": "Advanced chaos engineering framework for monitoring resilience",
+  "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "run:cpu": "node scripts/run_experiment.js experiments/cpu_stress.json",
+    "run:pod": "node scripts/run_experiment.js experiments/pod_kill.yml",
+    "report": "node scripts/report_generator.js reports/*.json"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "glob": "^10.3.10",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}

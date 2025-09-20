@@ -1,0 +1,26 @@
+
+// ---
+
+// ## `package.json`
+
+// *(not strictly needed for k6, but useful for managing JS utils, linting, report aggregation)*
+
+// ```json
+{
+  "name": "social-flow-k6-tests",
+  "version": "1.0.0",
+  "description": "K6 load tests for backend APIs",
+  "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "report": "node utils/reporter.js reports/*.json"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.0",
+    "faker": "^5.5.3",
+    "glob": "^10.3.10"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}

@@ -1,0 +1,23 @@
+name: Log Analysis
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  log-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: node scripts/analyze_logs.js ./logs/app.log
+      - run: node scripts/report_generator.js reports/*.json
+      - name: Upload reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: log-analysis-reports
+          path: reports/

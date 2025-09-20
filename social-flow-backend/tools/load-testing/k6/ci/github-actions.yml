@@ -1,0 +1,16 @@
+name: K6 Load Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  loadtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: grafana/setup-k6-action@v1
+      - run: k6 run scenarios/smoke.js
+      - run: k6 run scenarios/user_journey.js
+      - run: k6 run scenarios/soak_test.js

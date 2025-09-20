@@ -1,0 +1,8 @@
+{
+  "thresholds": {
+    "maxLatencyMs": 1000,
+    "availability": 0.99
+  },
+  "retries": 2,
+  "timeout": 5000
+}

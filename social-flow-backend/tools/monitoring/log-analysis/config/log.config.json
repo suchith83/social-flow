@@ -1,0 +1,6 @@
+{
+  "errorKeywords": ["ERROR", "FATAL", "CRITICAL"],
+  "warnKeywords": ["WARN", "WARNING"],
+  "timeFormat": "YYYY-MM-DD HH:mm:ss",
+  "maxErrorRate": 0.05
+}
