@@ -1,43 +1,46 @@
 # logger.py
 import logging
+import os
 import json
 import sys
 import uuid
 from datetime import datetime
+from typing import Optional
 
-class JSONFormatter(logging.Formatter):
-    """
-    Custom JSON log formatter for structured logging.
-    Adds timestamp, log level, correlation_id and message in JSON.
-    """
+LOG_JSON = os.environ.get("SF_LOG_JSON", "false").lower() in ("1", "true", "yes")
 
-    def format(self, record: logging.LogRecord) -> str:
-        log_record = {
-            "timestamp": datetime.utcnow().isoformat(),
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        payload = {
+            "ts": self.formatTime(record),
             "level": record.levelname,
+            "name": record.name,
             "message": record.getMessage(),
-            "logger": record.name,
-            "correlation_id": getattr(record, "correlation_id", None),
         }
         if record.exc_info:
-            log_record["exception"] = self.formatException(record.exc_info)
-        return json.dumps(log_record)
+            payload["exc"] = self.formatException(record.exc_info)
+        return json.dumps(payload)
 
 
-def get_logger(name: str = "monitoring", level=logging.INFO, correlation_id=None) -> logging.Logger:
+def get_logger(name: str, level: Optional[int] = logging.INFO, correlation_id=None) -> logging.Logger:
     """
-    Returns a logger instance with JSON formatting.
-    Supports correlation IDs for distributed tracing.
+    Return a configured logger. Safe to call multiple times.
+    Uses simple stream handler and optional JSON formatting controlled by SF_LOG_JSON.
     """
-    logger = logging.getLogger(name)
-    if not logger.handlers:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setFormatter(JSONFormatter())
-        logger.addHandler(handler)
-        logger.setLevel(level)
+    l = logging.getLogger(name)
+    if not l.handlers:
+        h = logging.StreamHandler(sys.stdout)
+        if LOG_JSON:
+            h.setFormatter(JsonFormatter())
+        else:
+            fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+            h.setFormatter(fmt)
+        l.addHandler(h)
+    l.setLevel(level)
 
     if correlation_id is None:
         correlation_id = str(uuid.uuid4())
 
-    logger = logging.LoggerAdapter(logger, {"correlation_id": correlation_id})
-    return logger
+    l = logging.LoggerAdapter(l, {"correlation_id": correlation_id})
+    return l

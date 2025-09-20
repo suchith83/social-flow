@@ -1,0 +1,29 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'console'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'pager'
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 3h
+
+receivers:
+  - name: 'console'
+    # Prints alerts to console when using prom/alertmanager docker image with file-based config
+    webhook_configs:
+      - url: 'http://localhost:5001/alert-receiver'  # placeholder; replace with real webhook in prod
+
+  - name: 'pager'
+    webhook_configs:
+      - url: 'http://localhost:5002/pager'  # placeholder for escalation
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['job']

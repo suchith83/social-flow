@@ -1,3 +1,89 @@
+# Repository Inventory — Social Flow Backend
+
+This file was generated automatically during a full repository scan. It summarizes the languages, sizes (counts), top-level services, key entrypoints, and a prioritized list of modules that need attention.
+
+Generated on: 2025-09-20
+
+## High-level counts
+
+- Python files: ~2848
+- JavaScript/TypeScript files: ~572
+- Dockerfiles: 34
+- YAML/Compose/Terraform files: ~100
+- Total files scanned: thousands (monorepo with modular services, infra, and tests)
+
+## Major top-level directories (selected)
+
+- `app/` - FastAPI application components and core business logic.
+- `services/` - Multiple microservices (video-service, recommendation-service, search-service, payment-service, ads-service, view-count-service, etc.).
+- `common/` - Shared libraries for Python and Node (auth, messaging, db, storage, monitoring).
+- `ai-models/`, `ml-pipelines/` - Model training and inference code (recommendation, moderation, thumbnail generation, content analysis).
+- `storage/` - Object-storage wrappers (S3, GCS, Azure), video storage pipelines (raw uploads, processed video, thumbnails).
+- `monitoring/`, `analytics/`, `performance/` - Observability, dashboards, metrics collectors.
+- `testing/`, `tests/` - Extensive unit / integration / e2e / performance test suites and CI configs.
+- `infra/`, `terraform/`, `k8s/` (if present) - IaC examples and manifests.
+- `scripts/`, `tools/` - Utility scripts, test harnesses, load-testing drivers.
+
+## Key service entrypoints found
+
+- Monorepo root API (main FastAPI app): `app/main.py`
+- Node/Nest services: `src/main.ts` (NestJS app), many controllers under `src/` (videos, users, posts, auth)
+- Python microservices:
+  - `services/recommendation-service/src/main.py`
+  - `services/search-service/src/main.py`
+  - `services/payment-service/src/main.py`
+  - `services/video-service/src/app.js` (Node)
+  - `services/view-count-service/src/main.py`
+- Workers and background processors:
+  - `workers/video-processing/*` (Node processors)
+  - `app/workers/*` (Python Celery workers)
+  - `ml-pipelines/inference/*` (Python real-time/batch inference workers)
+
+## Shared libraries
+
+- `common/libraries/python` – shared Python helpers: `auth`, `database`, `messaging`, `monitoring`, `ml` (inference/training helpers)
+- `common/libraries/node` – shared Node helpers for storage, video, messaging
+
+## Important configs & infra
+
+- `docker-compose.yml` – root compose to run core services locally.
+- `openapi.yaml` – top-level OpenAPI (partial) for some services.
+- `.github/workflows/ci.yml` – CI pipeline.
+- `services/*/Dockerfile` – per-service Dockerfiles exist.
+- Many `*.yml` files for tests/CI/k8s/chaos/load-testing.
+
+## Testing harnesses
+
+- `tests/`, `testing/` – contains unit, integration, e2e suites (pytest, cypress, playwright, artillery, k6, jmeter)
+
+## Immediate issues & observations (prioritized)
+
+1. Runtime dependency gaps in local environment — example: trying to run `services/recommendation-service` raised "No module named uvicorn". Many services expect dependencies to be installed.
+2. The monorepo mixes multiple languages and frameworks (FastAPI, Node/Nest, NestJS TypeScript, Celery workers, custom workers). Integration contracts exist but some need standardization (auth tokens, API versions).
+3. Several services have incomplete or missing DB migrations for their domain tables (e.g., `recommendation_feedback` referenced by the recommendation service worker).
+4. Some services use ad-hoc PYTHONPATH shims to import `common` (dev-only). Convert `common/libraries/python` to an installable package or centralize with proper packaging.
+5. The repository is already large and contains many production-ready pieces (monitoring, ML, infra). The work will be refactoring, standardizing, adding migration scripts, and wiring local compose for E2E tests.
+
+## Prioritized modules that need immediate attention
+
+1. `services/recommendation-service` — make runnable locally, add migrations for feedback, and integrate with `common` package. (High)
+2. `services/video-service` (Node) — validate upload/encoding pipeline and integrate with storage and workers. (High)
+3. `app/` FastAPI entrypoints — validate central app for shared semantics, auth middleware, and routes. (High)
+4. `common/libraries/python` — package, type-hint, and lint. (High)
+5. `storage/video-storage/raw-uploads` — ensure chunked uploads, validators, and tests. (Medium)
+6. `ml-pipelines/inference/real-time` — ensure model loader/inference endpoints are callable by services. (Medium)
+
+## Next steps (automatable)
+
+1. Run static analysis (mypy, flake8, bandit) across Python packages and collect `STATIC_REPORT.md`.
+2. Package `common/libraries/python` as an editable package and update services to use it (replace PYTHONPATH shims).
+3. Add `docker-compose.dev.yml` to bring up Postgres, Redis, MinIO (S3), and core services for local E2E tests.
+4. Create Alembic migrations for core schemas and deferred migrations for large changes.
+5. Generate `API_CONTRACT.md` and update `openapi.yaml` based on discovered endpoints.
+
+---
+
+This inventory is a snapshot. Use it as the authoritative map for the next refactoring phases.
 # Repository Inventory
 
 ## Overview

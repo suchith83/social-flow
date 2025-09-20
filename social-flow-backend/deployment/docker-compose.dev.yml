@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: socialflow
+      POSTGRES_PASSWORD: socialflow
+      POSTGRES_DB: socialflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: minio/minio:latest
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    ports:
+      - "9000:9000"
+    volumes:
+      - miniodata:/data
+
+  api:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    working_dir: /app
+    environment:
+      - DATABASE_URL=postgresql://socialflow:socialflow@postgres:5432/socialflow
+      - REDIS_URL=redis://redis:6379/0
+      - SF_SECRET_KEY=dev-secret
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../app:/app:cached
+    depends_on:
+      - postgres
+      - redis
+
+  recommendation-service:
+    build:
+      context: ./services/recommendation-service
+      dockerfile: Dockerfile
+    working_dir: /app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - RECOMMENDER_PORT=8003
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./services/recommendation-service:/app:cached
+    depends_on:
+      - redis
+
+volumes:
+  pgdata:
+  miniodata:

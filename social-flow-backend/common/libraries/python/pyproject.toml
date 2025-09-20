@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "social_flow_common"
+version = "0.1.0"
+description = "Common libraries for social-flow backend"
+authors = [
+  { name = "Platform Team", email = "devops@example.com" }
+]
+dependencies = [
+  "PyJWT>=2.8.0",
+  "python-dotenv>=1.0.0",
+  "sqlalchemy>=1.4",
+  "redis>=4.5.0"
+]

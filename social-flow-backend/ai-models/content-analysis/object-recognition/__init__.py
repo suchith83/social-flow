@@ -22,3 +22,14 @@ __all__ = [
     "Evaluator",
     "ObjectPipeline",
 ]
+
+"""Object recognition local stub."""
+from typing import Any, Dict, List
+
+
+def load_model(config: dict = None):
+    class ObjectModel:
+        def predict(self, image) -> List[Dict[str, Any]]:
+            return [{"object": "person", "score": 0.95}]
+
+    return ObjectModel()

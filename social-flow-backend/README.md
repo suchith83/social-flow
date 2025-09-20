@@ -1349,10 +1349,10 @@ The Social Flow Backend provides a comprehensive REST API with **100+ endpoints*
 curl -X POST "http://localhost:8000/api/v1/auth/register" \
   -H "Content-Type: application/json" \
   -d '{
-    "username": "johndoe",
-    "email": "john@example.com",
+    "username": "nirmalmina",
+    "email": "nirmalmina@socialflow.com",
     "password": "SecurePassword123!",
-    "display_name": "John Doe",
+    "display_name": "Nirmal Mina",
     "bio": "Software developer and content creator"
   }'
 ```
@@ -1362,7 +1362,7 @@ curl -X POST "http://localhost:8000/api/v1/auth/register" \
 curl -X POST "http://localhost:8000/api/v1/auth/login" \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "john@example.com",
+    "email": "nirmalmina@socialflow.com",
     "password": "SecurePassword123!"
   }'
 ```
@@ -1376,9 +1376,9 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
   "expires_in": 1800,
   "user": {
     "id": "uuid",
-    "username": "johndoe",
-    "email": "john@example.com",
-    "display_name": "John Doe"
+    "username": "nirmalmina",
+    "email": "nirmalmina@socialflow.com",
+    "display_name": "Nirmal Mina"
   }
 }
 ```

@@ -122,13 +122,13 @@ POST /auth/register
 Content-Type: application/json
 
 {
-  "username": "johndoe",
-  "email": "john@example.com",
+  "username": "nirmalmina",
+  "email": "nirmalmina@socialflow.com",
   "password": "securepassword123",
-  "display_name": "John Doe",
+  "display_name": "Nirmal Mina",
   "bio": "Software developer",
   "avatar_url": "https://example.com/avatar.jpg",
-  "website": "https://johndoe.com",
+  "website": "https://nirmalmina.com",
   "location": "New York, NY"
 }
 ```
@@ -137,12 +137,12 @@ Content-Type: application/json
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
-  "username": "johndoe",
-  "email": "john@example.com",
-  "display_name": "John Doe",
+  "username": "nirmalmina",
+  "email": "nirmalmina@socialflow.com",
+  "display_name": "Nirmal Mina",
   "bio": "Software developer",
   "avatar_url": "https://example.com/avatar.jpg",
-  "website": "https://johndoe.com",
+  "website": "https://nirmalmina.com",
   "location": "New York, NY",
   "is_active": true,
   "is_verified": false,
@@ -158,7 +158,7 @@ Content-Type: application/json
 POST /auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username=johndoe&password=securepassword123
+username=nirmalmina&password=securepassword123
 ```
 
 **Response:**
@@ -203,12 +203,12 @@ Authorization: Bearer <access_token>
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
-  "username": "johndoe",
-  "email": "john@example.com",
-  "display_name": "John Doe",
+  "username": "nirmalmina",
+  "email": "nirmalmina@socialflow.com",
+  "display_name": "Nirmal Mina",
   "bio": "Software developer",
   "avatar_url": "https://example.com/avatar.jpg",
-  "website": "https://johndoe.com",
+  "website": "https://nirmalmina.com",
   "location": "New York, NY",
   "is_active": true,
   "is_verified": false,
@@ -236,11 +236,11 @@ Authorization: Bearer <access_token>
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
-  "username": "johndoe",
-  "display_name": "John Doe",
+  "username": "nirmalmina",
+  "display_name": "Nirmal Mina",
   "bio": "Software developer",
   "avatar_url": "https://example.com/avatar.jpg",
-  "website": "https://johndoe.com",
+  "website": "https://nirmalmina.com",
   "location": "New York, NY",
   "is_verified": false,
   "followers_count": 150,
@@ -274,8 +274,8 @@ Content-Type: application/json
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
-  "username": "johndoe",
-  "email": "john@example.com",
+  "username": "nirmalmina",
+  "email": "nirmalmina@socialflow.com",
   "display_name": "John Smith",
   "bio": "Full-stack developer",
   "avatar_url": "https://example.com/avatar.jpg",
@@ -487,8 +487,8 @@ Authorization: Bearer <access_token>
       "likes_count": 75,
       "owner": {
         "id": "123e4567-e89b-12d3-a456-426614174000",
-        "username": "johndoe",
-        "display_name": "John Doe",
+        "username": "nirmalmina",
+        "display_name": "Nirmal Mina",
         "avatar_url": "https://example.com/avatar.jpg"
       },
       "created_at": "2024-01-01T00:00:00Z"
@@ -567,8 +567,8 @@ Authorization: Bearer <access_token>
   "is_verified": false,
   "author": {
     "id": "123e4567-e89b-12d3-a456-426614174000",
-    "username": "johndoe",
-    "display_name": "John Doe",
+    "username": "nirmalmina",
+    "display_name": "Nirmal Mina",
     "avatar_url": "https://example.com/avatar.jpg",
     "is_verified": false
   },
@@ -599,8 +599,8 @@ Authorization: Bearer <access_token>
       "replies_count": 3,
       "author": {
         "id": "123e4567-e89b-12d3-a456-426614174000",
-        "username": "johndoe",
-        "display_name": "John Doe",
+        "username": "nirmalmina",
+        "display_name": "Nirmal Mina",
         "avatar_url": "https://example.com/avatar.jpg"
       },
       "created_at": "2024-01-01T00:00:00Z"
@@ -663,8 +663,8 @@ Authorization: Bearer <access_token>
       "replies_count": 2,
       "author": {
         "id": "123e4567-e89b-12d3-a456-426614174000",
-        "username": "johndoe",
-        "display_name": "John Doe",
+        "username": "nirmalmina",
+        "display_name": "Nirmal Mina",
         "avatar_url": "https://example.com/avatar.jpg"
       },
       "created_at": "2024-01-01T00:00:00Z"
@@ -771,8 +771,8 @@ Authorization: Bearer <access_token>
   "followers": [
     {
       "id": "123e4567-e89b-12d3-a456-426614174000",
-      "username": "johndoe",
-      "display_name": "John Doe",
+      "username": "nirmalmina",
+      "display_name": "Nirmal Mina",
       "avatar_url": "https://example.com/avatar.jpg",
       "is_verified": false,
       "followed_at": "2024-01-01T00:00:00Z"
@@ -798,8 +798,8 @@ Authorization: Bearer <access_token>
   "following": [
     {
       "id": "123e4567-e89b-12d3-a456-426614174000",
-      "username": "johndoe",
-      "display_name": "John Doe",
+      "username": "nirmalmina",
+      "display_name": "Nirmal Mina",
       "avatar_url": "https://example.com/avatar.jpg",
       "is_verified": false,
       "followed_at": "2024-01-01T00:00:00Z"
@@ -1001,7 +1001,7 @@ Authorization: Bearer <access_token>
       "id": "123e4567-e89b-12d3-a456-426614174000",
       "type": "like",
       "title": "Someone liked your post",
-      "message": "johndoe liked your post",
+      "message": "nirmalmina liked your post",
       "data": {
         "post_id": "123e4567-e89b-12d3-a456-426614174000",
         "user_id": "123e4567-e89b-12d3-a456-426614174000"
@@ -1112,8 +1112,8 @@ Authorization: Bearer <access_token>
       "likes_count": 500,
       "author": {
         "id": "123e4567-e89b-12d3-a456-426614174000",
-        "username": "johndoe",
-        "display_name": "John Doe",
+        "username": "nirmalmina",
+        "display_name": "Nirmal Mina",
         "avatar_url": "https://example.com/avatar.jpg"
       },
       "created_at": "2024-01-01T00:00:00Z",
@@ -1285,8 +1285,8 @@ const ws = new WebSocket('wss://api.socialflow.com/ws?token=<access_token>');
   "data": {
     "user_id": "123e4567-e89b-12d3-a456-426614174000",
     "follower_id": "123e4567-e89b-12d3-a456-426614174000",
-    "follower_username": "johndoe",
-    "follower_display_name": "John Doe"
+    "follower_username": "nirmalmina",
+    "follower_display_name": "Nirmal Mina"
   }
 }
 ```
@@ -1313,7 +1313,7 @@ const ws = new WebSocket('wss://api.socialflow.com/ws?token=<access_token>');
     "id": "123e4567-e89b-12d3-a456-426614174000",
     "type": "like",
     "title": "Someone liked your post",
-    "message": "johndoe liked your post",
+    "message": "nirmalmina liked your post",
     "data": {
       "post_id": "123e4567-e89b-12d3-a456-426614174000"
     }

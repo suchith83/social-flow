@@ -43,8 +43,8 @@ The Social Flow Backend provides a comprehensive REST API with over 100 endpoint
   "expires_in": 1800,
   "user": {
     "id": "uuid",
-    "username": "johndoe",
-    "email": "john@example.com",
+    "username": "nirmalmina",
+    "email": "nirmalmina@socialflow.com",
     "roles": ["user"]
   }
 }
@@ -58,10 +58,10 @@ Register a new user account.
 **Request Body:**
 ```json
 {
-  "username": "johndoe",
-  "email": "john@example.com",
+  "username": "nirmalmina",
+  "email": "nirmalmina@socialflow.com",
   "password": "SecurePassword123!",
-  "display_name": "John Doe",
+  "display_name": "Nirmal Mina",
   "bio": "Software developer and content creator",
   "date_of_birth": "1990-01-01",
   "country": "US",
@@ -86,7 +86,7 @@ Authenticate user and return JWT tokens.
 **Request Body:**
 ```json
 {
-  "email": "john@example.com",
+  "email": "nirmalmina@socialflow.com",
   "password": "SecurePassword123!"
 }
 ```
@@ -100,9 +100,9 @@ Authenticate user and return JWT tokens.
   "expires_in": 1800,
   "user": {
     "id": "uuid",
-    "username": "johndoe",
-    "email": "john@example.com",
-    "display_name": "John Doe",
+    "username": "nirmalmina",
+    "email": "nirmalmina@socialflow.com",
+    "display_name": "Nirmal Mina",
     "avatar_url": "https://cdn.socialflow.com/avatars/uuid.jpg",
     "is_verified": true,
     "roles": ["user"],
@@ -157,7 +157,7 @@ Request password reset.
 **Request Body:**
 ```json
 {
-  "email": "john@example.com"
+  "email": "nirmalmina@socialflow.com"
 }
 ```
 
@@ -210,9 +210,9 @@ Authorization: Bearer <access_token>
 ```json
 {
   "id": "uuid",
-  "username": "johndoe",
-  "email": "john@example.com",
-  "display_name": "John Doe",
+  "username": "nirmalmina",
+  "email": "nirmalmina@socialflow.com",
+  "display_name": "Nirmal Mina",
   "bio": "Software developer and content creator",
   "avatar_url": "https://cdn.socialflow.com/avatars/uuid.jpg",
   "cover_url": "https://cdn.socialflow.com/covers/uuid.jpg",
@@ -391,8 +391,8 @@ Get video details.
   ],
   "owner": {
     "id": "user_uuid",
-    "username": "johndoe",
-    "display_name": "John Doe",
+    "username": "nirmalmina",
+    "display_name": "Nirmal Mina",
     "avatar_url": "https://cdn.socialflow.com/avatars/user_uuid.jpg"
   },
   "tags": ["gaming", "tutorial", "funny"],
@@ -508,8 +508,8 @@ Authorization: Bearer <access_token>
       "created_at": "2024-01-01T12:00:00Z",
       "owner": {
         "id": "user_uuid",
-        "username": "johndoe",
-        "display_name": "John Doe",
+        "username": "nirmalmina",
+        "display_name": "Nirmal Mina",
         "avatar_url": "https://cdn.socialflow.com/avatars/user_uuid.jpg"
       }
     }
@@ -659,8 +659,8 @@ Get live stream details.
   "started_at": "2024-01-01T12:00:00Z",
   "owner": {
     "id": "user_uuid",
-    "username": "johndoe",
-    "display_name": "John Doe",
+    "username": "nirmalmina",
+    "display_name": "Nirmal Mina",
     "avatar_url": "https://cdn.socialflow.com/avatars/user_uuid.jpg"
   },
   "playback_url": "https://stream.socialflow.com/live/stream_uuid.m3u8",
@@ -752,8 +752,8 @@ Authorization: Bearer <access_token>
   "timestamp": "2024-01-01T12:05:00Z",
   "user": {
     "id": "user_uuid",
-    "username": "johndoe",
-    "display_name": "John Doe",
+    "username": "nirmalmina",
+    "display_name": "Nirmal Mina",
     "avatar_url": "https://cdn.socialflow.com/avatars/user_uuid.jpg"
   }
 }
@@ -1149,7 +1149,7 @@ Authorization: Bearer <access_token>
       "id": "notification_uuid",
       "type": "like",
       "title": "New Like",
-      "message": "John Doe liked your video",
+      "message": "Nirmal Mina liked your video",
       "data": {
         "video_id": "video_uuid",
         "user_id": "user_uuid"
@@ -1388,8 +1388,8 @@ Search content (videos, posts).
       "created_at": "2024-01-01T12:00:00Z",
       "owner": {
         "id": "user_uuid",
-        "username": "johndoe",
-        "display_name": "John Doe"
+        "username": "nirmalmina",
+        "display_name": "Nirmal Mina"
       },
       "relevance_score": 0.95
     }

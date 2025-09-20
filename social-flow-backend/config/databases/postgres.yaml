@@ -1,0 +1,14 @@
+version: 1
+description: "Postgres connection template for services. Use templating to inject secrets."
+
+postgres:
+  host: ${PG_HOST:-localhost}
+  port: ${PG_PORT:-5432}
+  database: ${PG_DATABASE:-socialflow}
+  user: ${PG_USER:-socialflow}
+  password: ${PG_PASSWORD:-change-me}
+  sslmode: ${PG_SSLMODE:-disable}
+  max_connections: 20
+  pool_min: 1
+  pool_max: 10
+  connection_uri: "postgresql://${PG_USER:-socialflow}:${PG_PASSWORD:-change-me}@${PG_HOST:-localhost}:${PG_PORT:-5432}/${PG_DATABASE:-socialflow}"

@@ -23,3 +23,14 @@ __all__ = [
     "Evaluator",
     "AudioPipeline",
 ]
+
+"""Audio analysis local stub."""
+from typing import Any, Dict, List
+
+
+def load_model(config: dict = None):
+    class AudioModel:
+        def predict(self, audio_bytes) -> Dict[str, Any]:
+            return {"labels": ["speech"], "confidence": 0.9}
+
+    return AudioModel()

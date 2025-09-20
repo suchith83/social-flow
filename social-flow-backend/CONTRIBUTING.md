@@ -1,124 +1,314 @@
-﻿# Contributing Guidelines
-Contributing to Social Flow Backend
-Thank you for your interest in contributing to Social Flow! This document outlines the guidelines for contributing to the backend repository, ensuring a consistent and collaborative development process.
-Getting Started
+﻿# 🤝 **Contributing to Social Flow Backend**
 
-Fork the Repository:
+Thank you for your interest in contributing to **Social Flow Backend**! This document outlines comprehensive guidelines for contributing to ensure a consistent, collaborative, and high-quality development process.
 
-Fork the repository on GitHub and clone your fork:git clone https://github.com/nirmal-mina/social-flow-backend.git
-cd social-flow-backend
+---
 
+## 🚀 **Getting Started**
 
+### **📥 Fork the Repository**
 
+1. **Fork** the repository on GitHub by clicking the "Fork" button
+2. **Clone** your fork locally:
+   ```bash
+   git clone https://github.com/your-username/social-flow-backend.git
+   cd social-flow-backend
+   ```
+3. **Add upstream** remote:
+   ```bash
+   git remote add upstream https://github.com/nirmal-mina/social-flow-backend.git
+   ```
 
-Set Up Development Environment:
+### **🔄 Stay Updated**
 
-Install prerequisites (Docker, Go, Node.js, Python, Java, Kotlin, Terraform).
-Run the setup script:./scripts/setup/setup.sh
+Keep your fork synchronized with the upstream repository:
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+git push origin main
+```
 
+---
 
-Configure environment variables in config/environments/development/config.yaml.
+## 🛠️ **Development Environment**
 
+### **📋 Prerequisites**
 
-Run Tests:
+- **Python 3.11+** with pip and virtualenv
+- **Docker & Docker Compose** for containerization
+- **PostgreSQL 15+** for database
+- **Redis 7+** for caching
+- **Git** for version control
 
-Execute unit tests:./scripts/testing/run_unit.sh
+### **⚙️ Setup Development Environment**
 
+1. **Create Virtual Environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-Execute integration tests:./scripts/testing/run_integration.sh
+2. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
+3. **Setup Environment Variables**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
+4. **Start Development Services**:
+   ```bash
+   docker-compose up -d postgres redis
+   ```
 
+5. **Run Database Migrations**:
+   ```bash
+   alembic upgrade head
+   ```
 
+6. **Start the Application**:
+   ```bash
+   uvicorn app.main:app --reload --port 8000
+   ```
 
-Contribution Process
+### **🧪 Verify Setup**
 
-Create an Issue:
+Run the test suite to ensure everything is working:
+```bash
+pytest
+```
 
-Before starting work, create or claim an issue in the GitHub Issues section.
-Describe the feature, bug, or improvement clearly, referencing relevant documentation or designs.
+Access the API documentation at: http://localhost:8000/api/v1/docs
 
+---
 
-Create a Branch:
+## 📝 **Contribution Process**
 
-Create a feature branch from main:git checkout -b feature/<issue-number>-description
+### **1. 📋 Create or Claim an Issue**
 
+- **Search existing issues** before creating a new one
+- **Use issue templates** for bug reports and feature requests
+- **Provide detailed information** including:
+  - Clear description of the problem/feature
+  - Steps to reproduce (for bugs)
+  - Expected vs actual behavior
+  - Environment details
 
-Example: git checkout -b feature/123-add-user-authentication.
+### **2. 🌿 Create a Feature Branch**
 
+Create a new branch for your work:
+```bash
+git checkout -b feature/issue-number-short-description
+```
 
-Code Standards:
+**Branch naming conventions**:
+- **Features**: `feature/123-add-user-authentication`
+- **Bug fixes**: `bugfix/456-fix-video-upload`
+- **Documentation**: `docs/789-update-api-docs`
 
-Go: Follow Go style guidelines, use gofmt and golint.
-Node.js: Use ESLint with the provided .eslintrc configuration.
-Python: Adhere to PEP 8, use pylint for linting.
-Kotlin: Use detekt for static analysis.
-General: Write clear, concise code with comments for complex logic.
+### **3. 💻 Implement Your Changes**
 
+- Follow our Code Standards
+- Write comprehensive tests
+- Update documentation as needed
+- Ensure your code passes all CI checks
 
-Write Tests:
+### **4. 🔄 Submit a Pull Request**
 
-Add unit tests in services/<service>/tests/unit.
-Add integration tests in services/<service>/tests/integration.
-Ensure test coverage remains above 80%.
+- Push your branch to your fork
+- Create a pull request against the `main` branch
+- Fill out the PR template completely
+- Link to the related issue(s)
 
+---
 
-Commit Guidelines:
+## 📏 **Code Standards**
 
-Use conventional commits (e.g., feat: add user authentication, fix: resolve video upload bug).
-Keep commits small and focused.
-Reference the issue number in the commit message (e.g., Closes #123).
+### **🐍 Python Standards**
 
+- **PEP 8** compliance for code style
+- **Type hints** for all function parameters and return values
+- **Docstrings** for all public functions and classes
+- **Maximum line length**: 88 characters (Black formatter)
 
-Submit a Pull Request:
+### **📁 File Organization**
 
-Push your branch to your fork:git push origin feature/<issue-number>-description
+- **Modules**: Keep files focused and cohesive
+- **Imports**: Group imports (standard library, third-party, local)
+- **Constants**: Use UPPER_CASE for constants
+- **Classes**: Use PascalCase
+- **Functions/Variables**: Use snake_case
 
+### **🔒 Security Standards**
 
-Open a pull request against the main branch.
-Include a detailed description, referencing the issue and any design documents.
-Ensure all CI checks pass (linting, tests, code coverage).
+- **Never commit** secrets, API keys, or passwords
+- **Use environment variables** for configuration
+- **Validate all inputs** at API boundaries
+- **Use parameterized queries** to prevent SQL injection
 
+---
 
-Code Review:
+## 🧪 **Testing Guidelines**
 
-At least two reviewers must approve the PR.
-Address feedback promptly and make necessary changes.
-Ensure the PR is merged using squash-and-merge to maintain a clean history.
+### **📊 Coverage Requirements**
 
+- **Minimum 85%** overall test coverage
+- **95%+ coverage** for critical paths (authentication, payments)
 
+### **🔬 Test Types**
 
-Development Guidelines
+- **Unit Tests** (`tests/unit/`) - Individual component testing
+- **Integration Tests** (`tests/integration/`) - API endpoint testing
+- **End-to-End Tests** (`tests/e2e/`) - Complete workflow testing
 
-Modularity: Follow the microservices architecture, keeping services independent and loosely coupled.
-Security: Use secure coding practices, validate inputs, and avoid hardcoding sensitive data.
-Performance: Optimize for low latency and high throughput, especially for video and recommendation services.
-Documentation: Update relevant documentation (docs/*) for any new features or changes.
-Testing: Include unit, integration, and performance tests for all changes.
+---
 
-Tools and Standards
+## 📝 **Commit Guidelines**
 
-Code Quality: Use SonarQube, ESLint, Pylint, and Detekt for static analysis.
-Testing Frameworks: Go (testing), Node.js (Jest), Python (pytest), Kotlin (JUnit).
-CI/CD: Use GitLab CI or GitHub Actions for automated testing and deployment.
-Monitoring: Integrate with Prometheus and Grafana for metrics.
+### **📋 Conventional Commits**
 
-Community Guidelines
+We use [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
-Be respectful and inclusive, adhering to the Code of Conduct.
-Provide constructive feedback during code reviews.
-Help new contributors by answering questions and providing guidance.
+```
+<type>[optional scope]: <description>
+```
 
-Reporting Bugs
+### **🏷️ Commit Types**
 
-Open an issue with a clear title and description.
-Include steps to reproduce, expected behavior, and actual behavior.
-Attach relevant logs or screenshots.
+- **feat**: New feature implementation
+- **fix**: Bug fix
+- **docs**: Documentation changes
+- **style**: Code style changes
+- **refactor**: Code refactoring without feature changes
+- **test**: Adding or updating tests
 
-Proposing Features
+### **📏 Commit Best Practices**
 
-Create an issue with a detailed proposal, including use cases and benefits.
-Discuss with the community before starting implementation.
+- **Keep commits atomic** (one logical change per commit)
+- **Write clear, descriptive messages** in present tense
+- **Reference issues** in commit messages (`Closes #123`, `Fixes #456`)
 
-Contact
-For questions, contact the backend team at backend@socialflow.com or join our Slack channel.
+---
+
+## 🔄 **Pull Request Process**
+
+### **🔍 PR Guidelines**
+
+- **Keep PRs focused** - one feature/fix per PR
+- **Provide context** - explain the why, not just the what
+- **Include tests** - ensure your changes are tested
+- **Update documentation** - keep docs in sync with code
+
+### **✅ Approval Requirements**
+
+- **Minimum 2 approvals** from core team members
+- **All CI checks** must pass (tests, linting, security scans)
+- **No unresolved conflicts** with target branch
+
+---
+
+## 🤝 **Community Guidelines**
+
+### **💝 Code of Conduct**
+
+We follow the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). In summary:
+
+- **Be welcoming** to newcomers
+- **Be respectful** of different viewpoints and experiences
+- **Accept constructive criticism** gracefully
+
+---
+
+## 🐛 **Reporting Issues**
+
+### **📋 Bug Report Template**
+
+```markdown
+## 🐛 Bug Description
+Clear description of the bug
+
+## 📋 Steps to Reproduce
+1. Step one
+2. Step two
+3. Step three
+
+## ✅ Expected Behavior
+What should happen
+
+## ❌ Actual Behavior
+What actually happens
+
+## 🖥️ Environment
+- OS: [e.g. Ubuntu 20.04]
+- Python version: [e.g. 3.11.5]
+- Version: [e.g. 1.2.3]
+```
+
+### **🔒 Security Issues**
+
+For security vulnerabilities:
+- **DO NOT** create a public issue
+- **Email** security@socialflow.com
+
+---
+
+## 💡 **Feature Requests**
+
+### **📝 Feature Request Template**
+
+```markdown
+## 🎯 Feature Summary
+Brief description of the feature
+
+## 🤔 Motivation
+Why is this feature needed?
+
+## 📋 Detailed Description
+Comprehensive description of the feature
+```
+
+---
+
+## 📞 **Contact & Support**
+
+### **👥 Core Team**
+
+- **Nirmal Meena** - Lead Backend Developer
+  - GitHub: [@nirmal-mina](https://github.com/nirmal-mina)
+  - LinkedIn: [Nirmal Mina](https://www.linkedin.com/in/nirmal-mina-4b0b951b2)
+  - Mobile: +91 93516 88554
+
+- **Sumit Sharma** - Backend Developer
+  - Mobile: +91 93047 68420
+
+- **Koduru Suchith** - Backend Developer  
+  - Mobile: +91 84650 73250
+
+### **📧 Email Contacts**
+
+- **General Questions**: hello@socialflow.com
+- **Technical Support**: tech@socialflow.com  
+- **Security Issues**: security@socialflow.com
+- **Business Inquiries**: business@socialflow.com
+
+### **🔗 Links**
+
+- **Documentation**: [docs.socialflow.com](https://docs.socialflow.com)
+- **API Reference**: [api.socialflow.com/docs](https://api.socialflow.com/docs)
+- **Discord Community**: [Join our Discord](https://discord.gg/socialflow)
+
+---
+
+## 🙏 **Acknowledgments**
+
+Thank you to all contributors who have helped make Social Flow Backend better! Your contributions are what make this project successful.
+
+---
+
+**Happy Contributing! 🚀**
+
+*We're excited to see what you'll build with Social Flow Backend!*
