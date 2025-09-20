@@ -16,6 +16,7 @@ from app.models.subscription import Subscription
 from app.models.notification import Notification
 from app.models.analytics import Analytics
 from app.models.view_count import ViewCount
+from app.models.live_stream import LiveStream, LiveStreamViewer
 
 __all__ = [
     "User",
@@ -30,4 +31,6 @@ __all__ = [
     "Notification",
     "Analytics",
     "ViewCount",
+    "LiveStream",
+    "LiveStreamViewer",
 ]

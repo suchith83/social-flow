@@ -1,24 +1,16 @@
 """
-Storage Service for unified storage operations.
+Storage Service for handling all storage operations.
 
-This service integrates all existing storage modules from storage directory
-into the FastAPI application.
+This service integrates all existing storage modules from
+the storage directory into the FastAPI application.
 """
 
-import asyncio
 import logging
 from typing import Any, Dict, List, Optional, Union
-from pathlib import Path
-import sys
-import uuid
 from datetime import datetime
-
-# Add storage to path
-sys.path.append(str(Path(__file__).parent.parent.parent / "storage"))
-
+import uuid
 import boto3
 from botocore.exceptions import ClientError
-from fastapi import UploadFile
 
 from app.core.config import settings
 from app.core.exceptions import StorageServiceError
@@ -28,185 +20,151 @@ logger = logging.getLogger(__name__)
 
 
 class StorageService:
-    """Main storage service for unified storage operations."""
-    
+    """Main storage service integrating all storage capabilities."""
+
     def __init__(self):
         self.s3_client = None
-        self.redis_client = None
-        self.elasticsearch_client = None
         self.cache = None
         self._initialize_services()
-    
+
     async def _get_cache(self):
         """Get Redis cache instance."""
         if self.cache is None:
             self.cache = await get_cache()
         return self.cache
-    
+
     def _initialize_services(self):
         """Initialize storage services."""
         try:
             # Initialize S3 client
-            self._init_s3_client()
+            if settings.AWS_ACCESS_KEY_ID and settings.AWS_SECRET_ACCESS_KEY and settings.AWS_REGION:
+                self.s3_client = boto3.client(
+                    's3',
+                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                    region_name=settings.AWS_REGION
+                )
+                logger.info("S3 client initialized successfully")
+            else:
+                logger.warning("AWS credentials not fully configured. S3 client not initialized.")
             
-            # Initialize Redis client
-            self._init_redis_client()
-            
-            # Initialize Elasticsearch client
-            self._init_elasticsearch_client()
-            
-            # Initialize storage modules
-            self._init_storage_modules()
-            
+            # TODO: Initialize other storage backends (Azure Blob, Google Cloud Storage)
             logger.info("Storage Service initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize Storage Service: {e}")
-            raise StorageServiceError(f"Storage Service initialization failed: {e}")
-    
-    def _init_s3_client(self):
-        """Initialize S3 client for object storage."""
-        try:
-            self.s3_client = boto3.client(
-                's3',
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                region_name=settings.AWS_REGION
-            )
-            logger.info("S3 client initialized")
-        except Exception as e:
-            logger.warning(f"S3 client initialization failed: {e}")
-    
-    def _init_redis_client(self):
-        """Initialize Redis client for caching."""
-        try:
-            import redis
-            self.redis_client = redis.Redis.from_url(settings.REDIS_URL)
-            logger.info("Redis client initialized")
-        except Exception as e:
-            logger.warning(f"Redis client initialization failed: {e}")
-    
-    def _init_elasticsearch_client(self):
-        """Initialize Elasticsearch client for search."""
-        try:
-            from elasticsearch import Elasticsearch
-            self.elasticsearch_client = Elasticsearch([settings.ELASTICSEARCH_URL])
-            logger.info("Elasticsearch client initialized")
-        except Exception as e:
-            logger.warning(f"Elasticsearch client initialization failed: {e}")
-    
-    def _init_storage_modules(self):
-        """Initialize storage modules."""
-        try:
-            # S3 storage
-            from storage.object_storage.aws_s3.client import S3Client
-            self.s3_storage = S3Client()
-            
-            # Multi-cloud storage
-            from storage.object_storage.multi_cloud.manager import MultiCloudManager
-            self.multi_cloud_manager = MultiCloudManager()
-            
-            # Video storage
-            from storage.video_storage.raw_uploads.uploader import VideoUploader
-            self.video_uploader = VideoUploader()
-            
-            logger.info("Storage modules initialized")
-        except ImportError as e:
-            logger.warning(f"Storage modules not available: {e}")
-    
-    async def upload_file(self, file: UploadFile, bucket: str, key: str, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Upload file to object storage."""
+            raise StorageServiceError(f"Failed to initialize Storage Service: {e}")
+
+    async def upload_file(self, file_data: bytes, file_path: str, bucket: str = None, 
+                         content_type: str = "application/octet-stream") -> Dict[str, Any]:
+        """Upload a file to storage."""
         try:
             if not self.s3_client:
                 raise StorageServiceError("S3 client not initialized")
             
-            # Read file content
-            content = await file.read()
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
+            
+            # Generate unique file path if not provided
+            if not file_path:
+                file_path = f"uploads/{uuid.uuid4()}"
             
             # Upload to S3
-            extra_args = {}
-            if metadata:
-                extra_args['Metadata'] = metadata
-            
             self.s3_client.put_object(
                 Bucket=bucket,
-                Key=key,
-                Body=content,
-                ContentType=file.content_type,
-                **extra_args
+                Key=file_path,
+                Body=file_data,
+                ContentType=content_type
             )
             
-            # Generate URL
-            url = f"https://{bucket}.s3.{settings.AWS_REGION}.amazonaws.com/{key}"
+            # Generate presigned URL for access
+            url = self.s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': bucket, 'Key': file_path},
+                ExpiresIn=3600  # 1 hour
+            )
             
             return {
-                'success': True,
-                'bucket': bucket,
-                'key': key,
-                'url': url,
-                'size': len(content),
-                'content_type': file.content_type
+                "file_path": file_path,
+                "bucket": bucket,
+                "url": url,
+                "size": len(file_data),
+                "content_type": content_type,
+                "uploaded_at": datetime.utcnow().isoformat()
             }
         except ClientError as e:
-            logger.error(f"S3 upload failed: {e}")
-            raise StorageServiceError(f"File upload failed: {e}")
+            raise StorageServiceError(f"S3 upload failed: {str(e)}")
         except Exception as e:
-            logger.error(f"File upload failed: {e}")
-            raise StorageServiceError(f"File upload failed: {e}")
-    
-    async def download_file(self, bucket: str, key: str) -> bytes:
-        """Download file from object storage."""
+            raise StorageServiceError(f"Failed to upload file: {str(e)}")
+
+    async def download_file(self, file_path: str, bucket: str = None) -> bytes:
+        """Download a file from storage."""
         try:
             if not self.s3_client:
                 raise StorageServiceError("S3 client not initialized")
             
-            response = self.s3_client.get_object(Bucket=bucket, Key=key)
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
+            
+            response = self.s3_client.get_object(Bucket=bucket, Key=file_path)
             return response['Body'].read()
         except ClientError as e:
-            logger.error(f"S3 download failed: {e}")
-            raise StorageServiceError(f"File download failed: {e}")
+            raise StorageServiceError(f"S3 download failed: {str(e)}")
         except Exception as e:
-            logger.error(f"File download failed: {e}")
-            raise StorageServiceError(f"File download failed: {e}")
-    
-    async def delete_file(self, bucket: str, key: str) -> bool:
-        """Delete file from object storage."""
+            raise StorageServiceError(f"Failed to download file: {str(e)}")
+
+    async def delete_file(self, file_path: str, bucket: str = None) -> Dict[str, Any]:
+        """Delete a file from storage."""
         try:
             if not self.s3_client:
                 raise StorageServiceError("S3 client not initialized")
             
-            self.s3_client.delete_object(Bucket=bucket, Key=key)
-            return True
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
+            
+            self.s3_client.delete_object(Bucket=bucket, Key=file_path)
+            
+            return {
+                "file_path": file_path,
+                "bucket": bucket,
+                "deleted_at": datetime.utcnow().isoformat(),
+                "status": "deleted"
+            }
         except ClientError as e:
-            logger.error(f"S3 delete failed: {e}")
-            raise StorageServiceError(f"File deletion failed: {e}")
+            raise StorageServiceError(f"S3 delete failed: {str(e)}")
         except Exception as e:
-            logger.error(f"File deletion failed: {e}")
-            raise StorageServiceError(f"File deletion failed: {e}")
-    
-    async def generate_presigned_url(self, bucket: str, key: str, operation: str = "get_object", expires_in: int = 3600) -> str:
-        """Generate presigned URL for object storage operations."""
+            raise StorageServiceError(f"Failed to delete file: {str(e)}")
+
+    async def generate_presigned_url(self, file_path: str, bucket: str = None, 
+                                   operation: str = "get_object", expires_in: int = 3600) -> str:
+        """Generate a presigned URL for file access."""
         try:
             if not self.s3_client:
                 raise StorageServiceError("S3 client not initialized")
+            
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
             
             url = self.s3_client.generate_presigned_url(
                 operation,
-                Params={'Bucket': bucket, 'Key': key},
+                Params={'Bucket': bucket, 'Key': file_path},
                 ExpiresIn=expires_in
             )
+            
             return url
         except ClientError as e:
-            logger.error(f"Presigned URL generation failed: {e}")
-            raise StorageServiceError(f"Presigned URL generation failed: {e}")
+            raise StorageServiceError(f"Failed to generate presigned URL: {str(e)}")
         except Exception as e:
-            logger.error(f"Presigned URL generation failed: {e}")
-            raise StorageServiceError(f"Presigned URL generation failed: {e}")
-    
-    async def list_files(self, bucket: str, prefix: str = "", max_keys: int = 1000) -> List[Dict[str, Any]]:
-        """List files in object storage."""
+            raise StorageServiceError(f"Failed to generate presigned URL: {str(e)}")
+
+    async def list_files(self, prefix: str = "", bucket: str = None, 
+                        max_keys: int = 1000) -> List[Dict[str, Any]]:
+        """List files in storage."""
         try:
             if not self.s3_client:
                 raise StorageServiceError("S3 client not initialized")
+            
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
             
             response = self.s3_client.list_objects_v2(
                 Bucket=bucket,
@@ -217,210 +175,187 @@ class StorageService:
             files = []
             for obj in response.get('Contents', []):
                 files.append({
-                    'key': obj['Key'],
-                    'size': obj['Size'],
-                    'last_modified': obj['LastModified'].isoformat(),
-                    'etag': obj['ETag']
+                    "key": obj['Key'],
+                    "size": obj['Size'],
+                    "last_modified": obj['LastModified'].isoformat(),
+                    "etag": obj['ETag']
                 })
             
             return files
         except ClientError as e:
-            logger.error(f"S3 list failed: {e}")
-            raise StorageServiceError(f"File listing failed: {e}")
+            raise StorageServiceError(f"S3 list failed: {str(e)}")
         except Exception as e:
-            logger.error(f"File listing failed: {e}")
-            raise StorageServiceError(f"File listing failed: {e}")
-    
-    async def cache_set(self, key: str, value: Any, expire: Optional[int] = None) -> bool:
-        """Set value in cache."""
-        try:
-            cache = await self._get_cache()
-            return await cache.set(key, value, expire)
-        except Exception as e:
-            logger.error(f"Cache set failed: {e}")
-            raise StorageServiceError(f"Cache operation failed: {e}")
-    
-    async def cache_get(self, key: str) -> Optional[Any]:
-        """Get value from cache."""
-        try:
-            cache = await self._get_cache()
-            return await cache.get(key)
-        except Exception as e:
-            logger.error(f"Cache get failed: {e}")
-            raise StorageServiceError(f"Cache operation failed: {e}")
-    
-    async def cache_delete(self, key: str) -> bool:
-        """Delete value from cache."""
-        try:
-            cache = await self._get_cache()
-            return await cache.delete(key)
-        except Exception as e:
-            logger.error(f"Cache delete failed: {e}")
-            raise StorageServiceError(f"Cache operation failed: {e}")
-    
-    async def search_documents(self, index: str, query: Dict[str, Any], size: int = 10) -> List[Dict[str, Any]]:
-        """Search documents in Elasticsearch."""
-        try:
-            if not self.elasticsearch_client:
-                raise StorageServiceError("Elasticsearch client not initialized")
-            
-            response = self.elasticsearch_client.search(
-                index=index,
-                body=query,
-                size=size
-            )
-            
-            documents = []
-            for hit in response['hits']['hits']:
-                documents.append({
-                    'id': hit['_id'],
-                    'score': hit['_score'],
-                    'source': hit['_source']
-                })
-            
-            return documents
-        except Exception as e:
-            logger.error(f"Elasticsearch search failed: {e}")
-            raise StorageServiceError(f"Search failed: {e}")
-    
-    async def index_document(self, index: str, document: Dict[str, Any], doc_id: Optional[str] = None) -> str:
-        """Index document in Elasticsearch."""
-        try:
-            if not self.elasticsearch_client:
-                raise StorageServiceError("Elasticsearch client not initialized")
-            
-            response = self.elasticsearch_client.index(
-                index=index,
-                body=document,
-                id=doc_id
-            )
-            
-            return response['_id']
-        except Exception as e:
-            logger.error(f"Elasticsearch indexing failed: {e}")
-            raise StorageServiceError(f"Document indexing failed: {e}")
-    
-    async def delete_document(self, index: str, doc_id: str) -> bool:
-        """Delete document from Elasticsearch."""
-        try:
-            if not self.elasticsearch_client:
-                raise StorageServiceError("Elasticsearch client not initialized")
-            
-            response = self.elasticsearch_client.delete(
-                index=index,
-                id=doc_id
-            )
-            
-            return response['result'] == 'deleted'
-        except Exception as e:
-            logger.error(f"Elasticsearch deletion failed: {e}")
-            raise StorageServiceError(f"Document deletion failed: {e}")
-    
-    async def create_index(self, index: str, mapping: Dict[str, Any]) -> bool:
-        """Create Elasticsearch index."""
-        try:
-            if not self.elasticsearch_client:
-                raise StorageServiceError("Elasticsearch client not initialized")
-            
-            if not self.elasticsearch_client.indices.exists(index=index):
-                self.elasticsearch_client.indices.create(
-                    index=index,
-                    body=mapping
-                )
-                return True
-            return False
-        except Exception as e:
-            logger.error(f"Elasticsearch index creation failed: {e}")
-            raise StorageServiceError(f"Index creation failed: {e}")
-    
-    async def delete_index(self, index: str) -> bool:
-        """Delete Elasticsearch index."""
-        try:
-            if not self.elasticsearch_client:
-                raise StorageServiceError("Elasticsearch client not initialized")
-            
-            if self.elasticsearch_client.indices.exists(index=index):
-                self.elasticsearch_client.indices.delete(index=index)
-                return True
-            return False
-        except Exception as e:
-            logger.error(f"Elasticsearch index deletion failed: {e}")
-            raise StorageServiceError(f"Index deletion failed: {e}")
-    
-    async def get_storage_stats(self) -> Dict[str, Any]:
-        """Get storage statistics."""
-        try:
-            stats = {
-                's3': await self._get_s3_stats(),
-                'redis': await self._get_redis_stats(),
-                'elasticsearch': await self._get_elasticsearch_stats()
-            }
-            return stats
-        except Exception as e:
-            logger.error(f"Storage stats retrieval failed: {e}")
-            raise StorageServiceError(f"Storage stats retrieval failed: {e}")
-    
-    async def _get_s3_stats(self) -> Dict[str, Any]:
-        """Get S3 storage statistics."""
+            raise StorageServiceError(f"Failed to list files: {str(e)}")
+
+    async def copy_file(self, source_path: str, dest_path: str, 
+                       source_bucket: str = None, dest_bucket: str = None) -> Dict[str, Any]:
+        """Copy a file within storage."""
         try:
             if not self.s3_client:
-                return {'status': 'not_initialized'}
+                raise StorageServiceError("S3 client not initialized")
             
-            # Get bucket size and object count
-            response = self.s3_client.list_objects_v2(Bucket=settings.AWS_S3_BUCKET)
+            if not source_bucket:
+                source_bucket = settings.S3_BUCKET_NAME
+            if not dest_bucket:
+                dest_bucket = settings.S3_BUCKET_NAME
             
-            total_size = sum(obj['Size'] for obj in response.get('Contents', []))
-            object_count = len(response.get('Contents', []))
+            copy_source = {'Bucket': source_bucket, 'Key': source_path}
+            self.s3_client.copy_object(
+                CopySource=copy_source,
+                Bucket=dest_bucket,
+                Key=dest_path
+            )
             
             return {
-                'status': 'active',
-                'bucket': settings.AWS_S3_BUCKET,
-                'total_size': total_size,
-                'object_count': object_count
+                "source_path": source_path,
+                "dest_path": dest_path,
+                "source_bucket": source_bucket,
+                "dest_bucket": dest_bucket,
+                "copied_at": datetime.utcnow().isoformat(),
+                "status": "copied"
             }
+        except ClientError as e:
+            raise StorageServiceError(f"S3 copy failed: {str(e)}")
         except Exception as e:
-            logger.warning(f"S3 stats retrieval failed: {e}")
-            return {'status': 'error', 'error': str(e)}
-    
-    async def _get_redis_stats(self) -> Dict[str, Any]:
-        """Get Redis storage statistics."""
+            raise StorageServiceError(f"Failed to copy file: {str(e)}")
+
+    async def get_file_metadata(self, file_path: str, bucket: str = None) -> Dict[str, Any]:
+        """Get metadata for a file."""
         try:
-            if not self.redis_client:
-                return {'status': 'not_initialized'}
+            if not self.s3_client:
+                raise StorageServiceError("S3 client not initialized")
             
-            info = self.redis_client.info()
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
+            
+            response = self.s3_client.head_object(Bucket=bucket, Key=file_path)
             
             return {
-                'status': 'active',
-                'used_memory': info.get('used_memory', 0),
-                'connected_clients': info.get('connected_clients', 0),
-                'total_commands_processed': info.get('total_commands_processed', 0)
+                "file_path": file_path,
+                "bucket": bucket,
+                "size": response['ContentLength'],
+                "content_type": response.get('ContentType', 'application/octet-stream'),
+                "last_modified": response['LastModified'].isoformat(),
+                "etag": response['ETag'],
+                "metadata": response.get('Metadata', {})
             }
+        except ClientError as e:
+            raise StorageServiceError(f"S3 metadata fetch failed: {str(e)}")
         except Exception as e:
-            logger.warning(f"Redis stats retrieval failed: {e}")
-            return {'status': 'error', 'error': str(e)}
-    
-    async def _get_elasticsearch_stats(self) -> Dict[str, Any]:
-        """Get Elasticsearch storage statistics."""
+            raise StorageServiceError(f"Failed to get file metadata: {str(e)}")
+
+    async def create_multipart_upload(self, file_path: str, bucket: str = None, 
+                                    content_type: str = "application/octet-stream") -> Dict[str, Any]:
+        """Initiate a multipart upload."""
         try:
-            if not self.elasticsearch_client:
-                return {'status': 'not_initialized'}
+            if not self.s3_client:
+                raise StorageServiceError("S3 client not initialized")
             
-            stats = self.elasticsearch_client.indices.stats()
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
             
-            total_docs = sum(index_stats['total']['docs']['count'] for index_stats in stats['indices'].values())
-            total_size = sum(index_stats['total']['store']['size_in_bytes'] for index_stats in stats['indices'].values())
+            response = self.s3_client.create_multipart_upload(
+                Bucket=bucket,
+                Key=file_path,
+                ContentType=content_type
+            )
             
             return {
-                'status': 'active',
-                'total_documents': total_docs,
-                'total_size': total_size,
-                'index_count': len(stats['indices'])
+                "upload_id": response['UploadId'],
+                "file_path": file_path,
+                "bucket": bucket,
+                "created_at": datetime.utcnow().isoformat()
             }
+        except ClientError as e:
+            raise StorageServiceError(f"S3 multipart upload creation failed: {str(e)}")
         except Exception as e:
-            logger.warning(f"Elasticsearch stats retrieval failed: {e}")
-            return {'status': 'error', 'error': str(e)}
+            raise StorageServiceError(f"Failed to create multipart upload: {str(e)}")
+
+    async def upload_part(self, upload_id: str, file_path: str, part_number: int, 
+                         part_data: bytes, bucket: str = None) -> Dict[str, Any]:
+        """Upload a part of a multipart upload."""
+        try:
+            if not self.s3_client:
+                raise StorageServiceError("S3 client not initialized")
+            
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
+            
+            response = self.s3_client.upload_part(
+                Bucket=bucket,
+                Key=file_path,
+                PartNumber=part_number,
+                UploadId=upload_id,
+                Body=part_data
+            )
+            
+            return {
+                "upload_id": upload_id,
+                "part_number": part_number,
+                "etag": response['ETag'],
+                "uploaded_at": datetime.utcnow().isoformat()
+            }
+        except ClientError as e:
+            raise StorageServiceError(f"S3 part upload failed: {str(e)}")
+        except Exception as e:
+            raise StorageServiceError(f"Failed to upload part: {str(e)}")
+
+    async def complete_multipart_upload(self, upload_id: str, file_path: str, 
+                                       parts: List[Dict[str, Any]], bucket: str = None) -> Dict[str, Any]:
+        """Complete a multipart upload."""
+        try:
+            if not self.s3_client:
+                raise StorageServiceError("S3 client not initialized")
+            
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
+            
+            response = self.s3_client.complete_multipart_upload(
+                Bucket=bucket,
+                Key=file_path,
+                UploadId=upload_id,
+                MultipartUpload={'Parts': parts}
+            )
+            
+            return {
+                "upload_id": upload_id,
+                "file_path": file_path,
+                "bucket": bucket,
+                "location": response['Location'],
+                "etag": response['ETag'],
+                "completed_at": datetime.utcnow().isoformat()
+            }
+        except ClientError as e:
+            raise StorageServiceError(f"S3 multipart upload completion failed: {str(e)}")
+        except Exception as e:
+            raise StorageServiceError(f"Failed to complete multipart upload: {str(e)}")
+
+    async def abort_multipart_upload(self, upload_id: str, file_path: str, bucket: str = None) -> Dict[str, Any]:
+        """Abort a multipart upload."""
+        try:
+            if not self.s3_client:
+                raise StorageServiceError("S3 client not initialized")
+            
+            if not bucket:
+                bucket = settings.S3_BUCKET_NAME
+            
+            self.s3_client.abort_multipart_upload(
+                Bucket=bucket,
+                Key=file_path,
+                UploadId=upload_id
+            )
+            
+            return {
+                "upload_id": upload_id,
+                "file_path": file_path,
+                "bucket": bucket,
+                "aborted_at": datetime.utcnow().isoformat(),
+                "status": "aborted"
+            }
+        except ClientError as e:
+            raise StorageServiceError(f"S3 multipart upload abort failed: {str(e)}")
+        except Exception as e:
+            raise StorageServiceError(f"Failed to abort multipart upload: {str(e)}")
 
 
-# Global storage service instance
 storage_service = StorageService()

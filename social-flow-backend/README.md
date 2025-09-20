@@ -357,7 +357,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Documentation**: [docs.socialflow.com](https://docs.socialflow.com)
 - **API Reference**: [api.socialflow.com/docs](https://api.socialflow.com/docs)
-- **Issues**: [GitHub Issues](https://github.com/your-org/social-flow-backend/issues)
+- **Issues**: [GitHub Issues](https://github.com/nirmal-mina/social-flow-backend/issues)
 - **Discord**: [Join our Discord](https://discord.gg/socialflow)
 - **Email**: support@socialflow.com
 

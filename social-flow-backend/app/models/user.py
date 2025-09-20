@@ -92,6 +92,9 @@ class User(Base):
     # Notification relationships
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     
+    # Live streaming relationships
+    live_streams = relationship("LiveStream", back_populates="owner", cascade="all, delete-orphan")
+    
     def __repr__(self) -> str:
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"
     
