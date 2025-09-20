@@ -21,6 +21,10 @@ from app.core.logging import setup_logging
 from app.core.redis import init_redis
 from app.api.v1.router import api_router
 from app.core.exceptions import SocialFlowException
+from app.services.ml_service import ml_service
+from app.services.analytics_service import analytics_service
+from app.services.video_service import video_service
+from app.services.storage_service import storage_service
 
 
 @asynccontextmanager

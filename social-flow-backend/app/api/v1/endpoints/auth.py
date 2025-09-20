@@ -274,3 +274,124 @@ async def reset_password(
     await auth_service.update_password(user.id, new_password)
     
     return {"message": "Password reset successfully"}
+
+
+@router.post("/verify-email")
+async def verify_email(
+    verification_token: str,
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """Verify user email."""
+    try:
+        auth_service = AuthService(db)
+        success = await auth_service.verify_email(verification_token)
+        if success:
+            return {"message": "Email verified successfully"}
+        else:
+            raise HTTPException(status_code=400, detail="Invalid verification token")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Email verification failed")
+
+
+@router.post("/2fa/enable")
+async def enable_two_factor(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """Enable two-factor authentication."""
+    try:
+        auth_service = AuthService(db)
+        result = await auth_service.enable_two_factor(str(current_user.id))
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to enable 2FA")
+
+
+@router.post("/2fa/verify")
+async def verify_two_factor(
+    token: str,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """Verify two-factor authentication token."""
+    try:
+        auth_service = AuthService(db)
+        success = await auth_service.verify_two_factor(str(current_user.id), token)
+        if success:
+            return {"message": "2FA verified successfully"}
+        else:
+            raise HTTPException(status_code=400, detail="Invalid 2FA token")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="2FA verification failed")
+
+
+@router.post("/2fa/disable")
+async def disable_two_factor(
+    password: str,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """Disable two-factor authentication."""
+    try:
+        auth_service = AuthService(db)
+        success = await auth_service.disable_two_factor(str(current_user.id), password)
+        if success:
+            return {"message": "2FA disabled successfully"}
+        else:
+            raise HTTPException(status_code=400, detail="Failed to disable 2FA")
+    except AuthenticationError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to disable 2FA")
+
+
+@router.post("/social-login")
+async def social_login(
+    provider: str,
+    social_id: str,
+    email: str,
+    name: str,
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """Login with social provider."""
+    try:
+        auth_service = AuthService(db)
+        result = await auth_service.social_login(provider, social_id, email, name)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Social login failed")
+
+
+@router.get("/profile", response_model=dict)
+async def get_user_profile(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """Get comprehensive user profile."""
+    try:
+        auth_service = AuthService(db)
+        profile = await auth_service.get_user_profile(str(current_user.id))
+        if profile:
+            return profile
+        else:
+            raise HTTPException(status_code=404, detail="User profile not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to get user profile")
+
+
+@router.put("/preferences")
+async def update_user_preferences(
+    preferences: Dict[str, Any],
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """Update user preferences."""
+    try:
+        auth_service = AuthService(db)
+        success = await auth_service.update_user_preferences(str(current_user.id), preferences)
+        if success:
+            return {"message": "Preferences updated successfully"}
+        else:
+            raise HTTPException(status_code=400, detail="Failed to update preferences")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to update preferences")

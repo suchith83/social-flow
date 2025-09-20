@@ -1,0 +1,657 @@
+openapi: 3.0.3
+info:
+  title: Social Flow Backend API
+  description: |
+    A comprehensive social media backend API combining YouTube and Twitter features
+    with advanced AI/ML capabilities. This API supports video streaming, social posts,
+    real-time interactions, content moderation, analytics, and machine learning features.
+  version: 1.0.0
+  contact:
+    name: Social Flow Team
+    email: support@socialflow.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://api.socialflow.com/api/v1
+    description: Production server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - authentication
+      summary: Register a new user
+      description: Create a new user account with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad request - validation error
+        '409':
+          description: Conflict - user already exists
+
+  /auth/login:
+    post:
+      tags:
+        - authentication
+      summary: Login user
+      description: Authenticate user and return access token
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username or email
+                password:
+                  type: string
+                  format: password
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '401':
+          description: Unauthorized - invalid credentials
+
+  /auth/refresh:
+    post:
+      tags:
+        - authentication
+      summary: Refresh access token
+      description: Get new access token using refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required:
+                - refresh_token
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+
+  /videos/upload:
+    post:
+      tags:
+        - videos
+      summary: Upload a video
+      description: Upload a new video file for processing and streaming
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Video file to upload
+                title:
+                  type: string
+                  description: Video title
+                description:
+                  type: string
+                  description: Video description
+                tags:
+                  type: string
+                  description: Comma-separated tags
+              required:
+                - file
+                - title
+      responses:
+        '200':
+          description: Video uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  video_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [uploaded, processing, processed, failed]
+                  message:
+                    type: string
+        '400':
+          description: Bad request - invalid file or data
+        '401':
+          description: Unauthorized
+
+  /videos/{video_id}:
+    get:
+      tags:
+        - videos
+      summary: Get video details
+      description: Retrieve video information and metadata
+      parameters:
+        - name: video_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Video details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+        '404':
+          description: Video not found
+
+  /videos/{video_id}/stream:
+    get:
+      tags:
+        - videos
+      summary: Get video stream URL
+      description: Get streaming URL for video playback
+      parameters:
+        - name: video_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: quality
+          in: query
+          schema:
+            type: string
+            enum: [auto, 240p, 360p, 480p, 720p, 1080p]
+            default: auto
+      responses:
+        '200':
+          description: Streaming URL retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  video_id:
+                    type: string
+                    format: uuid
+                  streaming_url:
+                    type: string
+                    format: uri
+                  quality:
+                    type: string
+                  duration:
+                    type: number
+                  resolution:
+                    type: string
+        '404':
+          description: Video not found
+
+  /videos/{video_id}/like:
+    post:
+      tags:
+        - videos
+      summary: Like a video
+      description: Like a video
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: video_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Video liked successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Video not found
+
+  /videos/live/create:
+    post:
+      tags:
+        - videos
+      summary: Create live stream
+      description: Create a new live streaming session
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Stream title
+                description:
+                  type: string
+                  description: Stream description
+              required:
+                - title
+      responses:
+        '200':
+          description: Live stream created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stream_id:
+                    type: string
+                    format: uuid
+                  stream_key:
+                    type: string
+                  rtmp_url:
+                    type: string
+                    format: uri
+                  playback_url:
+                    type: string
+                    format: uri
+                  status:
+                    type: string
+                    enum: [active, ended]
+
+  /ml/analyze:
+    post:
+      tags:
+        - ml-ai
+      summary: Analyze content
+      description: Analyze content using ML models
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content_type:
+                  type: string
+                  enum: [text, image, video, audio]
+                content_data:
+                  type: string
+                  description: JSON string of content data
+              required:
+                - content_type
+                - content_data
+      responses:
+        '200':
+          description: Analysis queued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [queued, processing, completed, failed]
+                  message:
+                    type: string
+
+  /ml/recommendations:
+    get:
+      tags:
+        - ml-ai
+      summary: Get recommendations
+      description: Get content recommendations for user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: content_type
+          in: query
+          schema:
+            type: string
+            enum: [mixed, video, post]
+            default: mixed
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Recommendations queued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [queued, processing, completed, failed]
+                  message:
+                    type: string
+
+  /analytics/track:
+    post:
+      tags:
+        - analytics
+      summary: Track analytics event
+      description: Track user analytics event
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_type:
+                  type: string
+                  description: Type of event to track
+                data:
+                  type: object
+                  description: Event data
+              required:
+                - event_type
+      responses:
+        '200':
+          description: Event tracked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success, failed]
+                  message:
+                    type: string
+
+  /analytics/user/{user_id}:
+    get:
+      tags:
+        - analytics
+      summary: Get user analytics
+      description: Get analytics data for a specific user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: time_period
+          in: query
+          schema:
+            type: string
+            enum: [1d, 7d, 30d]
+            default: 7d
+      responses:
+        '200':
+          description: User analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    format: uuid
+                  time_period:
+                    type: string
+                  metrics:
+                    type: object
+                  events_count:
+                    type: integer
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    UserCreate:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - display_name
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          pattern: '^[a-zA-Z0-9_]+$'
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 100
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        bio:
+          type: string
+          maxLength: 500
+        avatar_url:
+          type: string
+          format: uri
+        website:
+          type: string
+          format: uri
+        location:
+          type: string
+          maxLength: 100
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        display_name:
+          type: string
+        bio:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        website:
+          type: string
+          format: uri
+        location:
+          type: string
+        is_active:
+          type: boolean
+        is_verified:
+          type: boolean
+        is_banned:
+          type: boolean
+        is_suspended:
+          type: boolean
+        followers_count:
+          type: integer
+        following_count:
+          type: integer
+        posts_count:
+          type: integer
+        videos_count:
+          type: integer
+        total_views:
+          type: integer
+        total_likes:
+          type: integer
+        privacy_level:
+          type: string
+          enum: [public, friends, private]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        last_login_at:
+          type: string
+          format: date-time
+
+    Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          enum: [bearer]
+
+    Video:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        tags:
+          type: string
+        filename:
+          type: string
+        file_size:
+          type: integer
+        duration:
+          type: number
+        resolution:
+          type: string
+        bitrate:
+          type: integer
+        codec:
+          type: string
+        thumbnail_url:
+          type: string
+          format: uri
+        hls_url:
+          type: string
+          format: uri
+        dash_url:
+          type: string
+          format: uri
+        streaming_url:
+          type: string
+          format: uri
+        status:
+          type: string
+          enum: [uploading, processing, processed, failed, deleted]
+        visibility:
+          type: string
+          enum: [public, unlisted, private]
+        is_approved:
+          type: boolean
+        is_flagged:
+          type: boolean
+        is_rejected:
+          type: boolean
+        views_count:
+          type: integer
+        likes_count:
+          type: integer
+        dislikes_count:
+          type: integer
+        comments_count:
+          type: integer
+        shares_count:
+          type: integer
+        total_watch_time:
+          type: number
+        average_watch_time:
+          type: number
+        retention_rate:
+          type: number
+        is_monetized:
+          type: boolean
+        ad_revenue:
+          type: number
+        engagement_rate:
+          type: number
+        like_ratio:
+          type: number
+        owner_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object

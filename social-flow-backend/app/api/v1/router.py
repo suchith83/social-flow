@@ -22,6 +22,7 @@ from app.api.v1.endpoints import (
     search,
     admin,
     moderation,
+    ml,
 )
 
 api_router = APIRouter()
@@ -42,3 +43,4 @@ api_router.include_router(analytics.router, prefix="/analytics", tags=["analytic
 api_router.include_router(search.router, prefix="/search", tags=["search"])
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
 api_router.include_router(moderation.router, prefix="/moderation", tags=["moderation"])
+api_router.include_router(ml.router, prefix="/ml", tags=["ml-ai"])
