@@ -1,128 +1,329 @@
 ﻿# Social Flow Backend
-Social Flow Backend
-Overview
-Social Flow is a robust, scalable, and secure backend architecture designed to power a next-generation video-sharing and social media platform. It combines the best features of video streaming platforms like YouTube with social interaction capabilities similar to Twitter. The platform supports advanced video processing, live streaming, AI-driven recommendations, content moderation, monetization, and comprehensive analytics, all deployed on a multi-cloud infrastructure with a focus on performance, security, and scalability.
-This repository contains the complete backend architecture, including microservices, AI models, event streaming, storage configurations, and deployment pipelines. The system is designed to handle millions of users, process terabytes of video data, and provide real-time personalization and analytics.
-Features
 
-Video Processing: Supports video uploads, transcoding to multiple formats (H.264, H.265, AV1, VP9), adaptive bitrate streaming (HLS/DASH), and thumbnail generation using AWS MediaConvert and FFmpeg.
-Social Interactions: Twitter-like threads, reposts, hashtags, and user follows, powered by a high-performance Go-based user service.
-Live Streaming: Real-time streaming with RTMP, WebRTC, and SRT protocols, integrated with AWS IVS for low-latency delivery.
-AI-Powered Recommendations: Machine learning models for collaborative filtering, content-based recommendations, viral prediction, and trending analysis, deployed using AWS SageMaker.
-Content Moderation: AI-driven NSFW, violence, and spam detection to ensure platform safety, using ResNet-50 and EfficientNet models.
-Monetization: Supports subscriptions, donations, ads, and creator payouts, integrated with Stripe and AWS Payment Cryptography.
-Analytics: Real-time and batch analytics for views, engagement, and monetization metrics, powered by Apache Flink and Scala.
-Search: Advanced search and autocomplete powered by Elasticsearch, with personalized ranking and hashtag support.
-Scalability: Microservices architecture with auto-scaling, load balancing, and multi-region deployment using AWS ECS, Lambda, and CloudFront.
-Security: JWT-based authentication with AWS Cognito, encryption with AWS KMS, and compliance with GDPR, CCPA, COPPA, and DMCA.
-CI/CD: Automated pipelines using GitLab CI, GitHub Actions, and ArgoCD for continuous integration and deployment.
-Monitoring: Comprehensive metrics, logging, and distributed tracing using Prometheus, Grafana, and AWS CloudWatch.
+A production-grade backend for a social media platform combining features of YouTube, Twitter, and other modern platforms. Built with NestJS, TypeScript, and AWS services.
 
-Architecture
-The backend is organized into microservices, each responsible for specific functionality. The architecture is detailed in ARCHITECTURE.md. Key components include:
+## Features
 
-User Service: Manages user authentication, profiles, subscriptions, and social interactions (Go).
-Video Service: Handles video uploads, transcoding, streaming, and live streaming (Node.js).
-Recommendation Service: Provides personalized recommendations using ML models (Python).
-Analytics Service: Processes real-time and batch analytics (Scala/Flink).
-Search Service: Powers search and hashtag discovery (Python/Elasticsearch).
-Monetization Service: Manages payments and ads (Kotlin).
-API Gateway: Routes requests and enforces security policies (Kong/Envoy).
-Workers: Background tasks for video processing, AI inference, and analytics (Node.js, Python).
-Event Streaming: Kafka and Pulsar for real-time event processing.
-Storage: AWS S3 for video storage, CockroachDB/MongoDB for data, and Redis/Elasticsearch for caching and search.
+- **User Authentication & Authorization**: JWT, OAuth2, social login (Google, Facebook, Twitter)
+- **Video Processing**: Upload, encoding, storage, and streaming (like YouTube)
+- **Social Features**: Posts, comments, likes, retweets/reposts (like Twitter)
+- **Monetization**: Advertisements system with targeting & revenue sharing
+- **Payments & Subscriptions**: Stripe/PayPal + in-app purchases support
+- **Notifications**: Push, email, in-app notifications
+- **Real-time Updates**: WebSockets for live interactions
+- **Search & Recommendations**: Elasticsearch + ML models
+- **Analytics**: View counts, impressions, click-through rates, retention, watch time
+- **Moderation Tools**: Reporting, flagging, AI content moderation
+- **Admin Dashboard**: Stats, user bans, ad approvals, system health
 
-Getting Started
-Prerequisites
+## Tech Stack
 
-Docker: For containerized services.
-AWS CLI: Configured with credentials for AWS services.
-Node.js: Version 18+ for video service.
-Go: Version 1.21+ for user service.
-Python: Version 3.11+ for recommendation and search services.
-Java: Version 17+ for analytics and monetization services.
-Kotlin: For monetization service.
-Terraform: For infrastructure provisioning.
-kubectl: For Kubernetes-based deployments.
+- **Framework**: NestJS with TypeScript
+- **Database**: PostgreSQL (primary), DynamoDB (fast lookups)
+- **Cache**: Redis
+- **Search**: AWS Elasticsearch (OpenSearch)
+- **Storage**: AWS S3 + CloudFront CDN
+- **Video Processing**: AWS MediaConvert
+- **Authentication**: AWS Cognito (optional) + JWT
+- **Queue**: BullMQ (Redis-based)
+- **Real-time**: Socket.IO + Redis Pub/Sub
+- **Monitoring**: AWS CloudWatch + X-Ray
+- **Notifications**: AWS SNS + SES
 
-Installation
+## Prerequisites
 
-Clone the repository:
-git clone https://github.com/social-flow/social-flow-backend.git
+- Node.js 18+ and npm
+- PostgreSQL 13+
+- Redis 6+
+- AWS Account with appropriate services enabled
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
 cd social-flow-backend
+   ```
 
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-Set up environment variables:
+3. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Fill in the environment variables in `.env`:
+   ```env
+   # App Configuration
+   NODE_ENV=development
+   APP_PORT=3000
+   JWT_SECRET=your-jwt-secret
+   JWT_EXPIRES_IN=7d
+   
+   # Database
+   DATABASE_HOST=localhost
+   DATABASE_PORT=5432
+   DATABASE_USERNAME=postgres
+   DATABASE_PASSWORD=password
+   DATABASE_NAME=social_flow
+   DATABASE_SSL=false
+   
+   # Redis
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+   REDIS_PASSWORD=
+   
+   # AWS Configuration
+   AWS_REGION=us-east-1
+   AWS_ACCESS_KEY_ID=your-access-key
+   AWS_SECRET_ACCESS_KEY=your-secret-key
+   S3_BUCKET_NAME=social-flow-videos
+   S3_BUCKET_REGION=us-east-1
+   MEDIACONVERT_ENDPOINT=https://your-mediaconvert-endpoint
+   
+   # Social Login
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   FACEBOOK_CLIENT_ID=your-facebook-client-id
+   FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
+   TWITTER_CLIENT_ID=your-twitter-client-id
+   TWITTER_CLIENT_SECRET=your-twitter-client-secret
+   
+   # Stripe
+   STRIPE_SECRET_KEY=your-stripe-secret-key
+   STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+   
+   # Email
+   AWS_SES_REGION=us-east-1
+   FROM_EMAIL=noreply@yourdomain.com
+   ```
 
-Copy config/environments/development/config.yaml.example to config/environments/development/config.yaml.
-Update with your AWS credentials, database URLs, and other configurations.
+4. **Database Setup**
+   ```bash
+   # Create PostgreSQL database
+   createdb social_flow
+   
+   # Run migrations (if available)
+   npm run migration:run
+   ```
 
+5. **Start the application**
+   ```bash
+   # Development
+   npm run start:dev
+   
+   # Production
+   npm run build
+   npm run start:prod
+   ```
 
-Build and run services using Docker Compose:
-./scripts/setup/setup.sh
+## API Documentation
 
+Once the server is running, visit:
+- Swagger UI: `http://localhost:3000/api`
+- Health Check: `http://localhost:3000/health`
 
-Initialize databases and run migrations:
-./scripts/setup/db_migrate.sh
+## Project Structure
 
+```
+src/
+├── auth/                    # Authentication & authorization
+├── users/                   # User management
+├── videos/                  # Video processing & streaming
+├── posts/                   # Social posts & interactions
+├── ads/                     # Advertisement system
+├── payments/                # Payment processing
+├── notifications/           # Notification system
+├── analytics/               # Analytics & metrics
+├── admin/                   # Admin dashboard
+├── search/                  # Search & recommendations
+├── realtime/                # WebSocket real-time features
+├── moderation/              # Content moderation
+└── shared/                  # Shared utilities & services
+    ├── config/              # Configuration files
+    ├── database/            # Database entities & repositories
+    ├── redis/               # Redis service
+    ├── aws/                 # AWS services
+    ├── logger/              # Logging service
+    ├── utils/               # Utility functions
+    └── middleware/          # Custom middleware
+```
 
-Access the API via the gateway at http://localhost:8000.
+## Key API Endpoints
 
+### Authentication
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `POST /auth/refresh` - Refresh JWT token
+- `GET /auth/profile` - Get user profile
+- `POST /auth/social/google` - Google OAuth login
+- `POST /auth/social/facebook` - Facebook OAuth login
+- `POST /auth/social/twitter` - Twitter OAuth login
 
-Deployment
-Refer to DEPLOYMENT_GUIDE.md for detailed instructions on deploying to AWS with Terraform, ECS, and Kubernetes.
-Directory Structure
-social-flow-backend/
-├── services/
-│   ├── user-service/           # User management and social interactions (Go)
-│   ├── video-service/          # Video processing and streaming (Node.js)
-│   ├── recommendation-service/ # AI-driven recommendations (Python)
-│   ├── analytics-service/      # Real-time and batch analytics (Scala/Flink)
-│   ├── search-service/         # Search and hashtag discovery (Python/Elasticsearch)
-│   ├── monetization-service/   # Payments and ads (Kotlin)
-│   ├── ads-service/            # Ad management (Python)
-│   ├── payment-service/        # Payment processing (Python)
-│   ├── view-count-service/     # View count tracking (Python)
-│   ├── api-gateway/            # Request routing and security (Kong)
-├── common/                     # Shared libraries and protobuf schemas
-├── ai-models/                  # ML models for moderation and recommendations
-├── workers/                    # Background processing workers
-├── scripts/                    # Setup, deployment, and maintenance scripts
-├── docs/                       # API specs and documentation
-├── config/                     # Environment and service configurations
-├── tools/                      # CLI and testing tools
-├── cicd/                       # CI/CD pipelines
-├── testing/                    # Unit, integration, and performance tests
-├── data/                       # Database migrations and fixtures
-├── ml-pipelines/               # ML training and inference pipelines
-├── event-streaming/            # Kafka and Pulsar configurations
-├── storage/                    # Storage configurations (S3, CockroachDB, etc.)
-├── api-specs/                  # REST, GraphQL, and gRPC API specifications
-├── security/                   # Authentication, encryption, and compliance
-├── performance/                # Caching, scaling, and optimization configs
-├── monitoring/                 # Metrics, logging, and tracing
-├── deployment/                 # Deployment strategies and automation
-├── quality-assurance/          # Code quality and security testing
-├── analytics/                  # Real-time and batch analytics configurations
-├── compliance/                 # GDPR, CCPA, and other compliance configs
-├── automation/                 # Infrastructure and operations automation
-├── live-streaming/             # Live streaming ingestion and delivery
-├── mobile-backend/             # Mobile-optimized APIs and offline support
-├── edge-computing/             # Edge deployment configurations
-├── README.md                   # Project overview
-├── ARCHITECTURE.md             # Detailed architecture
-├── DEPLOYMENT_GUIDE.md         # Deployment instructions
-├── CONTRIBUTING.md             # Contribution guidelines
-├── CODE_OF_CONDUCT.md         # Community guidelines
-├── SECURITY.md                 # Security policies
-├── CHANGELOG.md                # Version history
-├── LICENSE                     # MIT License
+### Users
+- `GET /users/:id` - Get user profile
+- `PUT /users/:id` - Update user profile
+- `POST /users/:id/follow` - Follow user
+- `DELETE /users/:id/follow` - Unfollow user
+- `GET /users/:id/followers` - Get user followers
+- `GET /users/:id/following` - Get user following
 
-Contributing
-Contributions are welcome! Please read CONTRIBUTING.md for guidelines on how to contribute, including code style, testing requirements, and pull request processes.
-Security
-Security is a top priority. Please review SECURITY.md for our security policies and how to report vulnerabilities.
-License
-This project is licensed under the MIT License. See LICENSE for details.
-Contact
-For questions or support, contact the backend team at backend@socialflow.com or open an issue in this repository.
+### Videos
+- `POST /videos/upload` - Upload video
+- `GET /videos/:id` - Get video details
+- `GET /videos/:id/stream` - Stream video
+- `POST /videos/:id/like` - Like video
+- `DELETE /videos/:id/like` - Unlike video
+- `POST /videos/:id/comment` - Comment on video
+- `GET /videos/:id/comments` - Get video comments
+
+### Posts
+- `POST /posts` - Create post
+- `GET /posts/:id` - Get post details
+- `PUT /posts/:id` - Update post
+- `DELETE /posts/:id` - Delete post
+- `POST /posts/:id/like` - Like post
+- `POST /posts/:id/repost` - Repost
+- `POST /posts/:id/comment` - Comment on post
+
+### Search
+- `POST /search` - Search content
+- `GET /search/suggestions` - Get search suggestions
+- `GET /search/trending/hashtags` - Get trending hashtags
+- `POST /search/recommendations` - Get recommendations
+
+### Analytics
+- `POST /analytics/track` - Track analytics event
+- `GET /analytics/user` - Get user analytics
+- `GET /analytics/video/:id` - Get video analytics
+- `GET /analytics/overview` - Get analytics overview
+
+### Admin
+- `GET /admin/stats` - Get admin statistics
+- `POST /admin/users/manage` - Manage users
+- `POST /admin/content/moderate` - Moderate content
+- `GET /admin/health` - Get system health
+
+## Development
+
+### Running Tests
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
+```
+
+### Code Quality
+```bash
+# Linting
+npm run lint
+
+# Formatting
+npm run format
+
+# Type checking
+npm run type-check
+```
+
+### Database Migrations
+```bash
+# Generate migration
+npm run migration:generate -- -n MigrationName
+
+# Run migrations
+npm run migration:run
+
+# Revert migration
+npm run migration:revert
+```
+
+## Deployment
+
+### AWS Deployment
+
+1. **Infrastructure Setup**
+   - Use Terraform or AWS CDK to provision infrastructure
+   - Set up RDS PostgreSQL instance
+   - Configure ElastiCache Redis cluster
+   - Set up S3 buckets for video storage
+   - Configure CloudFront distribution
+
+2. **Application Deployment**
+   - Build Docker image
+   - Deploy to ECS or EKS
+   - Configure load balancer
+   - Set up auto-scaling
+
+3. **Environment Variables**
+   - Set production environment variables
+   - Configure AWS IAM roles
+   - Set up secrets management
+
+### Docker Deployment
+
+```bash
+# Build image
+docker build -t social-flow-backend .
+
+# Run container
+docker run -p 3000:3000 --env-file .env social-flow-backend
+```
+
+## Monitoring & Logging
+
+- **Application Logs**: Winston logger with structured logging
+- **Metrics**: Prometheus metrics collection
+- **Tracing**: AWS X-Ray distributed tracing
+- **Health Checks**: Built-in health check endpoints
+- **Error Tracking**: Centralized error logging and alerting
+
+## Security
+
+- **Authentication**: JWT tokens with refresh mechanism
+- **Authorization**: Role-based access control (RBAC)
+- **Input Validation**: Comprehensive input sanitization
+- **Rate Limiting**: API rate limiting with Redis
+- **CORS**: Configurable CORS policies
+- **HTTPS**: TLS encryption for all communications
+- **Secrets Management**: AWS Secrets Manager integration
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support and questions:
+- Create an issue in the repository
+- Contact the development team
+- Check the documentation
+
+## Roadmap
+
+- [ ] GraphQL API support
+- [ ] Advanced ML recommendations
+- [ ] Live streaming capabilities
+- [ ] Mobile app push notifications
+- [ ] Advanced analytics dashboard
+- [ ] Content moderation AI
+- [ ] Multi-language support
+- [ ] API versioning
+- [ ] Advanced caching strategies
+- [ ] Microservices architecture
