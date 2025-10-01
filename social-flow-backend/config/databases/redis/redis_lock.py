@@ -1,4 +1,4 @@
-﻿"""Distributed locking using Redlock algorithm."""
+"""Distributed locking using Redlock algorithm."""
 """
 Redis Distributed Lock (Redlock Implementation)
 """

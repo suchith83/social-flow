@@ -1,4 +1,4 @@
-﻿"""
+"""
 # GDPR audit logs and reporting utilities
 """
 """

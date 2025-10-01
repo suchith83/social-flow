@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Common helper functions (validation, formatting)
 """
 # compliance/data-protection/pipeda/pipeda_utils.py

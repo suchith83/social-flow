@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Audit logs and reporting for CCPA events
 """
 """

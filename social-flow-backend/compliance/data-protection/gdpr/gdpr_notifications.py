@@ -1,4 +1,4 @@
-﻿"""
+"""
 # User notifications regarding GDPR rights
 """
 """

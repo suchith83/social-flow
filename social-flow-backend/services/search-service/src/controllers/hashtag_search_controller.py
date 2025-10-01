@@ -1,4 +1,4 @@
-﻿# Objective: Specialized search for hashtag-based content discovery and trending analysis.
+# Objective: Specialized search for hashtag-based content discovery and trending analysis.
 
 # Input Cases:
 # - GET /api/v1/hashtags/#tag/videos - Videos by hashtag

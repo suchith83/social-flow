@@ -1,4 +1,4 @@
-﻿"""Helper utilities for Redis operations."""
+"""Helper utilities for Redis operations."""
 """
 Redis Utility Functions
 - Key namespacing

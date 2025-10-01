@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Cache rules, purge, page rules
 """
 # config/cdn/cloudflare/cf_cache.py

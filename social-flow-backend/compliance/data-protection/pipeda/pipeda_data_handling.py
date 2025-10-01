@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Data retention, safeguarding, and cross-border transfer rules
 """
 # compliance/data-protection/pipeda/pipeda_data_handling.py

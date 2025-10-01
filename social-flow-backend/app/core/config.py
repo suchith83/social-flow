@@ -1,14 +1,16 @@
 """
 Application configuration management.
 
-This module handles all configuration settings using Pydantic BaseSettings
+This module handles all configuration settings using Pydantic Settings
 for type validation and environment variable management.
 """
 
 import secrets
-from typing import Any, Dict, List, Optional, Union
+import os
+from typing import Any, List, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
+from pydantic import AnyHttpUrl, EmailStr, HttpUrl, PostgresDsn, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -21,7 +23,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Security
-    SECRET_KEY: str = secrets.token_urlsafe(32)
+    SECRET_KEY: str = os.getenv("SECRET_KEY", secrets.token_urlsafe(32))
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     ALGORITHM: str = "HS256"
@@ -29,7 +31,8 @@ class Settings(BaseSettings):
     # CORS
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
     
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
@@ -45,17 +48,20 @@ class Settings(BaseSettings):
     POSTGRES_PORT: str = "5432"
     DATABASE_URL: Optional[PostgresDsn] = None
     
-    @validator("DATABASE_URL", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def assemble_db_connection(cls, v: Optional[str], info) -> Any:
         if isinstance(v, str):
             return v
+        # Access other field values from info.data
+        data = info.data if hasattr(info, 'data') else {}
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
-            port=values.get("POSTGRES_PORT"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
+            username=data.get("POSTGRES_USER"),
+            password=data.get("POSTGRES_PASSWORD"),
+            host=data.get("POSTGRES_SERVER"),
+            port=int(data.get("POSTGRES_PORT", 5432)),
+            path=f"/{data.get('POSTGRES_DB') or ''}",
         )
     
     # Redis
@@ -65,13 +71,16 @@ class Settings(BaseSettings):
     REDIS_DB: int = 0
     REDIS_URL: Optional[str] = None
     
-    @validator("REDIS_URL", pre=True)
-    def assemble_redis_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    @field_validator("REDIS_URL", mode="before")
+    @classmethod
+    def assemble_redis_connection(cls, v: Optional[str], info) -> Any:
         if isinstance(v, str):
             return v
-        password = values.get("REDIS_PASSWORD")
+        # Access other field values from info.data
+        data = info.data if hasattr(info, 'data') else {}
+        password = data.get("REDIS_PASSWORD")
         auth = f":{password}@" if password else ""
-        return f"redis://{auth}{values.get('REDIS_HOST')}:{values.get('REDIS_PORT')}/{values.get('REDIS_DB')}"
+        return f"redis://{auth}{data.get('REDIS_HOST')}:{data.get('REDIS_PORT')}/{data.get('REDIS_DB')}"
     
     # AWS Configuration
     AWS_ACCESS_KEY_ID: Optional[str] = None
@@ -112,10 +121,40 @@ class Settings(BaseSettings):
     EMAIL_FROM: Optional[EmailStr] = None
     PUSH_NOTIFICATION_ENABLED: bool = True
     
+    # Email / SMTP Configuration
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: int = 587
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    SMTP_TLS: bool = True
+    SMTP_SSL: bool = False
+    
+    # Firebase Cloud Messaging (FCM)
+    FCM_CREDENTIALS_FILE: Optional[str] = None
+    FCM_PROJECT_ID: Optional[str] = None
+    
+    # Twilio SMS
+    TWILIO_ACCOUNT_SID: Optional[str] = None
+    TWILIO_AUTH_TOKEN: Optional[str] = None
+    TWILIO_PHONE_NUMBER: Optional[str] = None
+    
     # Payments
     STRIPE_SECRET_KEY: Optional[str] = None
     STRIPE_PUBLISHABLE_KEY: Optional[str] = None
     STRIPE_WEBHOOK_SECRET: Optional[str] = None
+    STRIPE_BASIC_PRICE_ID: Optional[str] = None
+    STRIPE_PREMIUM_PRICE_ID: Optional[str] = None
+    STRIPE_PRO_PRICE_ID: Optional[str] = None
+    FRONTEND_URL: str = "http://localhost:3000"
+    
+    # OAuth Social Login
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+    FACEBOOK_CLIENT_ID: Optional[str] = None
+    FACEBOOK_CLIENT_SECRET: Optional[str] = None
+    APPLE_CLIENT_ID: Optional[str] = None
+    APPLE_CLIENT_SECRET: Optional[str] = None
+    OAUTH_REDIRECT_URI: str = "http://localhost:3000/auth/callback"
     
     # Analytics
     ANALYTICS_QUEUE: str = "analytics"
@@ -144,9 +183,11 @@ class Settings(BaseSettings):
     # Allowed Hosts
     ALLOWED_HOSTS: List[str] = ["*"]
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="allow"
+    )
 
 
 # Create settings instance

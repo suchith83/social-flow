@@ -1,4 +1,4 @@
-﻿"""Pub/Sub abstraction for Redis messaging."""
+"""Pub/Sub abstraction for Redis messaging."""
 """
 Redis Pub/Sub Abstraction
 - Wraps publish/subscribe in Redis.

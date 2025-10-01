@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Handle Data Subject Access Requests (DSAR)
 """
 """

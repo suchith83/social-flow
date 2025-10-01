@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Cache policies, invalidations
 """
 # config/cdn/aws-cloudfront/cloudfront_cache.py

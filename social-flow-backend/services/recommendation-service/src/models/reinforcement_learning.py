@@ -1,4 +1,4 @@
-﻿# Objective: Reinforcement learning for long-term engagement.
+# Objective: Reinforcement learning for long-term engagement.
 
 class ReinforcementLearningModel:
     def __init__(self):

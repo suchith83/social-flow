@@ -1,4 +1,4 @@
-﻿# Objective: Handle autocomplete.
+# Objective: Handle autocomplete.
 
 class AutocompleteController:
     def get_suggestions(self, partial_query):

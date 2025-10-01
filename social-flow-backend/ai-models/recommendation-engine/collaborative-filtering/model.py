@@ -1,4 +1,4 @@
-﻿# class CollaborativeFiltering:
+# class CollaborativeFiltering:
 #     # TODO: Model
 """
 collaborative-filtering/model.py

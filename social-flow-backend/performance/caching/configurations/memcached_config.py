@@ -1,4 +1,4 @@
-﻿# memcached_config.py
+# memcached_config.py
 # Created by Create-Configurations.ps1
 """
 memcached_config.py
@@ -43,4 +43,4 @@ class MemcachedConfig:
 
 
 if __name__ == "__main__":
-    print("🔧 Memcached Config:", MemcachedConfig.summary())
+    print("?? Memcached Config:", MemcachedConfig.summary())

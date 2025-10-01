@@ -1,4 +1,4 @@
-﻿"""Secure, resilient Elasticsearch cluster connection with retry/failover."""
+"""Secure, resilient Elasticsearch cluster connection with retry/failover."""
 """
 connection.py
 --------------
@@ -42,13 +42,13 @@ class ElasticsearchClient:
                     request_timeout=30,
                 )
                 if client.ping():
-                    logger.info("✅ Connected to Elasticsearch cluster.")
+                    logger.info("? Connected to Elasticsearch cluster.")
                     return client
             except exceptions.ConnectionError as e:
                 logger.warning(f"Connection failed (attempt {attempt+1}): {e}")
                 time.sleep(delay)
                 delay *= 2
-        raise Exception("❌ Unable to connect to Elasticsearch cluster")
+        raise Exception("? Unable to connect to Elasticsearch cluster")
 
     def get_client(self):
         return self.client

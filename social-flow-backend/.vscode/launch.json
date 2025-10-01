@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "API (Node)",
+      "program": "${workspaceFolder}/services/api-gateway/src/index.ts",
+      "runtimeExecutable": "node",
+      "preLaunchTask": "Docker Compose Up",
+      "envFile": "${workspaceFolder}/.env",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "name": "Worker (Python)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/services/worker/main.py",
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Feed Service (Go)",
+      "type": "go",
+      "request": "launch",
+      "program": "${workspaceFolder}/services/feed-service/cmd/server"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run API + Worker",
+      "configurations": [
+        "API (Node)",
+        "Worker (Python)"
+      ]
+    }
+  ]
+}

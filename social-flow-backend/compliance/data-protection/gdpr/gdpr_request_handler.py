@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Handle GDPR subject access & rights requests
 """
 """

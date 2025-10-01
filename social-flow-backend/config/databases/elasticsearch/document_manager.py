@@ -1,4 +1,4 @@
-﻿"""CRUD operations for documents, including bulk indexing."""
+"""CRUD operations for documents, including bulk indexing."""
 """
 document_manager.py
 -------------------
@@ -20,7 +20,7 @@ class DocumentManager:
     def insert_document(self, index: str, doc_id: str, document: dict):
         """Insert or update a document."""
         self.client.index(index=index, id=doc_id, document=document)
-        logger.info(f"📄 Document {doc_id} indexed in {index}")
+        logger.info(f"?? Document {doc_id} indexed in {index}")
 
     def get_document(self, index: str, doc_id: str):
         """Retrieve document by ID."""
@@ -29,10 +29,10 @@ class DocumentManager:
     def delete_document(self, index: str, doc_id: str):
         """Delete a document."""
         self.client.delete(index=index, id=doc_id, ignore=[404])
-        logger.info(f"🗑 Document {doc_id} deleted from {index}")
+        logger.info(f"?? Document {doc_id} deleted from {index}")
 
     def bulk_insert(self, index: str, documents: list):
         """Bulk insert documents (efficient)."""
         actions = [{"_index": index, "_id": doc["id"], "_source": doc} for doc in documents]
         helpers.bulk(self.client, actions)
-        logger.info(f"⚡ Bulk insert completed for index {index}")
+        logger.info(f"? Bulk insert completed for index {index}")

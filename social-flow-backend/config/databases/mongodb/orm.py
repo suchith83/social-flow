@@ -1,11 +1,11 @@
-ï»¿"""Optional lightweight ODM setup (Motor + Beanie example) and PyMongo wrappers."""
+"""Optional lightweight ODM setup (Motor + Beanie example) and PyMongo wrappers."""
 """
 orm.py
 ------
 Provides two patterns:
 1) Lightweight PyMongo wrapper helpers for traditional sync code (transactions, sessions).
 2) Motor + Beanie example for document-model ODM (async). Beanie is included as an example
-   â€” you can swap for odmantic or mongoengine based on preference.
+   — you can swap for odmantic or mongoengine based on preference.
 
 This file aims to show:
   - transaction/session usage (required for multi-doc transactions in replica sets/replicated clusters)
@@ -95,4 +95,4 @@ if BEANIE_AVAILABLE:
         db = client[conn.conf["database"]]
         await init_beanie(database=db, document_models=[UserDoc])
 else:
-    logger.info("Beanie not installed â€” skipping ODM initialization block. Install beanie+motor+pydantic to use.")
+    logger.info("Beanie not installed — skipping ODM initialization block. Install beanie+motor+pydantic to use.")

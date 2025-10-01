@@ -1,4 +1,4 @@
-﻿"""Compliance logging of Elasticsearch queries."""
+"""Compliance logging of Elasticsearch queries."""
 """
 audit_logger.py
 ---------------

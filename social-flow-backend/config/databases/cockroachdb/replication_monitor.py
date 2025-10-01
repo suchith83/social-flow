@@ -1,4 +1,4 @@
-﻿"""Monitors replication lag, health, and node status."""
+"""Monitors replication lag, health, and node status."""
 """
 replication_monitor.py
 ----------------------

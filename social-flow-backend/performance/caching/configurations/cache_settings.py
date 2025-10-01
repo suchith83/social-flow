@@ -1,4 +1,4 @@
-﻿# cache_settings.py
+# cache_settings.py
 # Created by Create-Configurations.ps1
 """
 cache_settings.py
@@ -48,4 +48,4 @@ class CacheSettings:
 
 if __name__ == "__main__":
     # Debug: print cache configuration at runtime
-    print("🔧 Cache Settings:", CacheSettings.summary())
+    print("?? Cache Settings:", CacheSettings.summary())

@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Common helpers (zone validation, request signing)
 """
 # config/cdn/cloudflare/cf_utils.py

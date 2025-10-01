@@ -1,4 +1,4 @@
-﻿"""Secure connection to InfluxDB v2 (token auth, retries, failover)."""
+"""Secure connection to InfluxDB v2 (token auth, retries, failover)."""
 """
 connection.py
 --------------
@@ -41,13 +41,13 @@ class InfluxDBConnection:
                     client = InfluxDBClient(url=url, token=token, org=org, timeout=30_000)
                     health = client.health()
                     if health.status == "pass":
-                        logger.info(f"✅ Connected to InfluxDB node {url}")
+                        logger.info(f"? Connected to InfluxDB node {url}")
                         return client
                 except Exception as e:
                     logger.warning(f"Connection attempt {attempt+1} to {url} failed: {e}")
                     time.sleep(delay)
             delay *= 2
-        raise Exception("❌ Could not connect to any InfluxDB nodes")
+        raise Exception("? Could not connect to any InfluxDB nodes")
 
     def get_client(self):
         return self.client

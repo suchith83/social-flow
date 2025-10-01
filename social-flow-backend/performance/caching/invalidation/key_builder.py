@@ -1,4 +1,4 @@
-﻿# key_builder.py
+# key_builder.py
 # Created by Create-Invalidation.ps1
 """
 key_builder.py

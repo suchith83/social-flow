@@ -1,4 +1,4 @@
-﻿# reservoir_sampler.py
+# reservoir_sampler.py
 # Created by Create-SamplingFiles.ps1
 """
 ReservoirSampler: keeps a bounded reservoir of traces to sample uniformly from an incoming stream.

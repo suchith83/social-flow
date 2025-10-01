@@ -1,4 +1,4 @@
-﻿"""
+"""
 Custom Exceptions for CCPA Compliance
 -------------------------------------
 These exceptions provide a structured way to handle errors

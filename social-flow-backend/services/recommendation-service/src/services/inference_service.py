@@ -1,4 +1,4 @@
-﻿# Objective: Provide real-time personalized recommendations with low latency.
+# Objective: Provide real-time personalized recommendations with low latency.
 
 # Input Cases:
 # - GET /api/v1/recommendations/:user id - Get recommendations
@@ -41,7 +41,7 @@ class FeedbackMessage:
 
 class InferenceService:
     def __init__(self):
-        # get_logger import might fail in some minimal test environments — try to import here.
+        # get_logger import might fail in some minimal test environments � try to import here.
         try:
             from common.libraries.python.monitoring.logger import get_logger as _get_logger
             self.logger = _get_logger("inference-service")

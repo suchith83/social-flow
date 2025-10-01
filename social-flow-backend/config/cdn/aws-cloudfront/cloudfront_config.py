@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Configuration models & validation
 """
 # config/cdn/aws-cloudfront/cloudfront_config.py

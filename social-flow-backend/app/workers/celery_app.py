@@ -4,7 +4,6 @@ Celery application configuration.
 This module configures Celery for background task processing.
 """
 
-import os
 from celery import Celery
 from app.core.config import settings
 
@@ -14,11 +13,11 @@ celery_app = Celery(
     broker=settings.REDIS_URL,
     backend=settings.REDIS_URL,
     include=[
-        "app.workers.video_processing",
-        "app.workers.ai_processing",
-        "app.workers.analytics_processing",
-        "app.workers.notification_processing",
-        "app.workers.email_processing",
+        "app.modules.videos.video_processing",
+        "app.modules.ml.ai_processing",
+        "app.modules.analytics.analytics_processing",
+        "app.modules.notifications.notification_processing",
+        "app.modules.notifications.email_processing",
     ]
 )
 

@@ -1,4 +1,4 @@
-ï»¿# http_instrumentation.py
+# http_instrumentation.py
 # Created by Create-DistributedFiles.ps1
 """
 HTTP instrumentation helpers for distributed tracing.
@@ -24,7 +24,7 @@ try:
     PROP_AVAILABLE = True
 except Exception:
     PROP_AVAILABLE = False
-    logger.debug("OTel propagation not available â€” http instrumentation will be limited.")
+    logger.debug("OTel propagation not available — http instrumentation will be limited.")
 
 
 def client_inject_headers(headers: Dict[str, str] = None):
@@ -105,7 +105,7 @@ def httpx_request_span_wrapper(client, tracer_name="http.client"):
       client = httpx.Client()
       wrapped = httpx_request_span_wrapper(client)
       resp = wrapped.get("https://example.com")
-    This is a minimal wrapper â€” prefer OpenTelemetry httpx instrumentation in production.
+    This is a minimal wrapper — prefer OpenTelemetry httpx instrumentation in production.
     """
     try:
         import httpx

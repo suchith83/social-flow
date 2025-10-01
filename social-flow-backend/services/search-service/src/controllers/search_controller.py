@@ -1,4 +1,4 @@
-﻿# Objective: Handle search requests with personalized ranking and faceted search.
+# Objective: Handle search requests with personalized ranking and faceted search.
 
 # Input Cases:
 # - GET /api/v1/search?q=query - Basic search

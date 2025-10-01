@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Custom exceptions for GDPR flows
 """
 """

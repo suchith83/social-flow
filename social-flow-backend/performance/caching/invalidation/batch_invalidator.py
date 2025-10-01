@@ -1,4 +1,4 @@
-﻿# batch_invalidator.py
+# batch_invalidator.py
 # Created by Create-Invalidation.ps1
 """
 batch_invalidator.py

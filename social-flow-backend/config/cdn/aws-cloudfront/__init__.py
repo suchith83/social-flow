@@ -1,4 +1,4 @@
-﻿"""
+"""
 # AWS CloudFront package initializer
 """
 # config/cdn/aws-cloudfront/__init__.py

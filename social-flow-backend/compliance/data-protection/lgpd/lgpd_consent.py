@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Consent management engine for LGPD
 """
 # compliance/data-protection/lgpd/lgpd_consent.py

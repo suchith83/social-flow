@@ -1,4 +1,4 @@
-﻿"""Secure Redis connection pool manager."""
+"""Secure Redis connection pool manager."""
 """
 Redis Connection Manager
 - Provides connection pooling and retry logic.

@@ -1,4 +1,4 @@
-﻿"""Compliance logging of all queries and writes."""
+"""Compliance logging of all queries and writes."""
 """
 audit_logger.py
 ---------------

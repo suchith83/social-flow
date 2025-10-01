@@ -1,11 +1,11 @@
-ï»¿"""
+"""
 # LGPD package initializer with metadata
 """
 # compliance/data-protection/lgpd/__init__.py
 """
 LGPD Compliance Package
 -----------------------
-Implements modules to ensure compliance with Brazil's Lei Geral de ProteÃ§Ã£o de Dados (LGPD).
+Implements modules to ensure compliance with Brazil's Lei Geral de Proteção de Dados (LGPD).
 This package provides:
  - Data Subject Rights
  - Consent Management

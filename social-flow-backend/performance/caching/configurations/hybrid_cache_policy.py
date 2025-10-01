@@ -1,4 +1,4 @@
-﻿# hybrid_cache_policy.py
+# hybrid_cache_policy.py
 # Created by Create-Configurations.ps1
 """
 hybrid_cache_policy.py
@@ -35,4 +35,4 @@ class HybridCachePolicy:
 
 
 if __name__ == "__main__":
-    print("🔧 Hybrid Cache Policy:", HybridCachePolicy.summary())
+    print("?? Hybrid Cache Policy:", HybridCachePolicy.summary())

@@ -1,4 +1,4 @@
-﻿"""
+"""
 # High-level orchestration of zones, DNS, firewall, cache
 """
 # config/cdn/cloudflare/cf_manager.py

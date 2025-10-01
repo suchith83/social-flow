@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Consent collection and withdrawal utilities
 """
 # compliance/data-protection/pipeda/pipeda_consent.py

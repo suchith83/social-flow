@@ -1,4 +1,4 @@
-ï»¿# distributed_tracer.py
+# distributed_tracer.py
 # Created by Create-DistributedFiles.ps1
 """
 Distributed tracer lifecycle and helpers.
@@ -35,7 +35,7 @@ except Exception:
     TracerProvider = None
     OTLP_AVAILABLE = False
     OTel_AVAILABLE = False
-    logger.warning("OpenTelemetry SDK not available â€” tracing will be no-op.")
+    logger.warning("OpenTelemetry SDK not available — tracing will be no-op.")
 
 
 _tracer_provider = None
@@ -113,7 +113,7 @@ class DistributedTracer:
             exporter = OTLPSpanExporter(endpoint=self.otlp_endpoint, insecure=DistributedConfig.OTLP_INSECURE)
             _span_processor = BatchSpanProcessor(exporter)
         elif self.exporter_backend == "otlp" and not OTLP_AVAILABLE:
-            logger.warning("OTLP exporter not available (package not installed) â€” falling back to console")
+            logger.warning("OTLP exporter not available (package not installed) — falling back to console")
             exporter = ConsoleSpanExporter()
             _span_processor = BatchSpanProcessor(exporter)
         else:

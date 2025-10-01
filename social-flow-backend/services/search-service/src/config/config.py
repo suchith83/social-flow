@@ -1,1 +1,1 @@
-﻿ES_HOST = 'localhost'
+ES_HOST = 'localhost'

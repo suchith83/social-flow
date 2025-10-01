@@ -1,2 +1,2 @@
-﻿def test_integration():
+def test_integration():
     assert True

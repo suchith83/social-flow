@@ -1,4 +1,4 @@
-﻿"""Manage CockroachDB connection pooling with retries, failover, and TLS."""
+"""Manage CockroachDB connection pooling with retries, failover, and TLS."""
 """
 connection.py
 --------------
@@ -54,12 +54,12 @@ class CockroachDBConnectionPool:
                     database=db_conf["name"],
                     sslmode="require"
                 )
-                logger.info(f"✅ Connected successfully to CockroachDB node {node['host']}")
+                logger.info(f"? Connected successfully to CockroachDB node {node['host']}")
                 return
             except Exception as e:
                 logger.warning(f"Failed to connect to node {node['host']}: {e}")
                 continue
-        raise Exception("❌ All CockroachDB nodes unavailable")
+        raise Exception("? All CockroachDB nodes unavailable")
 
     def get_conn(self):
         """Get a connection from the pool with retry mechanism."""
@@ -73,7 +73,7 @@ class CockroachDBConnectionPool:
                 logger.error(f"Connection attempt {attempt} failed: {e}")
                 time.sleep(delay)
                 delay *= 2
-        raise Exception("❌ Unable to get CockroachDB connection after retries")
+        raise Exception("? Unable to get CockroachDB connection after retries")
 
     def put_conn(self, conn):
         """Return connection to pool."""

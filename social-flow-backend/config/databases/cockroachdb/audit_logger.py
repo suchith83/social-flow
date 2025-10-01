@@ -1,4 +1,4 @@
-﻿"""Ensures compliance logging for all DB transactions."""
+"""Ensures compliance logging for all DB transactions."""
 """
 audit_logger.py
 ---------------

@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Config builders (server blocks, caching, SSL)
 """
 # config/cdn/nginx/nginx_config.py

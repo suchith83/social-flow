@@ -1,4 +1,4 @@
-﻿"""
+"""
 CCPA Compliance Package Initialization
 ======================================
 

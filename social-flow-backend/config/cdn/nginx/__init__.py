@@ -1,4 +1,4 @@
-﻿"""
+"""
 # NGINX package initializer
 """
 # config/cdn/nginx/__init__.py

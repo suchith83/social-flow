@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Logging, audit trails, and DPIA handling
 """
 # compliance/data-protection/lgpd/lgpd_audit.py

@@ -1,4 +1,4 @@
-﻿# # Objective: Automatically detect and classify inappropriate visual content in videos and thumbnails.
+# # Objective: Automatically detect and classify inappropriate visual content in videos and thumbnails.
 
 # # Model Architecture:
 # # - Base Model: ResNet-50 or EfficientNet
@@ -30,7 +30,7 @@ NSFW Detection Model
 
 This module implements an advanced NSFW (Not Safe For Work) image classifier.
 
-⚡ Features:
+? Features:
 - Transfer learning (EfficientNet / Vision Transformer) for accurate classification.
 - Supports GPU acceleration (CUDA / MPS).
 - Modular design for easy retraining or fine-tuning.
@@ -79,7 +79,7 @@ logger = logging.getLogger("NSFW-Detection")
 DEVICE = "cuda" if torch.cuda.is_available() else \
          "mps" if torch.backends.mps.is_available() else "cpu"
 
-logger.info(f"🚀 Using device: {DEVICE}")
+logger.info(f"?? Using device: {DEVICE}")
 
 
 # ============================================================
@@ -118,7 +118,7 @@ class NSFWImageDataset(Dataset):
         try:
             image = Image.open(img_path).convert("RGB")
         except Exception as e:
-            logger.error(f"❌ Error loading {img_path}: {e}")
+            logger.error(f"? Error loading {img_path}: {e}")
             raise e
 
         if self.transform:
@@ -169,10 +169,10 @@ class NSFWDetector:
         self.threshold = threshold
 
         if model_path and os.path.exists(model_path):
-            logger.info(f"📂 Loading model weights from {model_path}")
+            logger.info(f"?? Loading model weights from {model_path}")
             self.model.load_state_dict(torch.load(model_path, map_location=DEVICE))
         else:
-            logger.warning("⚠️ No custom weights found, using pretrained base model.")
+            logger.warning("?? No custom weights found, using pretrained base model.")
 
         self.model.eval()
 
@@ -206,7 +206,7 @@ class NSFWDetector:
             return result
 
         except Exception as e:
-            logger.error(f"❌ Prediction failed: {e}")
+            logger.error(f"? Prediction failed: {e}")
             return {"error": str(e)}
 
     def batch_predict(self, image_paths: List[str], batch_size: int = 8) -> List[Dict[str, Any]]:
@@ -268,4 +268,4 @@ if __name__ == "__main__":
 
     # Print results
     for r in results:
-        logger.info(f"🖼️ {r['file']} → {r['label']} (conf={r['confidence']:.2f})")
+        logger.info(f"??? {r['file']} ? {r['label']} (conf={r['confidence']:.2f})")

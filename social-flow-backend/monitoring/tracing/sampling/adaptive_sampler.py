@@ -1,4 +1,4 @@
-﻿# adaptive_sampler.py
+# adaptive_sampler.py
 # Created by Create-SamplingFiles.ps1
 """
 AdaptiveSampler: adjusts sampling probability dynamically based on observed export throughput.

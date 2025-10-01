@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Opt-out / Do-Not-Sell preference handling
 """
 """

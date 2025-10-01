@@ -1,4 +1,4 @@
-﻿"""Create, ensure, or drop indexes using best practices for background builds."""
+"""Create, ensure, or drop indexes using best practices for background builds."""
 """
 index_manager.py
 ----------------

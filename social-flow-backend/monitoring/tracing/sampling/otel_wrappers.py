@@ -1,4 +1,4 @@
-﻿# otel_wrappers.py
+# otel_wrappers.py
 # Created by Create-SamplingFiles.ps1
 """
 Lightweight wrappers to create OpenTelemetry-compatible samplers.

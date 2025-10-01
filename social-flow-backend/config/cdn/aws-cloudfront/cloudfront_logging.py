@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Access logging, monitoring, metrics
 """
 # config/cdn/aws-cloudfront/cloudfront_logging.py

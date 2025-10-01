@@ -1,4 +1,4 @@
-﻿# exceptions.py
+# exceptions.py
 # Created by Create-Invalidation.ps1
 """Custom exceptions used by the invalidation package."""
 

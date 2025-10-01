@@ -1,4 +1,4 @@
-﻿# invalidation_strategies.py
+# invalidation_strategies.py
 # Created by Create-Invalidation.ps1
 """
 invalidation_strategies.py

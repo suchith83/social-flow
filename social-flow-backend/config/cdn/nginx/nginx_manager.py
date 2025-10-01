@@ -1,4 +1,4 @@
-﻿"""
+"""
 # High-level manager (load configs, reload, test)
 """
 # config/cdn/nginx/nginx_manager.py

@@ -1,4 +1,4 @@
-﻿"""
+"""
 # GDPR package initializer with metadata
 """
 """

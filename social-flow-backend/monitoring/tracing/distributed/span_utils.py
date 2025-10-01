@@ -1,4 +1,4 @@
-﻿# span_utils.py
+# span_utils.py
 # Created by Create-DistributedFiles.ps1
 """
 Utilities for advanced span operations:

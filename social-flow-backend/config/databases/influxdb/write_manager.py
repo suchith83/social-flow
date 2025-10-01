@@ -1,4 +1,4 @@
-﻿"""Efficient data ingestion (batch writes, async writes)."""
+"""Efficient data ingestion (batch writes, async writes)."""
 """
 write_manager.py
 ----------------
@@ -30,9 +30,9 @@ class WriteManager:
             for k, v in tags.items():
                 point = point.tag(k, v)
         self.write_api.write(bucket=self.bucket, org=self.org, record=point)
-        logger.info(f"📊 Point written: {measurement} {fields}")
+        logger.info(f"?? Point written: {measurement} {fields}")
 
     def bulk_write(self, points: list):
         """Bulk write multiple points."""
         self.write_api.write(bucket=self.bucket, org=self.org, record=points)
-        logger.info(f"⚡ Bulk write completed: {len(points)} points")
+        logger.info(f"? Bulk write completed: {len(points)} points")

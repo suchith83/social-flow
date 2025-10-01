@@ -7,7 +7,7 @@ for the Social Flow backend.
 
 import json
 import logging
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool

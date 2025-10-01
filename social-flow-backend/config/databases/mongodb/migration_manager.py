@@ -1,4 +1,4 @@
-﻿"""Safe migrations for schema/indices (mongock-style or Python wrapper)."""
+"""Safe migrations for schema/indices (mongock-style or Python wrapper)."""
 """
 migration_manager.py
 --------------------

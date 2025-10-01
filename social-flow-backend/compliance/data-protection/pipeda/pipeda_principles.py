@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Ten Fair Information Principles under PIPEDA
 """
 # compliance/data-protection/pipeda/pipeda_principles.py

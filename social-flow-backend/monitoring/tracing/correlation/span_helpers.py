@@ -1,4 +1,4 @@
-﻿# span_helpers.py
+# span_helpers.py
 # Created automatically by Create-CorrelationFiles.ps1
 """
 Helpers for creating spans and decorating functions to be traced.

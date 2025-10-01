@@ -1,3 +1,72 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+  // Performance on huge repos
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.venv/**": true,
+    "**/.mypy_cache/**": true,
+    "**/__pycache__/**": true,
+    "**/coverage/**": true,
+    "**/logs/**": true,
+    "**/.turbo/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.venv": true,
+    "**/coverage": true,
+    "**/logs": true,
+    "**/.next": true,
+    "**/.cache": true
+  },
+
+  // Save-time hygiene
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+
+  // Copilot Pro (better flow for repo-wide edits & chat)
+  "github.copilot.chat.codeGeneration.needsConfirmation": false,
+  "github.copilot.inlineSuggest.enable": true,
+
+  // Python (if you have workers/services in Py)
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.testing.pytestEnabled": true,
+  "python.formatting.provider": "black",
+  "ruff.enable": true,
+  "ruff.lint.run": "onType",
+
+  // Node/TypeScript (APIs, gateways)
+  "eslint.format.enable": true,
+  "prettier.useTabs": false,
+  "prettier.singleQuote": true,
+
+  // YAML schemas (K8s, GitHub Actions, Compose)
+  "yaml.validate": true,
+  "yaml.schemas": {
+    "kubernetes": "k8s/**/*.y?(a)ml",
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.y?(a)ml",
+    "https://json.schemastore.org/docker-compose.json": "docker-compose*.y?(a)ml"
+  },
+
+  // OpenAPI/GraphQL quality of life
+  "openapi.showDiagnostics": true,
+  "graphql-config.load.rootDir": "${workspaceFolder}",
+
+  // Docker/Dev Containers
+  "docker.attachShellCommand.linuxContainer": "/bin/sh",
+  "dev.containers.copyGitConfig": true,
+
+  // Markdown/runbooks
+  "markdownlint.config": { "MD013": false }, // line length off for design docs
+
+  // Telemetry (optional)
+  "telemetry.telemetryLevel": "off"
 }

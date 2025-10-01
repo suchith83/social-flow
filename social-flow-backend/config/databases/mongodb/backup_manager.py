@@ -1,4 +1,4 @@
-﻿"""Backup & restore helpers (mongodump/mongorestore orchestration, snapshot hooks)."""
+"""Backup & restore helpers (mongodump/mongorestore orchestration, snapshot hooks)."""
 """
 backup_manager.py
 -----------------
@@ -60,7 +60,7 @@ class BackupManager:
             cmd.append("--oplog")
         logger.info(f"Running mongodump -> {target}")
         subprocess.run(cmd, check=True)
-        logger.info("✅ mongodump finished")
+        logger.info("? mongodump finished")
         return target
 
     def upload_to_s3(self, path: Path):
@@ -75,11 +75,11 @@ class BackupManager:
         cmd = ["aws", "s3", "cp", str(path), self.s3_bucket + "/" + path.name, "--recursive"]
         logger.info(f"Uploading backup to {self.s3_bucket}")
         subprocess.run(cmd, check=True)
-        logger.info("✅ Upload completed")
+        logger.info("? Upload completed")
 
     def restore(self, backup_path: str, drop_existing: bool = False):
         """
-        Restore using mongorestore. Be careful in production — restoring over live DB can be destructive.
+        Restore using mongorestore. Be careful in production � restoring over live DB can be destructive.
         Use --nsInclude/--nsExclude to limit restore scope.
         """
         cmd = ["mongorestore", "--gzip", "--uri", MongoConnectionManager()._build_uri(), str(backup_path)]
@@ -87,7 +87,7 @@ class BackupManager:
             cmd.insert(1, "--drop")
         logger.info(f"Running mongorestore from {backup_path}")
         subprocess.run(cmd, check=True)
-        logger.info("✅ Restore completed")
+        logger.info("? Restore completed")
 
     def cleanup_old_backups(self):
         cutoff = datetime.utcnow() - timedelta(days=self.retention_days)

@@ -1,2 +1,2 @@
-﻿def test_rec():
+def test_rec():
     assert True

@@ -1,4 +1,4 @@
-﻿# Objective: Deep learning model for recommendations.
+# Objective: Deep learning model for recommendations.
 
 class DeepLearningModel:
     def __init__(self):

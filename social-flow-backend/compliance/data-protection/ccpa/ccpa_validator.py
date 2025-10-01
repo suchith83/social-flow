@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Validate CCPA requests and compliance rules
 """
 """

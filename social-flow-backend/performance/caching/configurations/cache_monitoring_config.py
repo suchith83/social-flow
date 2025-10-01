@@ -1,4 +1,4 @@
-﻿# cache_monitoring_config.py
+# cache_monitoring_config.py
 # Created by Create-Configurations.ps1
 """
 cache_monitoring_config.py
@@ -32,4 +32,4 @@ class CacheMonitoringConfig:
 
 
 if __name__ == "__main__":
-    print("🔧 Cache Monitoring Config:", CacheMonitoringConfig.summary())
+    print("?? Cache Monitoring Config:", CacheMonitoringConfig.summary())

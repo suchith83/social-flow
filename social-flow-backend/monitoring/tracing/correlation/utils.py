@@ -1,4 +1,4 @@
-﻿# utils.py
+# utils.py
 # Created automatically by Create-CorrelationFiles.ps1
 """
 Utility helpers for trace correlation and logging integration.

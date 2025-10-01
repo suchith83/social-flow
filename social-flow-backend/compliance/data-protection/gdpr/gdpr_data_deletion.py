@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Data erasure (Right to be Forgotten) handlers
 """
 """

@@ -1,2 +1,2 @@
-﻿def test_search():
+def test_search():
     assert True

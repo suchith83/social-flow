@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Access logs, analytics, monitoring
 """
 # config/cdn/cloudflare/cf_logging.py

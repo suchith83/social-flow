@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Cloudflare package initializer
 """
 # config/cdn/cloudflare/__init__.py

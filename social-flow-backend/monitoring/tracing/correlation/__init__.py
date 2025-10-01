@@ -1,4 +1,4 @@
-﻿# __init__.py
+# __init__.py
 # Created automatically by Create-CorrelationFiles.ps1
 """
 Tracing correlation utilities.

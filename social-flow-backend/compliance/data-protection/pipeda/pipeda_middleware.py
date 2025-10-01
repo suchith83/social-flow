@@ -1,4 +1,4 @@
-﻿"""
+"""
 # API middleware for PIPEDA enforcement
 """
 # compliance/data-protection/pipeda/pipeda_middleware.py

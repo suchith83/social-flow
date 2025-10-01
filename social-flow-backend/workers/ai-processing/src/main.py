@@ -1,2 +1,2 @@
-﻿print('AI Processing Worker')
+print('AI Processing Worker')
 # TODO: Consume from Kafka

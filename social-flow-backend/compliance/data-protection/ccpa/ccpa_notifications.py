@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Send notifications about user rights
 """
 """

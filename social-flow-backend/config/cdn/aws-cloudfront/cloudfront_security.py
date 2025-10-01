@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Security (WAF, HTTPS, geo-restrictions, signed URLs)
 """
 # config/cdn/aws-cloudfront/cloudfront_security.py

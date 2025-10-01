@@ -1,4 +1,4 @@
-﻿"""
+"""
 # High-level orchestration of CloudFront distributions
 """
 # config/cdn/aws-cloudfront/cloudfront_manager.py

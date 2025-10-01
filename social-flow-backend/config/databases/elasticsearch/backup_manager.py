@@ -1,4 +1,4 @@
-﻿"""Snapshots & restores compatible with S3/GCS/Azure."""
+"""Snapshots & restores compatible with S3/GCS/Azure."""
 """
 backup_manager.py
 -----------------
@@ -23,7 +23,7 @@ class BackupManager:
             body={"type": repo_type, "settings": settings},
             verify=True
         )
-        logger.info(f"✅ Repository {repo_name} registered.")
+        logger.info(f"? Repository {repo_name} registered.")
 
     def create_snapshot(self, repo_name: str, snapshot_name: str, indices="*"):
         """Create snapshot."""
@@ -32,9 +32,9 @@ class BackupManager:
             snapshot=snapshot_name,
             body={"indices": indices, "ignore_unavailable": True, "include_global_state": True}
         )
-        logger.info(f"📦 Snapshot {snapshot_name} created in {repo_name}")
+        logger.info(f"?? Snapshot {snapshot_name} created in {repo_name}")
 
     def restore_snapshot(self, repo_name: str, snapshot_name: str):
         """Restore snapshot."""
         self.client.snapshot.restore(repository=repo_name, snapshot=snapshot_name)
-        logger.info(f"🔄 Restored snapshot {snapshot_name} from {repo_name}")
+        logger.info(f"?? Restored snapshot {snapshot_name} from {repo_name}")

@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Policy definitions and obligations for GDPR
 """
 """

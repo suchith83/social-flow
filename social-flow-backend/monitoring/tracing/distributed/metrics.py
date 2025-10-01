@@ -1,4 +1,4 @@
-﻿# metrics.py
+# metrics.py
 # Created by Create-DistributedFiles.ps1
 """
 Lightweight tracing-related metrics to observe tracing health (span creation, exporter errors).

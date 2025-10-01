@@ -1,4 +1,4 @@
-﻿"""Audit logging for reads/writes with structured logs."""
+"""Audit logging for reads/writes with structured logs."""
 """
 audit_logger.py
 ---------------

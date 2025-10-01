@@ -1,4 +1,4 @@
-﻿"""Health checks, shard status, retention policy monitoring."""
+"""Health checks, shard status, retention policy monitoring."""
 """
 monitor.py
 ----------

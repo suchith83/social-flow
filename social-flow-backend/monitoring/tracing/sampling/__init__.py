@@ -1,4 +1,4 @@
-﻿# __init__.py
+# __init__.py
 # Created by Create-SamplingFiles.ps1
 """
 Tracing sampling strategies package.

@@ -1,4 +1,4 @@
-﻿# redis_config.py
+# redis_config.py
 # Created by Create-Configurations.ps1
 """
 redis_config.py
@@ -48,4 +48,4 @@ class RedisConfig:
 
 
 if __name__ == "__main__":
-    print("🔧 Redis Config:", RedisConfig.summary())
+    print("?? Redis Config:", RedisConfig.summary())

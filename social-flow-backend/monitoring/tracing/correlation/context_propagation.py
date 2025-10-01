@@ -1,4 +1,4 @@
-﻿# context_propagation.py
+# context_propagation.py
 # Created automatically by Create-CorrelationFiles.ps1
 """
 Context propagation helpers.

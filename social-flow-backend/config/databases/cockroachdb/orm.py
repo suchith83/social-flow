@@ -1,4 +1,4 @@
-﻿"""SQLAlchemy ORM setup with CockroachDB dialect."""
+"""SQLAlchemy ORM setup with CockroachDB dialect."""
 """
 orm.py
 ------

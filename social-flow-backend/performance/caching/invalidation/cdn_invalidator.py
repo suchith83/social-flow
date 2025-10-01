@@ -1,4 +1,4 @@
-﻿# cdn_invalidator.py
+# cdn_invalidator.py
 # Created by Create-Invalidation.ps1
 """
 cdn_invalidator.py

@@ -1,4 +1,4 @@
-﻿# baggage_utils.py
+# baggage_utils.py
 # Created by Create-DistributedFiles.ps1
 """
 Baggage helpers for lightweight, low-cardinality key:value propagation across services.

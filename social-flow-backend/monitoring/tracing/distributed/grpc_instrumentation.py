@@ -1,4 +1,4 @@
-﻿# grpc_instrumentation.py
+# grpc_instrumentation.py
 # Created by Create-DistributedFiles.ps1
 """
 gRPC interceptors for tracing.

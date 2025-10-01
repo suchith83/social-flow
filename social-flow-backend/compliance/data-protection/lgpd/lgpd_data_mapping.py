@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Data inventory & lineage tracking
 """
 # compliance/data-protection/lgpd/lgpd_data_mapping.py

@@ -40,43 +40,153 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
-  # Celery worker for background tasks
-  celery:
+  # Celery worker for video processing (high CPU/memory)
+  celery-video:
     build: .
-    command: celery -A app.workers.celery worker --loglevel=info
+    command: celery -A app.workers.celery_app worker --loglevel=info --queues=video_processing --concurrency=2
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/social_flow
       - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - SECRET_KEY=your-secret-key-here
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - AWS_MEDIACONVERT_ROLE_ARN=${AWS_MEDIACONVERT_ROLE_ARN}
+      - AWS_MEDIACONVERT_QUEUE_ARN=${AWS_MEDIACONVERT_QUEUE_ARN}
+      - AWS_CLOUDFRONT_DOMAIN=${AWS_CLOUDFRONT_DOMAIN}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+    restart: unless-stopped
+
+  # Celery worker for notifications (high throughput)
+  celery-notifications:
+    build: .
+    command: celery -A app.workers.celery_app worker --loglevel=info --queues=notifications --concurrency=10
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/social_flow
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
       - SECRET_KEY=your-secret-key-here
     depends_on:
       - db
       - redis
     volumes:
       - ./logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+  # Celery worker for AI processing
+  celery-ai:
+    build: .
+    command: celery -A app.workers.celery_app worker --loglevel=info --queues=ai_processing --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/social_flow
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - SECRET_KEY=your-secret-key-here
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+    restart: unless-stopped
+
+  # Celery worker for analytics
+  celery-analytics:
+    build: .
+    command: celery -A app.workers.celery_app worker --loglevel=info --queues=analytics_processing --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/social_flow
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - SECRET_KEY=your-secret-key-here
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+  # Celery worker for email
+  celery-email:
+    build: .
+    command: celery -A app.workers.celery_app worker --loglevel=info --queues=email --concurrency=5
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/social_flow
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - SECRET_KEY=your-secret-key-here
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     restart: unless-stopped
 
   # Celery beat for scheduled tasks
   celery-beat:
     build: .
-    command: celery -A app.workers.celery beat --loglevel=info
+    command: celery -A app.workers.celery_app beat --loglevel=info --schedule=/tmp/celerybeat-schedule
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/social_flow
       - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
       - SECRET_KEY=your-secret-key-here
     depends_on:
       - db
       - redis
     volumes:
       - ./logs:/app/logs
+      - celery_beat_data:/tmp
     restart: unless-stopped
 
   # Flower for monitoring Celery
   flower:
     build: .
-    command: celery -A app.workers.celery flower --port=5555
+    command: celery -A app.workers.celery_app flower --port=5555 --broker=redis://redis:6379/1
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/social_flow
       - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
       - SECRET_KEY=your-secret-key-here
     depends_on:
       - db
@@ -88,3 +198,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  celery_beat_data:

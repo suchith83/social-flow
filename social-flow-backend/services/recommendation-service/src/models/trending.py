@@ -1,4 +1,4 @@
-﻿# Objective: Trending model.
+# Objective: Trending model.
 
 class TrendingModel:
     def get_trending_videos(self):

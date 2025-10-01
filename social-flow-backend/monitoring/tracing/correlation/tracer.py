@@ -1,4 +1,4 @@
-﻿# tracer.py
+# tracer.py
 # Created automatically by Create-CorrelationFiles.ps1
 """
 Tracer setup and lifecycle helpers.
@@ -7,7 +7,7 @@ Uses OpenTelemetry SDK (if available). This file creates the tracer provider,
 applies resource (service.name), configures sampler and exporters, and exposes
 get_tracer to get named tracers consistently.
 
-Note: This module is defensive — if OpenTelemetry dependencies are not present
+Note: This module is defensive � if OpenTelemetry dependencies are not present
 it will provide no-op fallbacks so importing modules doesn't crash tests.
 """
 

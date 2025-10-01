@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Compliance logging and breach reporting
 """
 # compliance/data-protection/pipeda/pipeda_audit.py

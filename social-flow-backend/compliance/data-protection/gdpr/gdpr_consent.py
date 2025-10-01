@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Consent management utilities
 """
 """

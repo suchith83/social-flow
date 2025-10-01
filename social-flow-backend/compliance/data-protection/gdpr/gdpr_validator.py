@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Validators for GDPR compliance checks
 """
 """

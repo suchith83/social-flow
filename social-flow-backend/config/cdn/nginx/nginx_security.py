@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Security rules (rate limiting, headers, WAF integration)
 """
 # config/cdn/nginx/nginx_security.py

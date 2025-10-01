@@ -1,4 +1,4 @@
-﻿# priority_sampler.py
+# priority_sampler.py
 # Created by Create-SamplingFiles.ps1
 """
 PrioritySampler: a lightweight wrapper that force-samples spans when attributes indicate high priority.

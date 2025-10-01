@@ -1,4 +1,4 @@
-﻿# Objective: Predict viral potential of videos using machine learning models.
+# Objective: Predict viral potential of videos using machine learning models.
 
 # Input Cases:
 # - Video metadata (title, description, tags)

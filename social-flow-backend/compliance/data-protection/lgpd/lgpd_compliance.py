@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Compliance checker, risk scoring, and audits
 """
 # compliance/data-protection/lgpd/lgpd_compliance.py

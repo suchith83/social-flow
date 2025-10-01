@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Access, correction, and complaint handling
 """
 # compliance/data-protection/pipeda/pipeda_rights.py

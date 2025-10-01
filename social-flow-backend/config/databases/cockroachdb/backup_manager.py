@@ -1,4 +1,4 @@
-﻿"""Automated incremental backups & restore using CockroachDB native features."""
+"""Automated incremental backups & restore using CockroachDB native features."""
 """
 backup_manager.py
 -----------------
@@ -32,7 +32,7 @@ def run_backup():
     cur = conn.cursor()
     backup_path = f"s3://cockroach-backups/{conf['name']}/{datetime.date.today()}"
     cur.execute(f"BACKUP TO '{backup_path}' WITH revision_history;")
-    print(f"✅ Backup completed: {backup_path}")
+    print(f"? Backup completed: {backup_path}")
     conn.commit()
     cur.close()
     conn.close()

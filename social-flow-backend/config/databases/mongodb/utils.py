@@ -1,4 +1,4 @@
-﻿"""Helper utilities: connection diagnostics, safe reads, fan-out helpers, ID utilities."""
+"""Helper utilities: connection diagnostics, safe reads, fan-out helpers, ID utilities."""
 """
 utils.py
 --------

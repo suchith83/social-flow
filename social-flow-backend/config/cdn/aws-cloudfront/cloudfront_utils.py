@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Common helpers (ARN utils, ID generation)
 """
 # config/cdn/aws-cloudfront/cloudfront_utils.py

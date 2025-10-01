@@ -1,4 +1,4 @@
-﻿# redis_invalidator.py
+# redis_invalidator.py
 # Created by Create-Invalidation.ps1
 """
 redis_invalidator.py

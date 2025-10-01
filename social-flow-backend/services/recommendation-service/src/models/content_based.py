@@ -1,4 +1,4 @@
-﻿# Objective: Content-based filtering using embeddings.
+# Objective: Content-based filtering using embeddings.
 
 class ContentBasedModel:
     def __init__(self):

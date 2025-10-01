@@ -1,4 +1,4 @@
-﻿# cdn_config.py
+# cdn_config.py
 # Created by Create-Configurations.ps1
 """
 cdn_config.py
@@ -32,4 +32,4 @@ class CDNConfig:
 
 
 if __name__ == "__main__":
-    print("🔧 CDN Config:", CDNConfig.summary())
+    print("?? CDN Config:", CDNConfig.summary())

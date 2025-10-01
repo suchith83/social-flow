@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Common helpers (validation, process control)
 """
 # config/cdn/nginx/nginx_utils.py

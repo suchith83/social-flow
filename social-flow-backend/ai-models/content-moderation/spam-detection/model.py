@@ -1,4 +1,4 @@
-﻿# class SpamDetectionModel:
+# class SpamDetectionModel:
 #     def detect(self, text):
 #         # TODO: Detect spam
 #         return {'class': 'NotSpam', 'confidence': 0.95}
@@ -626,8 +626,8 @@ class SpamDetectorService:
         """
         Quick rule-based shortcuts to immediately label or boost probability without invoking heavy model.
         Examples:
-         - Known spammy tokens / blacklisted domains → high confidence spam
-         - All-caps short messages with many repeats → likely spam
+         - Known spammy tokens / blacklisted domains ? high confidence spam
+         - All-caps short messages with many repeats ? likely spam
         Returns None if no rule applies.
         """
         # blacklist tokens (could be loaded from config)

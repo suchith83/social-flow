@@ -1,4 +1,4 @@
-﻿"""Cluster health, node stats, shard allocation monitoring."""
+"""Cluster health, node stats, shard allocation monitoring."""
 """
 monitor.py
 ----------

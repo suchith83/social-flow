@@ -1,4 +1,4 @@
-﻿"""Handles schema migrations (Alembic + CockroachDB)."""
+"""Handles schema migrations (Alembic + CockroachDB)."""
 """
 migration_manager.py
 ---------------------

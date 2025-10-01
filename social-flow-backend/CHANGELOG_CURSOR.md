@@ -15,10 +15,29 @@ This changelog documents all changes made during the comprehensive refactoring o
 - **New**: Unified PostgreSQL schema with proper relationships
 - **Rationale**: Create a normalized, relational database design
 
-### 3. **Authentication System Overhaul**
-- **Old**: No unified authentication system
-- **New**: JWT-based authentication with refresh tokens, OAuth2, and social login
-- **Rationale**: Implement secure, scalable authentication
+### 3. **Top-Level Module Restructure (2025-10-01)**
+- **Old**: Modules under `app/modules/`
+- **New**: Modules moved to top-level `app/` directories: auth/, users/, videos/, posts/, ads/, payments/, ml/, notifications/, analytics/, live/
+- **Rationale**: Simplify import paths and improve code organization
+- **Changes**:
+  - Moved `app/modules/auth/` → `app/auth/`
+  - Moved `app/modules/users/` → `app/users/`
+  - Moved `app/modules/videos/` → `app/videos/`
+  - Moved `app/modules/posts/` → `app/posts/`
+  - Moved `app/modules/ads/` → `app/ads/`
+  - Moved `app/modules/payments/` → `app/payments/`
+  - Moved `app/modules/ml/` → `app/ml/`
+  - Moved `app/modules/notifications/` → `app/notifications/`
+  - Moved `app/modules/analytics/` → `app/analytics/`
+  - Moved `app/modules/live/` → `app/live/`
+  - Removed empty `app/modules/` directory
+  - Renamed `common/` → `shared/`
+
+### 4. **Import Path Updates (2025-10-01)**
+- **Changes**: Updated all import statements from `from app.modules.*` to `from app.*`
+- **Files Updated**: All Python files recursively updated
+- **Tools Used**: PowerShell script to replace import patterns
+- **Verification**: Import paths now match new directory structure
 
 ## File Changes
 

@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Common helpers (validators, crypto, localization)
 """
 # compliance/data-protection/lgpd/lgpd_utils.py

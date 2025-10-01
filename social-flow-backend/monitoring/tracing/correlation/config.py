@@ -1,4 +1,4 @@
-﻿# config.py
+# config.py
 # Created automatically by Create-CorrelationFiles.ps1
 """
 Configuration for tracing/correlation.

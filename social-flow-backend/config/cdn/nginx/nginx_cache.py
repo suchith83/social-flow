@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Cache policies & purging
 """
 # config/cdn/nginx/nginx_cache.py

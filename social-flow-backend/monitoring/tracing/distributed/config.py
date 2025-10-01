@@ -1,4 +1,4 @@
-﻿# config.py
+# config.py
 # Created by Create-DistributedFiles.ps1
 """
 Configuration for distributed tracing module.

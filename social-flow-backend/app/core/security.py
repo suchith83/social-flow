@@ -6,7 +6,7 @@ JWT token creation and validation, and other security functions.
 """
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext

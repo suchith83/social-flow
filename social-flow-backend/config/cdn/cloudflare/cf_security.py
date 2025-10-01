@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Security (firewall rules, WAF, DDoS, bot protection)
 """
 # config/cdn/cloudflare/cf_security.py

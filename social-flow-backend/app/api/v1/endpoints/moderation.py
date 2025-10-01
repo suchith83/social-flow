@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
-from app.models.user import User
-from app.api.v1.endpoints.auth import get_current_active_user
+from app.auth.models.user import User
+from app.auth.api.auth import get_current_active_user
 
 router = APIRouter()
 

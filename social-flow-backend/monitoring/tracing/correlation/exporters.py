@@ -1,4 +1,4 @@
-﻿# exporters.py
+# exporters.py
 # Created automatically by Create-CorrelationFiles.ps1
 """
 Exporter initialization helpers.

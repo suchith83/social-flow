@@ -1,4 +1,4 @@
-﻿"""
+"""
 # PIPEDA package initializer with metadata
 """
 # compliance/data-protection/pipeda/__init__.py

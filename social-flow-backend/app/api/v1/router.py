@@ -7,24 +7,23 @@ This module defines the main router that includes all v1 API endpoints.
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
-    auth,
-    users,
-    videos,
-    posts,
-    comments,
-    likes,
-    follows,
-    ads,
-    payments,
-    subscriptions,
-    notifications,
-    analytics,
     search,
     admin,
     moderation,
-    ml,
-    live_streaming,
+    health,
 )
+
+# Import from modules
+from app.auth.api import auth, subscriptions, stripe_connect
+from app.users.api import users, follows
+from app.videos.api import videos
+from app.posts.api import posts, comments, likes
+from app.live.api import live_streaming
+from app.ads.api import ads
+from app.payments.api import payments, stripe_payments, stripe_subscriptions, stripe_webhooks
+from app.notifications.api import notifications
+from app.ml.api import ml
+from app.analytics.api import analytics
 
 api_router = APIRouter()
 
@@ -46,3 +45,12 @@ api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
 api_router.include_router(moderation.router, prefix="/moderation", tags=["moderation"])
 api_router.include_router(ml.router, prefix="/ml", tags=["ml-ai"])
 api_router.include_router(live_streaming.router, prefix="/live", tags=["live-streaming"])
+
+# Stripe Payment Integration
+api_router.include_router(stripe_payments.router, tags=["Payments"])
+api_router.include_router(stripe_subscriptions.router, tags=["Subscriptions"])
+api_router.include_router(stripe_connect.router, tags=["Creator Payouts"])
+api_router.include_router(stripe_webhooks.router, tags=["Webhooks"])
+
+# Health & Monitoring
+api_router.include_router(health.router, tags=["Health"])

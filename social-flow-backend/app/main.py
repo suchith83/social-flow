@@ -5,7 +5,6 @@ This module initializes the FastAPI application with all necessary middleware,
 routers, and configurations for the Social Flow backend.
 """
 
-import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -21,13 +20,6 @@ from app.core.logging import setup_logging
 from app.core.redis import init_redis
 from app.api.v1.router import api_router
 from app.core.exceptions import SocialFlowException
-from app.services.ml_service import ml_service
-from app.services.analytics_service import analytics_service
-from app.services.video_service import video_service
-from app.services.storage_service import storage_service
-from app.services.ads_service import ads_service
-from app.services.notification_service import notification_service
-from app.services.live_streaming_service import live_streaming_service
 
 
 @asynccontextmanager

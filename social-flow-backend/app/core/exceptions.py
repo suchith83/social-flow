@@ -181,6 +181,42 @@ class VideoProcessingError(SocialFlowException):
         )
 
 
+class VideoServiceError(SocialFlowException):
+    """Video service error exception."""
+    
+    def __init__(self, message: str = "Video service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="VIDEO_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
+class LiveStreamingServiceError(SocialFlowException):
+    """Live streaming service error exception."""
+    
+    def __init__(self, message: str = "Live streaming service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="LIVE_STREAMING_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
+class AdsServiceError(SocialFlowException):
+    """Ads service error exception."""
+    
+    def __init__(self, message: str = "Ads service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="ADS_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
 class PaymentError(SocialFlowException):
     """Payment processing error exception."""
     
@@ -193,6 +229,18 @@ class PaymentError(SocialFlowException):
         )
 
 
+class PaymentServiceError(SocialFlowException):
+    """Payment service error exception."""
+    
+    def __init__(self, message: str = "Payment service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="PAYMENT_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
 class NotificationError(SocialFlowException):
     """Notification error exception."""
     
@@ -200,6 +248,42 @@ class NotificationError(SocialFlowException):
         super().__init__(
             message=message,
             error_code="NOTIFICATION_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
+class NotificationServiceError(SocialFlowException):
+    """Notification service error exception."""
+    
+    def __init__(self, message: str = "Notification service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="NOTIFICATION_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
+class AnalyticsServiceError(SocialFlowException):
+    """Analytics service error exception."""
+    
+    def __init__(self, message: str = "Analytics service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="ANALYTICS_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
+class MLServiceError(SocialFlowException):
+    """ML service error exception."""
+    
+    def __init__(self, message: str = "ML service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="ML_SERVICE_ERROR",
             status_code=500,
             details=details,
         )

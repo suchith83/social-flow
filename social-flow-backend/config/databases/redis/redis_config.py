@@ -1,4 +1,4 @@
-﻿"""Configuration loader for Redis settings."""
+"""Configuration loader for Redis settings."""
 """
 Redis Configuration Loader
 - Loads settings from environment variables or AWS Secrets Manager / Vault.

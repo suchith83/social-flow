@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Pseudonymization & anonymization utilities
 """
 # compliance/data-protection/lgpd/lgpd_anonymizer.py
@@ -23,7 +23,7 @@ class LGPDAnonymizer:
                 for k, v in record.items()}
 
     def anonymize(self, record: Dict[str, Any]) -> Dict[str, Any]:
-        """Full anonymization – irreversibly remove PII."""
+        """Full anonymization � irreversibly remove PII."""
         return {k: None if "name" in k or "email" in k else v for k, v in record.items()}
 
     def tokenize(self, value: str) -> str:

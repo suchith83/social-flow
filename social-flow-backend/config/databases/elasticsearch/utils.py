@@ -1,4 +1,4 @@
-﻿"""Helper utilities for debugging and schema validation."""
+"""Helper utilities for debugging and schema validation."""
 """
 utils.py
 --------

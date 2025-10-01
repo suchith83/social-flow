@@ -1,4 +1,4 @@
-﻿# config.py
+# config.py
 # Created by Create-SamplingFiles.ps1
 """
 Configuration for tracing sampling.

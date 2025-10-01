@@ -1,4 +1,4 @@
-﻿"""Helper utilities for database diagnostics and debugging."""
+"""Helper utilities for database diagnostics and debugging."""
 """
 utils.py
 --------

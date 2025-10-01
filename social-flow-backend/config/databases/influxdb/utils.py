@@ -1,4 +1,4 @@
-﻿"""Helper utilities for diagnostics, schema checks, performance testing."""
+"""Helper utilities for diagnostics, schema checks, performance testing."""
 """
 utils.py
 --------

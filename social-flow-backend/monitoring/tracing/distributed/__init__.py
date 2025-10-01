@@ -1,4 +1,4 @@
-﻿# __init__.py
+# __init__.py
 # Created by Create-DistributedFiles.ps1
 """
 Distributed tracing helpers.

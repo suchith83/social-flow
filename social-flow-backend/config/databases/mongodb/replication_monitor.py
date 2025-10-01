@@ -1,9 +1,9 @@
-﻿"""Replica set health, primary/secondary checks, replication lag metrics."""
+"""Replica set health, primary/secondary checks, replication lag metrics."""
 """
 replication_monitor.py
 ----------------------
 Utilities to inspect replica set health, find primary/secondaries, and compute
-replication lag statistics. Intentionally lightweight — integrate into your
+replication lag statistics. Intentionally lightweight � integrate into your
 monitoring system (Prometheus exporters, alerting) as needed.
 
 Provides:

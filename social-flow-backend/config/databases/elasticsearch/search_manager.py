@@ -1,4 +1,4 @@
-﻿"""Advanced search queries: full-text, filters, aggregations."""
+"""Advanced search queries: full-text, filters, aggregations."""
 """
 search_manager.py
 -----------------

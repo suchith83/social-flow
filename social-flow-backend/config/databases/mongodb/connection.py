@@ -1,4 +1,4 @@
-﻿"""Connection pool, TLS, retries, replica-set awareness, async & sync clients."""
+"""Connection pool, TLS, retries, replica-set awareness, async & sync clients."""
 """
 connection.py
 -------------
@@ -93,7 +93,7 @@ class MongoConnectionManager:
 
                 # Force server selection to detect connectivity early
                 self.sync_client.admin.command("ping")
-                logger.info("✅ Synchronous MongoDB client connected successfully")
+                logger.info("? Synchronous MongoDB client connected successfully")
 
                 # Build async client with the same uri and options
                 self.async_client = AsyncIOMotorClient(
@@ -103,7 +103,7 @@ class MongoConnectionManager:
                     socketTimeoutMS=pool.get("socketTimeoutMS"),
                     tls=self.conf.get("tls", False)
                 )
-                logger.info("✅ Async Motor client initialized")
+                logger.info("? Async Motor client initialized")
                 return
             except ServerSelectionTimeoutError as e:
                 logger.warning(f"Server selection timeout on attempt {attempt}: {e}")
@@ -115,7 +115,7 @@ class MongoConnectionManager:
             time.sleep(delay)
             delay *= 2
 
-        raise RuntimeError("❌ Unable to connect to MongoDB cluster after retries")
+        raise RuntimeError("? Unable to connect to MongoDB cluster after retries")
 
     def get_sync_client(self) -> MongoClient:
         if not self.sync_client:

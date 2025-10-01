@@ -1,4 +1,4 @@
-﻿# pubsub_invalidator.py
+# pubsub_invalidator.py
 # Created by Create-Invalidation.ps1
 """
 pubsub_invalidator.py

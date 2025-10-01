@@ -1,4 +1,4 @@
-﻿# Objective: Implement transformer-based collaborative filtering for user-item recommendations.
+# Objective: Implement transformer-based collaborative filtering for user-item recommendations.
 
 # Input Cases:
 # - User interaction history (views, likes, shares)

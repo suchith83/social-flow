@@ -1,4 +1,4 @@
-﻿"""
+"""
 # API middleware for LGPD enforcement
 """
 # compliance/data-protection/lgpd/lgpd_middleware.py

@@ -4,15 +4,14 @@ Search endpoints.
 This module contains all search-related API endpoints.
 """
 
-from typing import Any, List, Optional
+from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.exceptions import SearchServiceError
-from app.models.user import User
-from app.api.v1.endpoints.auth import get_current_active_user
-from app.services.analytics_service import analytics_service
+from app.auth.models.user import User
+from app.auth.api.auth import get_current_active_user
+from app.analytics.services.analytics_service import analytics_service
 
 router = APIRouter()
 
@@ -71,7 +70,7 @@ async def search(
                 "date_ranges": []
             }
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Search failed")
 
 
@@ -121,7 +120,7 @@ async def search_videos(
             "filters": filter_dict,
             "sort": sort
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Video search failed")
 
 
@@ -171,7 +170,7 @@ async def search_users(
             "filters": filter_dict,
             "sort": sort
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="User search failed")
 
 
@@ -194,7 +193,7 @@ async def get_suggestions(
             "suggestions": suggestions,
             "limit": limit
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to get search suggestions")
 
 
@@ -217,7 +216,7 @@ async def get_trending_searches(
             "trending_searches": trending_searches,
             "limit": limit
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to get trending searches")
 
 
@@ -251,7 +250,7 @@ async def record_search_interaction(
             "result_id": result_id,
             "interaction_type": interaction_type
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to record search interaction")
 
 
@@ -279,7 +278,7 @@ async def get_videos_by_hashtag(
             "offset": offset,
             "sort": sort
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to get videos by hashtag")
 
 
@@ -300,7 +299,7 @@ async def get_trending_hashtags(
             "trending_hashtags": [],
             "limit": limit
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to get trending hashtags")
 
 
@@ -321,7 +320,7 @@ async def get_related_hashtags(
             "related_hashtags": [],
             "limit": limit
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to get related hashtags")
 
 
@@ -348,5 +347,5 @@ async def get_hashtag_analytics(
                 "engagement_metrics": {}
             }
         }
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to get hashtag analytics")

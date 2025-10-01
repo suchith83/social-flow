@@ -1,4 +1,4 @@
-﻿"""
+"""
 # Logging management & log parsing
 """
 # config/cdn/nginx/nginx_logging.py

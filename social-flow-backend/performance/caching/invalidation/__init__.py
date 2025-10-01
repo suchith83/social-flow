@@ -1,4 +1,4 @@
-﻿# __init__.py
+# __init__.py
 # Created by Create-Invalidation.ps1
 """
 performance.caching.invalidation

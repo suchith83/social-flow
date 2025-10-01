@@ -1,4 +1,4 @@
-﻿# sampler.py
+# sampler.py
 # Created automatically by Create-CorrelationFiles.ps1
 """
 Custom sampler helpers and simple wrappers for OpenTelemetry samplers.

@@ -1,4 +1,4 @@
-﻿"""High-level caching utilities using Redis."""
+"""High-level caching utilities using Redis."""
 """
 Redis Cache Abstraction
 - Provides high-level cache operations (JSON serialization, TTL, compression).
