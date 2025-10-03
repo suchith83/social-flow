@@ -75,8 +75,6 @@ async def readiness_check(
     if not redis_healthy:
         all_healthy = False
     
-    status_code = status.HTTP_200_OK if all_healthy else status.HTTP_503_SERVICE_UNAVAILABLE
-    
     return {
         "status": "ready" if all_healthy else "not_ready",
         "checks": checks,
@@ -134,7 +132,9 @@ async def detailed_health_check(
     all_healthy = True
     
     for name, result in zip(check_names, results):
-        if isinstance(result, Exception):
+        # asyncio.gather(return_exceptions=True) can return BaseException instances
+        # (e.g., CancelledError, SystemExit). Treat all BaseException as errors.
+        if isinstance(result, BaseException):
             checks[name] = {
                 "status": "error",
                 "error": str(result),
@@ -292,15 +292,15 @@ async def check_s3() -> tuple[bool, Dict[str, Any]]:
 async def check_ml_models() -> tuple[bool, Dict[str, Any]]:
     """Check ML model availability."""
     try:
-        from app.services.ml_service import ml_service
+        from app.ml.services.ml_service import ml_service
         
         # Get model info
-        model_info = await ml_service.get_model_info()
+        model_info = await ml_service.get_models_status()
         
         return True, {
             "status": "healthy",
             "loaded_models": model_info.get("loaded_models", []),
-            "model_count": model_info.get("model_count", 0),
+            "model_count": model_info.get("counts", {}).get("models", 0),
         }
         
     except Exception as e:

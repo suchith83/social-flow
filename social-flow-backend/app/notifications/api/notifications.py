@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.exceptions import NotificationServiceError
-from app.auth.models.user import User
+from app.models.user import User
 from app.auth.api.auth import get_current_active_user
 from app.notifications.services.notification_service import notification_service
 
@@ -137,3 +137,4 @@ async def get_notification_stats(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to get notification stats")
+

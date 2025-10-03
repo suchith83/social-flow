@@ -1,19 +1,32 @@
 """
 Search endpoints.
 
-This module contains all search-related API endpoints.
+This module contains all search-related API endpoints with smart search
+and recommendation capabilities.
 """
 
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.auth.models.user import User
+from app.models.user import User
 from app.auth.api.auth import get_current_active_user
 from app.analytics.services.analytics_service import analytics_service
+from app.services.search_service import SearchService
+from app.services.recommendation_service import RecommendationService
 
 router = APIRouter()
+
+
+def get_search_service(db: AsyncSession = Depends(get_db)) -> SearchService:
+    """Dependency to get search service."""
+    return SearchService(db)
+
+
+def get_recommendation_service(db: AsyncSession = Depends(get_db)) -> RecommendationService:
+    """Dependency to get recommendation service."""
+    return RecommendationService(db)
 
 
 @router.get("/")
@@ -25,9 +38,18 @@ async def search(
     filters: Optional[str] = Query(None),
     sort: str = Query("relevance"),
     current_user: Optional[User] = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_db),
+    search_service: SearchService = Depends(get_search_service),
 ) -> Any:
-    """Search for content with advanced filtering and sorting."""
+    """
+    Unified search across all content types with smart ranking.
+    
+    - **q**: Search query
+    - **content_type**: Type of content (all, videos, posts, users)
+    - **limit**: Maximum results per type
+    - **offset**: Pagination offset
+    - **filters**: JSON string with additional filters
+    - **sort**: Sort order (relevance, recent, popular)
+    """
     try:
         # Parse filters if provided
         filter_dict = {}
@@ -37,9 +59,6 @@ async def search(
                 filter_dict = json.loads(filters)
             except json.JSONDecodeError:
                 pass
-        
-        # TODO: Implement search functionality with Elasticsearch
-        # This would typically involve querying Elasticsearch or similar search engine
         
         # Track search analytics
         if current_user:
@@ -54,24 +73,42 @@ async def search(
                 }
             )
         
-        return {
-            "query": q,
-            "content_type": content_type,
-            "results": [],
-            "total": 0,
-            "limit": limit,
-            "offset": offset,
-            "filters": filter_dict,
-            "sort": sort,
-            "facets": {
-                "categories": [],
-                "tags": [],
-                "users": [],
-                "date_ranges": []
-            }
-        }
-    except Exception:
-        raise HTTPException(status_code=500, detail="Search failed")
+        # Route to appropriate search
+        if content_type == "videos":
+            result = await search_service.search_videos(
+                query=q,
+                limit=limit,
+                offset=offset,
+                filters=filter_dict,
+                sort_by=sort,
+            )
+        elif content_type == "posts":
+            result = await search_service.search_posts(
+                query=q,
+                limit=limit,
+                offset=offset,
+                filters=filter_dict,
+                sort_by=sort,
+            )
+        elif content_type == "users":
+            result = await search_service.search_users(
+                query=q,
+                limit=limit,
+                offset=offset,
+            )
+        else:  # all
+            result = await search_service.search_all(
+                query=q,
+                user_id=current_user.id if current_user else None,
+                limit=limit,
+                offset=offset,
+                filters=filter_dict,
+            )
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
 
 
 @router.get("/videos")
@@ -82,11 +119,19 @@ async def search_videos(
     filters: Optional[str] = Query(None),
     sort: str = Query("relevance"),
     current_user: Optional[User] = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_db),
+    search_service: SearchService = Depends(get_search_service),
 ) -> Any:
-    """Search for videos specifically."""
+    """
+    Search for videos with smart ranking.
+    
+    - **q**: Search query
+    - **limit**: Maximum results
+    - **offset**: Pagination offset
+    - **filters**: JSON filters (duration, date_range, etc.)
+    - **sort**: Sort order (relevance, recent, views, engagement)
+    """
     try:
-        # Parse filters if provided
+        # Parse filters
         filter_dict = {}
         if filters:
             import json
@@ -95,10 +140,7 @@ async def search_videos(
             except json.JSONDecodeError:
                 pass
         
-        # TODO: Implement video search functionality
-        # This would search specifically in video content
-        
-        # Track search analytics
+        # Track analytics
         if current_user:
             await analytics_service.track_event(
                 event_type="video_search",
@@ -110,18 +152,18 @@ async def search_videos(
                 }
             )
         
-        return {
-            "query": q,
-            "content_type": "videos",
-            "results": [],
-            "total": 0,
-            "limit": limit,
-            "offset": offset,
-            "filters": filter_dict,
-            "sort": sort
-        }
-    except Exception:
-        raise HTTPException(status_code=500, detail="Video search failed")
+        result = await search_service.search_videos(
+            query=q,
+            limit=limit,
+            offset=offset,
+            filters=filter_dict,
+            sort_by=sort,
+        )
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Video search failed: {str(e)}")
 
 
 @router.get("/users")
@@ -132,46 +174,36 @@ async def search_users(
     filters: Optional[str] = Query(None),
     sort: str = Query("relevance"),
     current_user: Optional[User] = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_db),
+    search_service: SearchService = Depends(get_search_service),
 ) -> Any:
-    """Search for users specifically."""
+    """
+    Search for users by username or email.
+    
+    - **q**: Search query
+    - **limit**: Maximum results
+    - **offset**: Pagination offset
+    """
     try:
-        # Parse filters if provided
-        filter_dict = {}
-        if filters:
-            import json
-            try:
-                filter_dict = json.loads(filters)
-            except json.JSONDecodeError:
-                pass
-        
-        # TODO: Implement user search functionality
-        # This would search specifically in user profiles
-        
-        # Track search analytics
+        # Track analytics
         if current_user:
             await analytics_service.track_event(
                 event_type="user_search",
                 user_id=str(current_user.id),
                 data={
                     "query": q,
-                    "filters": filter_dict,
-                    "sort": sort
                 }
             )
         
-        return {
-            "query": q,
-            "content_type": "users",
-            "results": [],
-            "total": 0,
-            "limit": limit,
-            "offset": offset,
-            "filters": filter_dict,
-            "sort": sort
-        }
-    except Exception:
-        raise HTTPException(status_code=500, detail="User search failed")
+        result = await search_service.search_users(
+            query=q,
+            limit=limit,
+            offset=offset,
+        )
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"User search failed: {str(e)}")
 
 
 @router.get("/suggestions")
@@ -179,22 +211,25 @@ async def get_suggestions(
     q: str,
     limit: int = Query(10, ge=1, le=50),
     current_user: Optional[User] = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_db),
+    search_service: SearchService = Depends(get_search_service),
 ) -> Any:
-    """Get search suggestions and autocomplete."""
+    """
+    Get search suggestions and autocomplete.
+    
+    - **q**: Partial search query
+    - **limit**: Maximum suggestions
+    """
     try:
-        # TODO: Implement autocomplete functionality
-        # This would provide search suggestions based on partial query
+        result = await search_service.get_suggestions(
+            query=q,
+            limit=limit,
+            user_id=current_user.id if current_user else None,
+        )
         
-        suggestions = []
+        return result
         
-        return {
-            "query": q,
-            "suggestions": suggestions,
-            "limit": limit
-        }
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to get search suggestions")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get suggestions: {str(e)}")
 
 
 @router.get("/trending")
@@ -202,22 +237,24 @@ async def get_trending_searches(
     time_window: str = Query("24h"),
     limit: int = Query(20, ge=1, le=100),
     current_user: Optional[User] = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_db),
+    search_service: SearchService = Depends(get_search_service),
 ) -> Any:
-    """Get trending search queries."""
+    """
+    Get trending search queries.
+    
+    - **time_window**: Time window (1h, 24h, 7d)
+    - **limit**: Maximum results
+    """
     try:
-        # TODO: Implement trending searches functionality
-        # This would analyze search patterns over time
+        result = await search_service.get_trending_searches(
+            limit=limit,
+            time_window=time_window,
+        )
         
-        trending_searches = []
+        return result
         
-        return {
-            "time_window": time_window,
-            "trending_searches": trending_searches,
-            "limit": limit
-        }
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to get trending searches")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get trending searches: {str(e)}")
 
 
 @router.post("/interaction")
@@ -329,12 +366,11 @@ async def get_hashtag_analytics(
     hashtag: str,
     time_window: str = Query("7d"),
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_db),
+    search_service: SearchService = Depends(get_search_service),
 ) -> Any:
     """Get hashtag analytics and performance metrics."""
     try:
-        # TODO: Implement hashtag analytics functionality
-        # This would provide detailed metrics about hashtag performance
+        # TODO: Implement detailed hashtag analytics
         
         return {
             "hashtag": hashtag,
@@ -347,5 +383,117 @@ async def get_hashtag_analytics(
                 "engagement_metrics": {}
             }
         }
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to get hashtag analytics")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get hashtag analytics: {str(e)}")
+
+
+# Recommendation Endpoints
+
+@router.get("/recommendations/videos")
+async def get_video_recommendations(
+    limit: int = Query(20, ge=1, le=100),
+    algorithm: str = Query("hybrid", pattern="^(hybrid|trending|collaborative|content_based)$"),
+    current_user: Optional[User] = Depends(get_current_active_user),
+    recommendation_service: RecommendationService = Depends(get_recommendation_service),
+) -> Any:
+    """
+    Get personalized video recommendations.
+    
+    - **limit**: Number of recommendations
+    - **algorithm**: Algorithm to use
+        - `hybrid`: Combines multiple signals (default)
+        - `trending`: Popular videos now
+        - `collaborative`: Based on similar users
+        - `content_based`: Based on viewing history
+    """
+    try:
+        result = await recommendation_service.get_video_recommendations(
+            user_id=current_user.id if current_user else None,
+            limit=limit,
+            algorithm=algorithm,
+        )
+        
+        # Track analytics
+        if current_user:
+            await analytics_service.track_event(
+                event_type="video_recommendations_viewed",
+                user_id=str(current_user.id),
+                data={
+                    "algorithm": algorithm,
+                    "count": result["count"],
+                }
+            )
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get video recommendations: {str(e)}")
+
+
+@router.get("/recommendations/feed")
+async def get_feed_recommendations(
+    limit: int = Query(20, ge=1, le=100),
+    algorithm: str = Query("hybrid", pattern="^(hybrid|trending|following)$"),
+    current_user: User = Depends(get_current_active_user),
+    recommendation_service: RecommendationService = Depends(get_recommendation_service),
+) -> Any:
+    """
+    Get personalized feed recommendations (posts).
+    
+    - **limit**: Number of recommendations
+    - **algorithm**: Algorithm to use
+        - `hybrid`: Combines following + trending + discovery
+        - `trending`: Trending posts
+        - `following`: Posts from followed users
+    """
+    try:
+        result = await recommendation_service.get_feed_recommendations(
+            user_id=current_user.id,
+            limit=limit,
+            algorithm=algorithm,
+        )
+        
+        # Track analytics
+        await analytics_service.track_event(
+            event_type="feed_recommendations_viewed",
+            user_id=str(current_user.id),
+            data={
+                "algorithm": algorithm,
+                "count": result["count"],
+            }
+        )
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get feed recommendations: {str(e)}")
+
+
+@router.get("/recommendations/posts")
+async def get_post_recommendations(
+    limit: int = Query(20, ge=1, le=100),
+    algorithm: str = Query("hybrid"),
+    current_user: Optional[User] = Depends(get_current_active_user),
+    recommendation_service: RecommendationService = Depends(get_recommendation_service),
+) -> Any:
+    """
+    Get personalized post recommendations.
+    
+    Alias for /recommendations/feed with flexible authentication.
+    """
+    try:
+        if not current_user:
+            # For anonymous users, return trending posts
+            algorithm = "trending"
+        
+        result = await recommendation_service.get_feed_recommendations(
+            user_id=current_user.id if current_user else None,
+            limit=limit,
+            algorithm=algorithm,
+        )
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get post recommendations: {str(e)}")
+

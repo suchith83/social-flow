@@ -5,6 +5,8 @@ This module contains Celery tasks for notification processing operations.
 """
 
 import logging
+import uuid
+from datetime import datetime
 from typing import Dict, Any, List
 from app.workers.celery_app import celery_app
 
@@ -21,19 +23,19 @@ def send_push_notification_task(self, user_id: str, notification_data: Dict[str,
         self.update_state(state="PROGRESS", meta={"status": "preparing", "progress": 20})
         
         # Prepare notification
-        notification = await self._prepare_push_notification(user_id, notification_data)
+        notification = _prepare_push_notification(user_id, notification_data)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "sending", "progress": 60})
         
         # Send notification
-        result = await self._send_push_notification(notification)
+        result = _send_push_notification(notification)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "storing", "progress": 80})
         
         # Store notification record
-        await self._store_notification_record(user_id, notification_data, result)
+        _store_notification_record(user_id, notification_data, result)
         
         logger.info(f"Push notification sent to user {user_id}")
         
@@ -59,19 +61,19 @@ def send_email_notification_task(self, user_id: str, notification_data: Dict[str
         self.update_state(state="PROGRESS", meta={"status": "preparing", "progress": 20})
         
         # Prepare email
-        email = await self._prepare_email_notification(user_id, notification_data)
+        email = _prepare_email_notification(user_id, notification_data)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "sending", "progress": 60})
         
         # Send email
-        result = await self._send_email_notification(email)
+        result = _send_email_notification(email)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "storing", "progress": 80})
         
         # Store notification record
-        await self._store_notification_record(user_id, notification_data, result)
+        _store_notification_record(user_id, notification_data, result)
         
         logger.info(f"Email notification sent to user {user_id}")
         
@@ -104,13 +106,13 @@ def send_bulk_notifications_task(self, user_ids: List[str], notification_data: D
                 
                 # Send notification based on type
                 if notification_data.get("type") == "push":
-                    await send_push_notification_task.delay(user_id, notification_data)
+                    send_push_notification_task.delay(user_id, notification_data)
                 elif notification_data.get("type") == "email":
-                    await send_email_notification_task.delay(user_id, notification_data)
+                    send_email_notification_task.delay(user_id, notification_data)
                 else:
                     # Send both
-                    await send_push_notification_task.delay(user_id, notification_data)
-                    await send_email_notification_task.delay(user_id, notification_data)
+                    send_push_notification_task.delay(user_id, notification_data)
+                    send_email_notification_task.delay(user_id, notification_data)
                 
                 sent_count += 1
                 
@@ -142,7 +144,7 @@ def process_notification_queue_task(self) -> Dict[str, Any]:
         self.update_state(state="PROGRESS", meta={"status": "fetching_queue", "progress": 20})
         
         # Get pending notifications
-        pending_notifications = await self._get_pending_notifications()
+        pending_notifications = _get_pending_notifications()
         
         processed_count = 0
         failed_count = 0
@@ -154,7 +156,7 @@ def process_notification_queue_task(self) -> Dict[str, Any]:
                 self.update_state(state="PROGRESS", meta={"status": "processing", "progress": progress})
                 
                 # Process notification
-                await self._process_notification(notification)
+                _process_notification(notification)
                 processed_count += 1
                 
             except Exception as e:
@@ -185,13 +187,13 @@ def cleanup_old_notifications_task(self) -> Dict[str, Any]:
         self.update_state(state="PROGRESS", meta={"status": "identifying_old", "progress": 30})
         
         # Identify old notifications
-        old_notifications = await self._identify_old_notifications()
+        old_notifications = _identify_old_notifications()
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "cleaning_up", "progress": 60})
         
         # Clean up notifications
-        cleaned_count = await self._cleanup_notifications(old_notifications)
+        cleaned_count = _cleanup_notifications(old_notifications)
         
         logger.info(f"Cleaned up {cleaned_count} old notifications")
         
@@ -206,7 +208,7 @@ def cleanup_old_notifications_task(self) -> Dict[str, Any]:
 
 
 # Helper methods
-async def _prepare_push_notification(self, user_id: str, notification_data: Dict[str, Any]) -> Dict[str, Any]:
+def _prepare_push_notification(user_id: str, notification_data: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare push notification data."""
     # This would prepare the notification data for push service
     return {
@@ -218,7 +220,7 @@ async def _prepare_push_notification(self, user_id: str, notification_data: Dict
     }
 
 
-async def _send_push_notification(self, notification: Dict[str, Any]) -> Dict[str, Any]:
+def _send_push_notification(notification: Dict[str, Any]) -> Dict[str, Any]:
     """Send push notification via FCM/APNs."""
     # This would integrate with FCM or APNs
     return {
@@ -228,7 +230,7 @@ async def _send_push_notification(self, notification: Dict[str, Any]) -> Dict[st
     }
 
 
-async def _prepare_email_notification(self, user_id: str, notification_data: Dict[str, Any]) -> Dict[str, Any]:
+def _prepare_email_notification(user_id: str, notification_data: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare email notification data."""
     # This would prepare the email data
     return {
@@ -241,7 +243,7 @@ async def _prepare_email_notification(self, user_id: str, notification_data: Dic
     }
 
 
-async def _send_email_notification(self, email: Dict[str, Any]) -> Dict[str, Any]:
+def _send_email_notification(email: Dict[str, Any]) -> Dict[str, Any]:
     """Send email notification via SMTP/SES."""
     # This would integrate with SMTP or AWS SES
     return {
@@ -251,31 +253,31 @@ async def _send_email_notification(self, email: Dict[str, Any]) -> Dict[str, Any
     }
 
 
-async def _store_notification_record(self, user_id: str, notification_data: Dict[str, Any], result: Dict[str, Any]) -> None:
+def _store_notification_record(user_id: str, notification_data: Dict[str, Any], result: Dict[str, Any]) -> None:
     """Store notification record in database."""
     # This would store the notification in the database
     pass
 
 
-async def _get_pending_notifications(self) -> List[Dict[str, Any]]:
+def _get_pending_notifications() -> List[Dict[str, Any]]:
     """Get pending notifications from queue."""
     # This would fetch from Redis queue or database
     return []
 
 
-async def _process_notification(self, notification: Dict[str, Any]) -> None:
+def _process_notification(notification: Dict[str, Any]) -> None:
     """Process individual notification."""
     # This would process the notification
     pass
 
 
-async def _identify_old_notifications(self) -> List[str]:
+def _identify_old_notifications() -> List[str]:
     """Identify old notifications for cleanup."""
     # This would identify notifications older than retention period
     return []
 
 
-async def _cleanup_notifications(self, notification_ids: List[str]) -> int:
+def _cleanup_notifications(notification_ids: List[str]) -> int:
     """Clean up old notifications."""
     # This would delete old notifications
     return len(notification_ids)

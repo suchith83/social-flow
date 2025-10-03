@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Column, DateTime, Float, String, Text
+from sqlalchemy import Column, DateTime, Float, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.core.database import Base
@@ -52,7 +52,7 @@ class Analytics(Base):
     entity_id = Column(UUID(as_uuid=True), nullable=True)
     
     # User information
-    user_id = Column(UUID(as_uuid=True), nullable=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
     session_id = Column(String(255), nullable=True)
     
     # Event data

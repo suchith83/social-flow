@@ -1,3 +1,0 @@
-﻿package repositories
-
-// Thread repo

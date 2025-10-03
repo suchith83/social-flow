@@ -39,3 +39,13 @@ wrk==0.0.1
 
 # Security testing
 semgrep==1.45.0
+
+# E2E Testing
+selenium==4.15.2
+webdriver-manager==4.0.1
+
+# Additional testing utilities
+faker==20.0.3
+factory-boy==3.3.0
+responses==0.24.1
+httpx==0.25.1

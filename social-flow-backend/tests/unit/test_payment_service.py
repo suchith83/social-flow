@@ -9,8 +9,8 @@ import pytest
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from decimal import Decimal
 from datetime import datetime, timedelta
-from app.services.payment import PaymentService
-from app.schemas.payment import PaymentCreate, SubscriptionCreate
+from app.payments.services.payments_service import PaymentsService
+from app.payments.schemas.payment import PaymentCreate, SubscriptionCreate
 from app.models import Payment, Subscription, User
 
 
@@ -29,8 +29,9 @@ class TestPaymentService:
 
     @pytest.fixture
     def payment_service(self, mock_db):
-        """Create PaymentService instance for testing."""
-        return PaymentService(mock_db)
+        """Create PaymentsService instance for testing."""
+        # PaymentsService doesn't take any arguments
+        return PaymentsService()
 
     @pytest.fixture
     def test_user(self):
@@ -51,8 +52,9 @@ class TestPaymentService:
             amount=1000,
             currency="USD",
             status="completed",
-            stripe_payment_intent_id="pi_test123",
-            payment_method="card",
+            provider_payment_id="pi_test123",
+            payment_type="one_time",
+            payment_method_id="pm_test123",
         )
 
     @pytest.fixture
@@ -62,9 +64,9 @@ class TestPaymentService:
             id="sub123",
             user_id=test_user.id,
             stripe_subscription_id="sub_test123",
-            plan="premium",
+            tier="premium",
             status="active",
-            amount=999,
+            price_amount=999,
             currency="USD",
             billing_cycle="monthly",
             current_period_start=datetime.utcnow(),
@@ -305,7 +307,7 @@ class TestPaymentService:
         with patch('stripe.Refund.create') as mock_stripe:
             mock_stripe.return_value = {
                 "id": "re_test123",
-                "payment_intent": test_payment.stripe_payment_intent_id,
+                "payment_intent": test_payment.provider_payment_id,
                 "amount": test_payment.amount,
                 "status": "succeeded",
             }

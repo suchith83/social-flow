@@ -9,11 +9,29 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.auth.models.user import User
+from typing import List, Optional
+from uuid import UUID
+
+from app.models.user import User
 from app.auth.api.auth import get_current_active_user
 from app.payments.services.payments_service import payments_service
 
 router = APIRouter()
+@router.post("/create-intent")
+async def create_payment_intent(
+    payload: dict,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """Create a Stripe payment intent. Minimal endpoint for integration tests.
+
+    Tests patch stripe.PaymentIntent.create; this endpoint simply forwards to the service.
+    """
+    amount = payload.get("amount")
+    currency = payload.get("currency", "USD")
+    result = await payments_service.create_payment_intent(str(current_user.id), amount, currency)
+    return result
+
 
 
 @router.post("/process")

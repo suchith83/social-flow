@@ -1,9 +1,0 @@
-version: 1
-description: "Redis connection template"
-
-redis:
-  url: ${REDIS_URL:-redis://localhost:6379/0}
-  sentinel: ${REDIS_SENTINEL:-}
-  db: ${REDIS_DB:-0}
-  timeout_seconds: 5
-  max_connections: 20

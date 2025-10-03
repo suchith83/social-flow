@@ -8,8 +8,8 @@ and feed generation logic.
 import pytest
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from datetime import datetime, timedelta
-from app.services.post import PostService
-from app.schemas.post import PostCreate, PostUpdate
+from app.posts.services.post_service import PostService
+from app.posts.schemas.post import PostCreate, PostUpdate
 from app.models import Post, User
 
 

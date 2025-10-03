@@ -16,7 +16,7 @@ from app.core.database import async_session_maker
 from app.videos.models.video import Video
 from app.models.post import Post
 from app.models.comment import Comment
-from app.services.ml_service import ml_service
+from app.ml.services.ml_service import ml_service
 
 
 logger = logging.getLogger(__name__)
@@ -712,3 +712,4 @@ def batch_calculate_trending_task():
     """
     logger.info("Starting batch trending calculation")
     return calculate_trending_task.delay(time_window="24h")
+

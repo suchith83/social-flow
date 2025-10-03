@@ -1,82 +1,63 @@
 """
-Authentication schemas.
+Authentication schemas for user management.
 
-This module contains Pydantic schemas for authentication-related requests and responses.
+This module contains Pydantic schemas for user creation, updates, and authentication.
 """
 
 from datetime import datetime
 from typing import Optional
-
 from pydantic import BaseModel, EmailStr, Field, validator
+import re
 
 
 class UserBase(BaseModel):
     """Base user schema."""
-    username: str = Field(..., min_length=3, max_length=20)
+    username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
-    display_name: str = Field(..., min_length=1, max_length=100)
-    bio: Optional[str] = Field(None, max_length=500)
-    avatar_url: Optional[str] = Field(None, max_length=500)
-    website: Optional[str] = Field(None, max_length=500)
-    location: Optional[str] = Field(None, max_length=100)
+    display_name: Optional[str] = Field(None, max_length=100)
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    website: Optional[str] = None
+    location: Optional[str] = None
+    
+    @validator('username')
+    def validate_username(cls, v):
+        """Validate username format."""
+        if not re.match(r'^[a-zA-Z0-9_]+$', v):
+            raise ValueError('Username must contain only letters, numbers, and underscores')
+        return v
 
 
 class UserCreate(UserBase):
-    """User creation schema."""
+    """Schema for creating a new user."""
     password: str = Field(..., min_length=8, max_length=100)
     
     @validator('password')
     def validate_password(cls, v):
-        if len(v) < 8:
-            raise ValueError('Password must be at least 8 characters long')
-        if not any(c.isupper() for c in v):
+        """Validate password strength."""
+        if not re.search(r'[A-Z]', v):
             raise ValueError('Password must contain at least one uppercase letter')
-        if not any(c.islower() for c in v):
+        if not re.search(r'[a-z]', v):
             raise ValueError('Password must contain at least one lowercase letter')
-        if not any(c.isdigit() for c in v):
-            raise ValueError('Password must contain at least one number')
-        return v
-    
-    @validator('username')
-    def validate_username(cls, v):
-        if not v.replace("_", "").isalnum():
-            raise ValueError('Username can only contain letters, numbers, and underscores')
-        if v.startswith("_") or v.endswith("_"):
-            raise ValueError('Username cannot start or end with underscore')
+        if not re.search(r'\d', v):
+            raise ValueError('Password must contain at least one digit')
         return v
 
 
 class UserUpdate(BaseModel):
-    """User update schema."""
-    display_name: Optional[str] = Field(None, min_length=1, max_length=100)
-    bio: Optional[str] = Field(None, max_length=500)
-    avatar_url: Optional[str] = Field(None, max_length=500)
-    website: Optional[str] = Field(None, max_length=500)
-    location: Optional[str] = Field(None, max_length=100)
-    password: Optional[str] = Field(None, min_length=8, max_length=100)
-    
-    @validator('password')
-    def validate_password(cls, v):
-        if v is not None:
-            if len(v) < 8:
-                raise ValueError('Password must be at least 8 characters long')
-            if not any(c.isupper() for c in v):
-                raise ValueError('Password must contain at least one uppercase letter')
-            if not any(c.islower() for c in v):
-                raise ValueError('Password must contain at least one lowercase letter')
-            if not any(c.isdigit() for c in v):
-                raise ValueError('Password must contain at least one number')
-        return v
-
-
-class UserLogin(BaseModel):
-    """User login schema."""
-    username: str = Field(..., min_length=1)
-    password: str = Field(..., min_length=1)
+    """Schema for updating user information."""
+    display_name: Optional[str] = Field(None, max_length=100)
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    website: Optional[str] = None
+    location: Optional[str] = None
+    email_notifications: Optional[bool] = None
+    push_notifications: Optional[bool] = None
+    privacy_level: Optional[str] = Field(None, pattern='^(public|friends|private)$')
 
 
 class UserResponse(UserBase):
-    """User response schema."""
+    """Schema for user response."""
     id: str
     is_active: bool
     is_verified: bool
@@ -88,68 +69,86 @@ class UserResponse(UserBase):
     videos_count: int
     total_views: int
     total_likes: int
-    privacy_level: str
     created_at: datetime
     updated_at: datetime
-    last_login_at: Optional[datetime] = None
+    last_login_at: Optional[datetime]
     
     class Config:
         from_attributes = True
+        orm_mode = True
+
+
+class UserLogin(BaseModel):
+    """Schema for user login."""
+    email: EmailStr
+    password: str
 
 
 class Token(BaseModel):
-    """Token response schema."""
+    """Schema for access token response."""
     access_token: str
     refresh_token: str
-    token_type: str
+    token_type: str = "bearer"
+    expires_in: int = Field(default=1800, description="Token expiration time in seconds")
 
 
 class TokenData(BaseModel):
-    """Token data schema."""
+    """Schema for token payload data."""
     user_id: Optional[str] = None
+    email: Optional[str] = None
+    username: Optional[str] = None
 
 
 class PasswordChange(BaseModel):
-    """Password change schema."""
-    old_password: str = Field(..., min_length=1)
+    """Schema for password change."""
+    current_password: str
     new_password: str = Field(..., min_length=8, max_length=100)
     
     @validator('new_password')
     def validate_new_password(cls, v):
-        if len(v) < 8:
-            raise ValueError('Password must be at least 8 characters long')
-        if not any(c.isupper() for c in v):
+        """Validate new password strength."""
+        if not re.search(r'[A-Z]', v):
             raise ValueError('Password must contain at least one uppercase letter')
-        if not any(c.islower() for c in v):
+        if not re.search(r'[a-z]', v):
             raise ValueError('Password must contain at least one lowercase letter')
-        if not any(c.isdigit() for c in v):
-            raise ValueError('Password must contain at least one number')
+        if not re.search(r'\d', v):
+            raise ValueError('Password must contain at least one digit')
         return v
 
 
 class PasswordReset(BaseModel):
-    """Password reset schema."""
+    """Schema for password reset request."""
     email: EmailStr
 
 
 class PasswordResetConfirm(BaseModel):
-    """Password reset confirmation schema."""
-    token: str = Field(..., min_length=1)
+    """Schema for password reset confirmation."""
+    token: str
     new_password: str = Field(..., min_length=8, max_length=100)
     
     @validator('new_password')
     def validate_new_password(cls, v):
-        if len(v) < 8:
-            raise ValueError('Password must be at least 8 characters long')
-        if not any(c.isupper() for c in v):
+        """Validate new password strength."""
+        if not re.search(r'[A-Z]', v):
             raise ValueError('Password must contain at least one uppercase letter')
-        if not any(c.islower() for c in v):
+        if not re.search(r'[a-z]', v):
             raise ValueError('Password must contain at least one lowercase letter')
-        if not any(c.isdigit() for c in v):
-            raise ValueError('Password must contain at least one number')
+        if not re.search(r'\d', v):
+            raise ValueError('Password must contain at least one digit')
         return v
 
 
 class EmailVerification(BaseModel):
-    """Email verification schema."""
-    token: str = Field(..., min_length=1)
+    """Schema for email verification."""
+    token: str
+
+
+class TwoFactorSetup(BaseModel):
+    """Schema for 2FA setup response."""
+    secret: str
+    qr_code_url: str
+
+
+class TwoFactorVerify(BaseModel):
+    """Schema for 2FA verification."""
+    code: str = Field(..., min_length=6, max_length=6)

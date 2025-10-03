@@ -1,0 +1,10 @@
+{
+    "python.testing.pytestArgs": [
+        "social-flow-backend"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "ocaml.sandbox": {
+        "kind": "global"
+    }
+}

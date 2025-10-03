@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.auth.models.user import User
+from app.models.user import User
 from app.auth.api.auth import get_current_active_user
 from app.ml.services.ml_service import ml_service
 from app.analytics.services.analytics_service import analytics_service
@@ -494,3 +494,4 @@ async def get_trending_analysis(
         return result
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to get trending analysis")
+

@@ -7,7 +7,7 @@ and related functionality.
 
 import pytest
 from unittest.mock import Mock, patch
-from app.services.ml_service import MLService
+from app.ml.services.ml_service import MLService
 from app.core.exceptions import MLServiceError
 
 

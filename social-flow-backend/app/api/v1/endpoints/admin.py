@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
-from app.auth.models.user import User
+from app.models.user import User
 from app.auth.api.auth import get_current_active_user
 
 router = APIRouter()
@@ -19,3 +19,4 @@ async def get_admin_stats(
 async def get_system_health(db: AsyncSession = Depends(get_db)) -> dict:
     """Get system health."""
     return {"status": "healthy"}
+

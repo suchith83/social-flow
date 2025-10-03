@@ -7,7 +7,7 @@ and related functionality.
 
 import pytest
 from unittest.mock import Mock, patch
-from app.services.video_service import VideoService
+from app.videos.services.video_service import VideoService
 from app.core.exceptions import VideoServiceError
 
 

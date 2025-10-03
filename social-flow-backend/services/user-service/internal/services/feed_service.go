@@ -1,3 +1,0 @@
-﻿package services
-
-// Feed service

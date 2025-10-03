@@ -1,0 +1,14 @@
+2025-10-02 22:24:16 - app.notifications.services.email_service - ERROR - email_service - _create_smtp_connection - 51 - Failed to create SMTP connection: [Errno 11001] getaddrinfo failed
+2025-10-02 22:24:16 - app.notifications.services.email_service - ERROR - email_service - send_email - 85 - Failed to send email to test@example.com: [Errno 11001] getaddrinfo failed
+2025-10-02 22:25:15 - app.notifications.services.email_service - ERROR - email_service - _create_smtp_connection - 51 - Failed to create SMTP connection: [Errno 11001] getaddrinfo failed
+2025-10-02 22:25:15 - app.notifications.services.email_service - ERROR - email_service - send_email - 85 - Failed to send email to test@example.com: [Errno 11001] getaddrinfo failed
+2025-10-02 22:26:03 - app.notifications.services.email_service - ERROR - email_service - _create_smtp_connection - 51 - Failed to create SMTP connection: [Errno 11001] getaddrinfo failed
+2025-10-02 22:26:03 - app.notifications.services.email_service - ERROR - email_service - send_email - 85 - Failed to send email to test@example.com: [Errno 11001] getaddrinfo failed
+2025-10-02 22:27:04 - app.app.livestream.services.stream_service - INFO - stream_service - create_stream - 152 - Created stream af4dfb83-615a-4d3c-ba4c-3bc53f33c87f for user 1880e934-150a-469c-9d0e-3a631578e803
+2025-10-02 22:27:07 - app.app.livestream.services.stream_service - INFO - stream_service - start_stream - 196 - Started stream d05c26cd-7bca-414d-8eee-0eaa23253594
+2025-10-02 22:27:08 - app.app.livestream.services.stream_service - INFO - stream_service - stop_stream - 245 - Stopped stream bf5426e4-ac2f-4561-ae28-59472df8ff3e after 0s
+2025-10-02 22:27:21 - app.app.livestream.services.stream_service - INFO - stream_service - create_stream - 152 - Created stream 84c9f7c6-be0d-43cf-9cf9-0b6729152dba for user 20f3560a-0178-42a2-9f61-bd2c9b95f971
+2025-10-02 22:27:21 - app.app.livestream.services.stream_service - INFO - stream_service - _start_ivs_channel - 638 - IVS channel arn:aws:ivs:us-west-2:000000000000:channel/20f3560a-0178-42a2-9f61-bd2c9b95f971 ready for streaming
+2025-10-02 22:27:21 - app.app.livestream.services.stream_service - INFO - stream_service - start_stream - 196 - Started stream 84c9f7c6-be0d-43cf-9cf9-0b6729152dba
+2025-10-02 22:27:21 - app.app.livestream.services.stream_service - ERROR - stream_service - stop_stream - 233 - Error stopping IVS channel: 'NoneType' object has no attribute 'stop_stream'
+2025-10-02 22:27:21 - app.app.livestream.services.stream_service - INFO - stream_service - stop_stream - 245 - Stopped stream 84c9f7c6-be0d-43cf-9cf9-0b6729152dba after 0s

@@ -8,6 +8,7 @@ import logging
 from typing import Dict, Any, List
 from datetime import datetime
 import uuid
+from app.core.config import settings
 from app.workers.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
@@ -23,13 +24,13 @@ def send_welcome_email_task(self, user_id: str, user_data: Dict[str, Any]) -> Di
         self.update_state(state="PROGRESS", meta={"status": "preparing", "progress": 20})
         
         # Prepare welcome email
-        email_data = await self._prepare_welcome_email(user_data)
+        email_data = _prepare_welcome_email(user_data)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "sending", "progress": 60})
         
         # Send email
-        result = await self._send_email(email_data)
+        result = _send_email(email_data)
         
         logger.info(f"Welcome email sent to user {user_id}")
         
@@ -55,13 +56,13 @@ def send_password_reset_email_task(self, user_id: str, reset_token: str, user_da
         self.update_state(state="PROGRESS", meta={"status": "preparing", "progress": 20})
         
         # Prepare password reset email
-        email_data = await self._prepare_password_reset_email(user_data, reset_token)
+        email_data = _prepare_password_reset_email(user_data, reset_token)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "sending", "progress": 60})
         
         # Send email
-        result = await self._send_email(email_data)
+        result = _send_email(email_data)
         
         logger.info(f"Password reset email sent to user {user_id}")
         
@@ -87,13 +88,13 @@ def send_verification_email_task(self, user_id: str, verification_token: str, us
         self.update_state(state="PROGRESS", meta={"status": "preparing", "progress": 20})
         
         # Prepare verification email
-        email_data = await self._prepare_verification_email(user_data, verification_token)
+        email_data = _prepare_verification_email(user_data, verification_token)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "sending", "progress": 60})
         
         # Send email
-        result = await self._send_email(email_data)
+        result = _send_email(email_data)
         
         logger.info(f"Verification email sent to user {user_id}")
         
@@ -119,13 +120,13 @@ def send_notification_email_task(self, user_id: str, notification_data: Dict[str
         self.update_state(state="PROGRESS", meta={"status": "preparing", "progress": 20})
         
         # Prepare notification email
-        email_data = await self._prepare_notification_email(user_id, notification_data)
+        email_data = _prepare_notification_email(user_id, notification_data)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "sending", "progress": 60})
         
         # Send email
-        result = await self._send_email(email_data)
+        result = _send_email(email_data)
         
         logger.info(f"Notification email sent to user {user_id}")
         
@@ -151,13 +152,13 @@ def send_digest_email_task(self, user_id: str, digest_data: Dict[str, Any]) -> D
         self.update_state(state="PROGRESS", meta={"status": "preparing", "progress": 20})
         
         # Prepare digest email
-        email_data = await self._prepare_digest_email(user_id, digest_data)
+        email_data = _prepare_digest_email(user_id, digest_data)
         
         # Update task progress
         self.update_state(state="PROGRESS", meta={"status": "sending", "progress": 60})
         
         # Send email
-        result = await self._send_email(email_data)
+        result = _send_email(email_data)
         
         logger.info(f"Digest email sent to user {user_id}")
         
@@ -183,7 +184,7 @@ def process_email_queue_task(self) -> Dict[str, Any]:
         self.update_state(state="PROGRESS", meta={"status": "fetching_queue", "progress": 20})
         
         # Get pending emails
-        pending_emails = await self._get_pending_emails()
+        pending_emails = _get_pending_emails()
         
         processed_count = 0
         failed_count = 0
@@ -195,7 +196,7 @@ def process_email_queue_task(self) -> Dict[str, Any]:
                 self.update_state(state="PROGRESS", meta={"status": "processing", "progress": progress})
                 
                 # Process email
-                await self._process_email(email)
+                _process_email(email)
                 processed_count += 1
                 
             except Exception as e:
@@ -217,7 +218,7 @@ def process_email_queue_task(self) -> Dict[str, Any]:
 
 
 # Helper methods
-async def _prepare_welcome_email(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+def _prepare_welcome_email(user_data: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare welcome email data."""
     return {
         "to": user_data.get("email", ""),
@@ -232,7 +233,7 @@ async def _prepare_welcome_email(self, user_data: Dict[str, Any]) -> Dict[str, A
     }
 
 
-async def _prepare_password_reset_email(self, user_data: Dict[str, Any], reset_token: str) -> Dict[str, Any]:
+def _prepare_password_reset_email(user_data: Dict[str, Any], reset_token: str) -> Dict[str, Any]:
     """Prepare password reset email data."""
     return {
         "to": user_data.get("email", ""),
@@ -247,7 +248,7 @@ async def _prepare_password_reset_email(self, user_data: Dict[str, Any], reset_t
     }
 
 
-async def _prepare_verification_email(self, user_data: Dict[str, Any], verification_token: str) -> Dict[str, Any]:
+def _prepare_verification_email(user_data: Dict[str, Any], verification_token: str) -> Dict[str, Any]:
     """Prepare email verification email data."""
     return {
         "to": user_data.get("email", ""),
@@ -262,7 +263,7 @@ async def _prepare_verification_email(self, user_data: Dict[str, Any], verificat
     }
 
 
-async def _prepare_notification_email(self, user_id: str, notification_data: Dict[str, Any]) -> Dict[str, Any]:
+def _prepare_notification_email(user_id: str, notification_data: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare notification email data."""
     return {
         "to": notification_data.get("email", ""),
@@ -278,7 +279,7 @@ async def _prepare_notification_email(self, user_id: str, notification_data: Dic
     }
 
 
-async def _prepare_digest_email(self, user_id: str, digest_data: Dict[str, Any]) -> Dict[str, Any]:
+def _prepare_digest_email(user_id: str, digest_data: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare digest email data."""
     return {
         "to": digest_data.get("email", ""),
@@ -294,7 +295,7 @@ async def _prepare_digest_email(self, user_id: str, digest_data: Dict[str, Any])
     }
 
 
-async def _send_email(self, email_data: Dict[str, Any]) -> Dict[str, Any]:
+def _send_email(email_data: Dict[str, Any]) -> Dict[str, Any]:
     """Send email via SMTP/SES."""
     # This would integrate with SMTP or AWS SES
     return {
@@ -304,13 +305,13 @@ async def _send_email(self, email_data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-async def _get_pending_emails(self) -> List[Dict[str, Any]]:
+def _get_pending_emails() -> List[Dict[str, Any]]:
     """Get pending emails from queue."""
     # This would fetch from Redis queue or database
     return []
 
 
-async def _process_email(self, email: Dict[str, Any]) -> None:
+def _process_email(email: Dict[str, Any]) -> None:
     """Process individual email."""
     # This would process the email
     pass

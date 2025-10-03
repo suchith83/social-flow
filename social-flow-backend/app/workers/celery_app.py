@@ -13,11 +13,11 @@ celery_app = Celery(
     broker=settings.REDIS_URL,
     backend=settings.REDIS_URL,
     include=[
-        "app.modules.videos.video_processing",
-        "app.modules.ml.ai_processing",
-        "app.modules.analytics.analytics_processing",
-        "app.modules.notifications.notification_processing",
-        "app.modules.notifications.email_processing",
+        "app.videos.video_processing",
+        "app.ml.ml_tasks",
+        "app.analytics.analytics_processing",
+        "app.notifications.notification_processing",
+        "app.notifications.email_processing",
     ]
 )
 

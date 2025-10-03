@@ -54,6 +54,12 @@ def process_video_task(self, video_id: str) -> Dict[str, Any]:
         logger.error(f"Video processing failed for video_id {video_id}: {str(e)}")
         # Retry the task
         self.retry(exc=e, countdown=60)  # Retry after 1 minute
+        # Return error status if all retries exhausted
+        return {
+            "video_id": video_id,
+            "status": "failed",
+            "error": str(e)
+        }
 
 
 @shared_task(bind=True, max_retries=3)
@@ -88,6 +94,12 @@ def generate_video_thumbnails_task(self, video_id: str, count: int = 5) -> Dict[
     except Exception as e:
         logger.error(f"Thumbnail generation failed for video_id {video_id}: {str(e)}")
         self.retry(exc=e, countdown=30)
+        # Return error status if all retries exhausted
+        return {
+            "video_id": video_id,
+            "status": "failed",
+            "error": str(e)
+        }
 
 
 @shared_task(bind=True, max_retries=3)
@@ -130,6 +142,12 @@ def transcode_video_task(self, video_id: str, settings_override: Dict[str, Any] 
     except Exception as e:
         logger.error(f"Video transcoding failed for video_id {video_id}: {str(e)}")
         self.retry(exc=e, countdown=120)  # Retry after 2 minutes
+        # Return error status if all retries exhausted
+        return {
+            "video_id": video_id,
+            "status": "failed",
+            "error": str(e)
+        }
 
 
 @shared_task
@@ -199,3 +217,9 @@ def generate_video_preview_task(self, video_id: str, duration: int = 15) -> Dict
     except Exception as e:
         logger.error(f"Preview generation failed for video_id {video_id}: {str(e)}")
         self.retry(exc=e, countdown=60)
+        # Return error status if all retries exhausted
+        return {
+            "video_id": video_id,
+            "status": "failed",
+            "error": str(e)
+        }

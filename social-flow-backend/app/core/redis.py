@@ -16,55 +16,69 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Redis connection pool
-redis_pool: Optional[ConnectionPool] = None
-redis_client: Optional[redis.Redis] = None
+# Module-level Redis connection instances
+_redis_pool: Optional[ConnectionPool] = None
+_redis_client: Optional[redis.Redis] = None
 
 
 async def init_redis() -> None:
     """Initialize Redis connection pool."""
-    global redis_pool, redis_client
+    global _redis_pool, _redis_client
+    
+    # Skip Redis initialization in test mode
+    if settings.TESTING:
+        logger.info("Skipping Redis initialization in test mode")
+        return
     
     try:
-        redis_pool = ConnectionPool.from_url(
+        _redis_pool = ConnectionPool.from_url(
             str(settings.REDIS_URL),
             max_connections=20,
             retry_on_timeout=True,
             decode_responses=True,
         )
         
-        redis_client = redis.Redis(connection_pool=redis_pool)
+        _redis_client = redis.Redis(connection_pool=_redis_pool)
         
         # Test connection
-        await redis_client.ping()
+        await _redis_client.ping()
         
         logger.info("Redis initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize Redis: {e}")
-        raise
+        # In production, this should raise, but log and continue in dev
+        if not settings.DEBUG:
+            raise
 
 
-async def get_redis() -> redis.Redis:
+async def get_redis() -> Optional[redis.Redis]:
     """
     Get Redis client instance.
     
     Returns:
-        redis.Redis: Redis client
+        redis.Redis: Redis client or None in test mode
     """
-    if redis_client is None:
+    # Return None in test mode
+    if settings.TESTING:
+        return None
+    
+    if _redis_client is None:
         await init_redis()
-    return redis_client
+    
+    return _redis_client
 
 
 async def close_redis() -> None:
     """Close Redis connections."""
-    global redis_pool, redis_client
+    global _redis_pool, _redis_client
     
     try:
-        if redis_client:
-            await redis_client.close()
-        if redis_pool:
-            await redis_pool.disconnect()
+        if _redis_client:
+            await _redis_client.close()
+            _redis_client = None
+        if _redis_pool:
+            await _redis_pool.disconnect()
+            _redis_pool = None
         
         logger.info("Redis connections closed")
     except Exception as e:
@@ -145,7 +159,7 @@ async def get_cache() -> RedisCache:
     global cache
     
     if cache is None:
-        redis_client = await get_redis()
-        cache = RedisCache(redis_client)
+        client = await get_redis()
+        cache = RedisCache(client)
     
     return cache

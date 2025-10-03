@@ -4,17 +4,24 @@ Authentication and authorization dependencies.
 FastAPI dependencies for authentication, authorization, and permission checks.
 """
 
-from typing import Optional, List
+from typing import Optional, List, AsyncGenerator
+import uuid
 
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.config import settings
 from app.core.redis import get_redis
 from app.core.security import verify_token
-from app.auth.models.user import User
+from app.models.user import User
 from app.auth.services.enhanced_auth_service import EnhancedAuthService
+from app.application.services import (
+    UserApplicationService,
+    VideoApplicationService,
+    PostApplicationService,
+)
 
 
 # HTTP Bearer token security scheme
@@ -36,6 +43,27 @@ async def get_current_user(
 ) -> User:
     """Get current authenticated user from JWT token."""
     token = credentials.credentials
+    
+    # Testing shortcut: accept tokens of form 'test_token_<user_id>'
+    if settings.TESTING and token.startswith("test_token_"):
+        user_id = token.split("test_token_", 1)[1]
+        try:
+            user_uuid = uuid.UUID(user_id)
+        except Exception:
+            # Not a valid UUID
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid test token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        user = await db.get(User, user_uuid)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Test user not found",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return user
     
     # Verify token
     payload = verify_token(token)
@@ -237,6 +265,16 @@ async def get_optional_user(
     
     token = auth_header[7:]  # Remove "Bearer " prefix
     
+    # Testing shortcut: accept tokens of form 'test_token_<user_id>'
+    if settings.TESTING and token.startswith("test_token_"):
+        user_id = token.split("test_token_", 1)[1]
+        try:
+            user_uuid = uuid.UUID(user_id)
+        except Exception:
+            return None
+        user = await db.get(User, user_uuid)
+        return user
+    
     # Verify token
     payload = verify_token(token)
     if not payload or payload.get("type") != "access":
@@ -266,3 +304,67 @@ async def get_optional_user(
 require_admin = require_role("admin")
 require_moderator = require_any_role(["admin", "moderator"])
 require_creator = require_any_role(["admin", "moderator", "creator"])
+
+
+# Application Service Dependencies
+
+
+async def get_user_service(
+    session: AsyncSession = Depends(get_db),
+) -> AsyncGenerator[UserApplicationService, None]:
+    """
+    Get UserApplicationService instance.
+    
+    Args:
+        session: Database session
+        
+    Yields:
+        UserApplicationService instance
+    """
+    service = UserApplicationService(session)
+    try:
+        yield service
+    finally:
+        # Cleanup if needed
+        pass
+
+
+async def get_video_service(
+    session: AsyncSession = Depends(get_db),
+) -> AsyncGenerator[VideoApplicationService, None]:
+    """
+    Get VideoApplicationService instance.
+    
+    Args:
+        session: Database session
+        
+    Yields:
+        VideoApplicationService instance
+    """
+    service = VideoApplicationService(session)
+    try:
+        yield service
+    finally:
+        # Cleanup if needed
+        pass
+
+
+async def get_post_service(
+    session: AsyncSession = Depends(get_db),
+) -> AsyncGenerator[PostApplicationService, None]:
+    """
+    Get PostApplicationService instance.
+    
+    Args:
+        session: Database session
+        
+    Yields:
+        PostApplicationService instance
+    """
+    service = PostApplicationService(session)
+    try:
+        yield service
+    finally:
+        # Cleanup if needed
+        pass
+

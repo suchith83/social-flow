@@ -1,3 +1,0 @@
-﻿package utils
-
-// Error utils

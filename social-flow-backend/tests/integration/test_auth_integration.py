@@ -18,11 +18,14 @@ class TestAuthIntegration:
         user_data = {
             "username": "testuser",
             "email": "test@example.com",
-            "password": "testpassword123",
+            "password": "TestPassword123",  # Valid password with upper, lower, and digit
             "display_name": "Test User",
         }
         
         response = client.post("/api/v1/auth/register", json=user_data)
+        
+        print(f"Status: {response.status_code}")
+        print(f"Response: {response.json()}")
         
         assert response.status_code == 201
         data = response.json()
@@ -34,7 +37,7 @@ class TestAuthIntegration:
         user_data = {
             "username": "newuser",
             "email": test_user.email,  # Duplicate email
-            "password": "testpassword123",
+            "password": "TestPassword123",
             "display_name": "New User",
         }
         
@@ -84,7 +87,7 @@ class TestAuthIntegration:
         """Test successful login."""
         login_data = {
             "email": test_user.email,
-            "password": "testpassword123",
+            "password": "TestPassword123",  # Match the password from conftest
         }
         
         response = client.post("/api/v1/auth/login", json=login_data)

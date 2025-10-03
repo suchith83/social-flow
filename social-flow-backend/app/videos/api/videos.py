@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.exceptions import VideoServiceError, ValidationError
-from app.auth.models.user import User
+from app.models.user import User
 from app.auth.api.auth import get_current_active_user
 from app.videos.services.video_service import video_service
 from app.analytics.services.analytics_service import analytics_service
@@ -492,3 +492,4 @@ async def optimize_for_mobile(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to optimize for mobile")
+

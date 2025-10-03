@@ -7,7 +7,7 @@ including content moderation, recommendations, and trending analysis.
 
 import pytest
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
-from app.services.ml import MLService
+from app.ml.services.ml_service import MLService
 from app.models import User, Video, Post
 
 
@@ -27,7 +27,8 @@ class TestMLService:
     @pytest.fixture
     def ml_service(self, mock_db):
         """Create MLService instance for testing."""
-        return MLService(mock_db)
+        # MLService doesn't take any arguments
+        return MLService()
 
     @pytest.fixture
     def test_user(self):

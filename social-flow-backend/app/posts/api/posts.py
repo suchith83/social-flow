@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.api.auth import get_current_active_user
 from app.core.database import get_db
 from app.core.exceptions import NotFoundError, ValidationError
-from app.auth.models.user import User
+from app.models.user import User
 from app.posts.schemas.post import (
     PostCreate,
     PostResponse,
@@ -41,7 +41,8 @@ async def create_post(
     service = PostService(db)
     
     try:
-        post = await service.create_post(current_user.id, post_data)
+        # Service expects (post_data, user_id)
+        post = await service.create_post(post_data, current_user.id)
         return post
     except ValidationError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -83,7 +84,8 @@ async def update_post(
     service = PostService(db)
     
     try:
-        post = await service.update_post(post_id, current_user.id, post_data)
+        # Service expects (post_id, post_data, user_id)
+        post = await service.update_post(post_id, post_data, current_user.id)
         return post
     except NotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -197,7 +199,7 @@ async def like_post(
     service = PostService(db)
     
     try:
-        await service.like_post(current_user.id, post_id)
+        await service.like_post(post_id, current_user.id)
     except NotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ValidationError as e:
@@ -218,6 +220,7 @@ async def unlike_post(
     service = PostService(db)
     
     try:
-        await service.unlike_post(current_user.id, post_id)
+        await service.unlike_post(post_id, current_user.id)
     except NotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+

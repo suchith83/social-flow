@@ -1,5 +1,146 @@
 """
-Schemas package.
+Pydantic schemas for API request/response validation.
 
-This package contains all Pydantic schemas for request/response validation.
+This module exports all schemas used throughout the application.
 """
+
+# Base schemas
+from app.schemas.base import (
+    BaseDBSchema,
+    BaseSchema,
+    ErrorResponse,
+    FilterParams,
+    PaginatedResponse,
+    PaginationParams,
+    SoftDeleteSchema,
+    SortParams,
+    SuccessResponse,
+    TimestampSchema,
+)
+
+# User schemas
+from app.schemas.user import (
+    OAuthConnect,
+    OAuthLogin,
+    Token,
+    TokenRefresh,
+    TwoFactorDisable,
+    TwoFactorSetup,
+    TwoFactorVerify,
+    UserAdminUpdate,
+    UserCreate,
+    UserDetailResponse,
+    UserListFilters,
+    UserLogin,
+    UserPublicResponse,
+    UserRegister,
+    UserResponse,
+    UserUpdate,
+    UserUpdatePassword,
+)
+
+# Video schemas
+from app.schemas.video import (
+    VideoAnalytics,
+    VideoBatchDelete,
+    VideoBatchUpdate,
+    VideoCreate,
+    VideoDetailResponse,
+    VideoListFilters,
+    VideoPublicResponse,
+    VideoResponse,
+    VideoSortOptions,
+    VideoStreamingURLs,
+    VideoUpdate,
+    VideoUploadComplete,
+    VideoUploadInit,
+    VideoUploadURL,
+)
+
+# Social schemas
+from app.schemas.social import (
+    CommentCreate,
+    CommentDetailResponse,
+    CommentListFilters,
+    CommentResponse,
+    CommentUpdate,
+    FeedFilters,
+    FollowCreate,
+    FollowerResponse,
+    FollowResponse,
+    LikeCreate,
+    LikeResponse,
+    PostCreate,
+    PostDetailResponse,
+    PostListFilters,
+    PostResponse,
+    PostUpdate,
+    SaveCreate,
+    SaveResponse,
+)
+
+__all__ = [
+    # Base
+    "BaseSchema",
+    "BaseDBSchema",
+    "TimestampSchema",
+    "SoftDeleteSchema",
+    "PaginationParams",
+    "PaginatedResponse",
+    "SuccessResponse",
+    "ErrorResponse",
+    "SortParams",
+    "FilterParams",
+    # User
+    "UserCreate",
+    "UserRegister",
+    "UserUpdate",
+    "UserUpdatePassword",
+    "UserResponse",
+    "UserDetailResponse",
+    "UserPublicResponse",
+    "UserLogin",
+    "Token",
+    "TokenRefresh",
+    "OAuthLogin",
+    "OAuthConnect",
+    "TwoFactorSetup",
+    "TwoFactorVerify",
+    "TwoFactorDisable",
+    "UserAdminUpdate",
+    "UserListFilters",
+    # Video
+    "VideoCreate",
+    "VideoUpdate",
+    "VideoResponse",
+    "VideoDetailResponse",
+    "VideoPublicResponse",
+    "VideoUploadInit",
+    "VideoUploadURL",
+    "VideoUploadComplete",
+    "VideoStreamingURLs",
+    "VideoAnalytics",
+    "VideoListFilters",
+    "VideoSortOptions",
+    "VideoBatchUpdate",
+    "VideoBatchDelete",
+    # Social
+    "PostCreate",
+    "PostUpdate",
+    "PostResponse",
+    "PostDetailResponse",
+    "CommentCreate",
+    "CommentUpdate",
+    "CommentResponse",
+    "CommentDetailResponse",
+    "LikeCreate",
+    "LikeResponse",
+    "FollowCreate",
+    "FollowResponse",
+    "FollowerResponse",
+    "SaveCreate",
+    "SaveResponse",
+    "PostListFilters",
+    "CommentListFilters",
+    "FeedFilters",
+]

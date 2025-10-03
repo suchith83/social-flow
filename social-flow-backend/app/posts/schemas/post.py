@@ -1,128 +1,121 @@
 """
-Post Pydantic schemas for request/response validation.
+Post schemas for request/response validation.
 
-This module defines all Pydantic schemas related to posts.
+This module contains Pydantic schemas for post management.
 """
 
 from datetime import datetime
-from typing import List, Optional
-from uuid import UUID
-
+from typing import Optional, List
 from pydantic import BaseModel, Field, validator
 
 
 class PostBase(BaseModel):
-    """Base schema for posts."""
-    content: str = Field(..., min_length=1, max_length=2000, description="Post content")
-    media_url: Optional[str] = Field(None, max_length=500, description="Media URL")
-    media_type: Optional[str] = Field(None, max_length=50, description="Media type (image, video, gif)")
+    """Base post schema."""
+    content: str = Field(..., min_length=1, max_length=5000)
+    media_url: Optional[str] = None
+    media_type: Optional[str] = Field(None, pattern='^(image|video|gif)$')
+    hashtags: Optional[str] = None
+    mentions: Optional[str] = None
+    visibility: Optional[str] = Field('public', pattern='^(public|private|followers)$')
 
 
 class PostCreate(PostBase):
-    """Schema for creating a post."""
-    pass
+    """Schema for creating a new post."""
+    is_repost: Optional[bool] = False
+    original_post_id: Optional[str] = None
+    repost_reason: Optional[str] = None
+    
+    @validator('original_post_id')
+    def validate_repost(cls, v, values):
+        """Validate repost data consistency."""
+        if values.get('is_repost') and not v:
+            raise ValueError('original_post_id required when is_repost is True')
+        return v
 
 
 class PostUpdate(BaseModel):
     """Schema for updating a post."""
-    content: Optional[str] = Field(None, min_length=1, max_length=2000)
-    media_url: Optional[str] = Field(None, max_length=500)
-    media_type: Optional[str] = Field(None, max_length=50)
+    content: Optional[str] = Field(None, min_length=1, max_length=5000)
+    media_url: Optional[str] = None
+    media_type: Optional[str] = Field(None, pattern='^(image|video|gif)$')
+    hashtags: Optional[str] = None
+    mentions: Optional[str] = None
 
 
 class RepostCreate(BaseModel):
-    """Schema for reposting."""
-    original_post_id: UUID
-    reason: Optional[str] = Field(None, max_length=500, description="Optional reason for repost")
-
-
-class UserMinimal(BaseModel):
-    """Minimal user information for post responses."""
-    id: UUID
-    username: str
-    display_name: str
-    avatar_url: Optional[str]
-    is_verified: bool
-    
-    class Config:
-        from_attributes = True
+    """Schema for creating a repost."""
+    original_post_id: str
+    repost_reason: Optional[str] = Field(None, max_length=500)
 
 
 class PostResponse(PostBase):
-    """Schema for post responses."""
-    id: UUID
-    owner_id: UUID
-    owner: Optional[UserMinimal]
-    
-    # Engagement metrics
+    """Schema for post response."""
+    id: str
+    owner_id: str
     likes_count: int
     reposts_count: int
     comments_count: int
     shares_count: int
     views_count: int
-    
-    # Repost information
-    is_repost: bool
-    original_post_id: Optional[UUID]
-    repost_reason: Optional[str]
-    original_post: Optional['PostResponse']
-    
-    # Hashtags and mentions
-    hashtags: Optional[str]  # JSON string
-    mentions: Optional[str]  # JSON string
-    
-    # Moderation
     is_approved: bool
     is_flagged: bool
-    
-    # Timestamps
+    is_rejected: bool
+    is_repost: bool
+    original_post_id: Optional[str]
     created_at: datetime
     updated_at: datetime
     
     class Config:
         from_attributes = True
-    
-    @validator('hashtags', 'mentions', pre=True)
-    def parse_json_fields(cls, value):
-        """Parse JSON string fields."""
-        if isinstance(value, str):
-            import json
-            try:
-                return json.loads(value)
-            except:
-                return []
-        return value
+        orm_mode = True
 
 
 class PostListResponse(BaseModel):
-    """Schema for list of posts."""
+    """Schema for paginated post list response."""
     posts: List[PostResponse]
     total: int
-    skip: int
-    limit: int
-
-
-class FeedResponse(BaseModel):
-    """Schema for feed response."""
-    posts: List[PostResponse]
-    algorithm: str
+    page: int
+    page_size: int
     has_more: bool
 
 
-class LikeRequest(BaseModel):
-    """Schema for like request."""
-    post_id: UUID
+class CommentCreate(BaseModel):
+    """Schema for creating a comment."""
+    content: str = Field(..., min_length=1, max_length=2000)
+    parent_id: Optional[str] = None
+
+
+class CommentUpdate(BaseModel):
+    """Schema for updating a comment."""
+    content: str = Field(..., min_length=1, max_length=2000)
+
+
+class CommentResponse(BaseModel):
+    """Schema for comment response."""
+    id: str
+    content: str
+    user_id: str
+    post_id: str
+    parent_id: Optional[str]
+    likes_count: int
+    replies_count: int
+    is_flagged: bool
+    is_deleted: bool
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+        orm_mode = True
 
 
 class LikeResponse(BaseModel):
     """Schema for like response."""
-    post_id: UUID
-    user_id: UUID
+    id: str
+    user_id: str
+    post_id: str
     created_at: datetime
     
     class Config:
         from_attributes = True
-
-
-# Update forward references
-PostResponse.model_rebuild()
+        orm_mode = True

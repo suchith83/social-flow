@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Boolean, Column, DateTime, String, Text
+from sqlalchemy import Boolean, Column, DateTime, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -60,8 +60,8 @@ class Notification(Base):
     entity_type = Column(String(50), nullable=True)  # post, video, comment, etc.
     entity_id = Column(UUID(as_uuid=True), nullable=True)
     
-    # Sender information
-    sender_id = Column(UUID(as_uuid=True), nullable=True)
+    # Sender information (with foreign key constraint)
+    sender_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
     sender_name = Column(String(255), nullable=True)
     sender_avatar_url = Column(String(500), nullable=True)
     
@@ -80,11 +80,11 @@ class Notification(Base):
     read_at = Column(DateTime, nullable=True)
     archived_at = Column(DateTime, nullable=True)
     
-    # Foreign keys
-    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    # Foreign keys with proper constraints
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
     
     # Relationships
-    user = relationship("User", back_populates="notifications")
+    user = relationship("User", back_populates="notifications", foreign_keys=[user_id])
     
     def __repr__(self) -> str:
         return f"<Notification(id={self.id}, title={self.title}, user_id={self.user_id})>"
@@ -133,3 +133,42 @@ class Notification(Base):
             "read_at": self.read_at.isoformat() if self.read_at else None,
             "archived_at": self.archived_at.isoformat() if self.archived_at else None,
         }
+
+
+class NotificationPreference(Base):
+    """User notification preferences."""
+    
+    __tablename__ = "notification_preferences"
+    
+    # Primary key
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    
+    # User reference
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, unique=True, index=True)
+    
+    # Notification type preferences
+    email_likes = Column(Boolean, default=True, nullable=False)
+    email_comments = Column(Boolean, default=True, nullable=False)
+    email_follows = Column(Boolean, default=True, nullable=False)
+    email_mentions = Column(Boolean, default=True, nullable=False)
+    email_shares = Column(Boolean, default=False, nullable=False)
+    
+    push_likes = Column(Boolean, default=True, nullable=False)
+    push_comments = Column(Boolean, default=True, nullable=False)
+    push_follows = Column(Boolean, default=True, nullable=False)
+    push_mentions = Column(Boolean, default=True, nullable=False)
+    push_shares = Column(Boolean, default=True, nullable=False)
+    
+    # Marketing preferences
+    email_marketing = Column(Boolean, default=False, nullable=False)
+    push_marketing = Column(Boolean, default=False, nullable=False)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    user = relationship("User", back_populates="notification_preferences", foreign_keys=[user_id])
+    
+    def __repr__(self) -> str:
+        return f"<NotificationPreference(id={self.id}, user_id={self.user_id})>"

@@ -1,0 +1,946 @@
+"""
+Integration tests for payment endpoints.
+
+Tests payment intents, subscriptions, payouts, and analytics.
+"""
+
+import pytest
+from datetime import datetime, timedelta, timezone
+from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.infrastructure.crud import user as crud_user
+from app.schemas.user import UserCreate
+
+
+# ============================================================================
+# PAYMENT INTENT TESTS
+# ============================================        # Try to create another subscription
+        response2 = await async_client.post(
+            "/api/v1/subscriptions",
+            json={"tier": "basic", "payment_method_id": "pm_test_456", "trial_days": 0},
+            headers=headers,
+        )==========================
+
+
+class TestPaymentIntents:
+    """Test payment intent endpoints."""
+
+    @pytest.mark.asyncio
+    async def test_create_payment_intent(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test creating a payment intent."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create payment intent
+        response = await async_client.post(
+            "/api/v1/payments/intent",
+            json={
+                "amount": 50.00,
+                "currency": "usd",
+                "payment_type": "donation",
+                "description": "Support creator",
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert "payment_id" in data
+        assert "client_secret" in data
+        assert "stripe_payment_intent_id" in data
+        assert data["amount"] == 50.00
+        assert data["currency"] == "usd"
+        assert data["status"] == "pending"
+
+    @pytest.mark.asyncio
+    async def test_confirm_payment(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test confirming a payment."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create payment intent
+        create_response = await async_client.post(
+            "/api/v1/payments/intent",
+            json={
+                "amount": 25.00,
+                "currency": "usd",
+                "payment_type": "tip",
+            },
+            headers=headers,
+        )
+        payment_id = create_response.json()["payment_id"]
+
+        # Confirm payment
+        response = await async_client.post(
+            f"/api/v1/payments/{payment_id}/confirm",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "completed"
+        assert data["amount"] == 25.00
+        assert data["processing_fee"] is not None
+        assert data["platform_fee"] is not None
+        assert data["net_amount"] is not None
+        assert data["processed_at"] is not None
+
+    @pytest.mark.asyncio
+    async def test_refund_payment(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test refunding a payment."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create and confirm payment
+        create_response = await async_client.post(
+            "/api/v1/payments/intent",
+            json={"amount": 100.00, "currency": "usd"},
+            headers=headers,
+        )
+        payment_id = create_response.json()["payment_id"]
+
+        await async_client.post(
+            f"/api/v1/payments/{payment_id}/confirm",
+            headers=headers,
+        )
+
+        # Refund payment
+        response = await async_client.post(
+            f"/api/v1/payments/{payment_id}/refund",
+            json={
+                "amount": 50.00,
+                "reason": "Customer requested partial refund",
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "partially_refunded"
+        assert data["refund_amount"] == 50.00
+
+    @pytest.mark.asyncio
+    async def test_list_payments(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test listing user payments."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create multiple payments
+        for i in range(3):
+            await async_client.post(
+                "/api/v1/payments/intent",
+                json={"amount": 10.00 + i, "currency": "usd"},
+                headers=headers,
+            )
+
+        # List payments
+        response = await async_client.get(
+            "/api/v1/payments",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "payments" in data
+        assert len(data["payments"]) >= 3
+        assert data["total_count"] >= 3
+        assert data["page"] == 1
+
+    @pytest.mark.asyncio
+    async def test_get_payment_by_id(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test getting payment details by ID."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create payment
+        create_response = await async_client.post(
+            "/api/v1/payments/intent",
+            json={
+                "amount": 75.00,
+                "currency": "usd",
+                "description": "Test payment",
+            },
+            headers=headers,
+        )
+        payment_id = create_response.json()["payment_id"]
+
+        # Get payment details
+        response = await async_client.get(
+            f"/api/v1/payments/{payment_id}",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] == payment_id
+        assert data["amount"] == 75.00
+        assert data["description"] == "Test payment"
+
+    @pytest.mark.asyncio
+    async def test_confirm_other_user_payment_fails(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test that users cannot confirm other users' payments."""
+        # Create first user payment
+        login1 = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token1 = login1.json()["access_token"]
+        headers1 = {"Authorization": f"Bearer {token1}"}
+
+        create_response = await async_client.post(
+            "/api/v1/payments/intent",
+            json={"amount": 50.00, "currency": "usd"},
+            headers=headers1,
+        )
+        payment_id = create_response.json()["payment_id"]
+
+        # Create second user
+        user2_data = UserCreate(
+            email="user2@example.com",
+            username="testuser2",
+            password="TestPassword123",
+            full_name="Test User 2",
+        )
+        user2 = await crud_user.create(db_session, obj_in=user2_data)
+        await db_session.commit()
+
+        # Login as second user
+        login2 = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": user2.email, "password": "TestPassword123"},
+        )
+        token2 = login2.json()["access_token"]
+        headers2 = {"Authorization": f"Bearer {token2}"}
+
+        # Try to confirm first user's payment
+        response = await async_client.post(
+            f"/api/v1/payments/{payment_id}/confirm",
+            headers=headers2,
+        )
+
+        assert response.status_code == 403
+
+
+# ============================================================================
+# SUBSCRIPTION TESTS
+# ============================================================================
+
+
+class TestSubscriptions:
+    """Test subscription endpoints."""
+
+    @pytest.mark.asyncio
+    async def test_get_subscription_pricing(
+        self,
+        async_client: AsyncClient,
+    ):
+        """Test getting subscription pricing (no auth required)."""
+        response = await async_client.get("/api/v1/subscriptions/pricing")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "pricing" in data
+        assert len(data["pricing"]) == 5  # free, basic, premium, pro, enterprise
+
+        # Verify pricing structure
+        tiers = {p["tier"] for p in data["pricing"]}
+        assert "free" in tiers
+        assert "basic" in tiers
+        assert "premium" in tiers
+
+        # Check features
+        premium = next(p for p in data["pricing"] if p["tier"] == "premium")
+        assert premium["is_popular"] is True
+        assert len(premium["features"]) > 0
+
+    @pytest.mark.asyncio
+    async def test_create_subscription(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test creating a subscription."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create subscription
+        response = await async_client.post(
+            "/api/v1/subscriptions",
+            json={
+                "tier": "premium",
+                "payment_method_id": "pm_test_123",
+                "trial_days": 14,
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["tier"] == "premium"
+        assert data["status"] == "trialing"
+        assert data["price"] == 19.99
+        assert data["is_trial"] is True
+        assert data["trial_days"] == 14
+        assert data["is_trial_active"] is True
+        assert "provider_subscription_id" in data
+
+    @pytest.mark.asyncio
+    async def test_get_current_subscription(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test getting current active subscription."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create subscription
+        create_response = await async_client.post(
+            "/api/v1/subscriptions",
+            json={"tier": "basic", "trial_days": 0},
+            headers=headers,
+        )
+        subscription_id = create_response.json()["id"]
+
+        # Get current subscription
+        response = await async_client.get(
+            "/api/v1/subscriptions/current",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] == subscription_id
+        assert data["tier"] == "basic"
+        assert data["is_active"] is True
+
+    @pytest.mark.asyncio
+    async def test_upgrade_subscription(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test upgrading subscription tier."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create basic subscription
+        create_response = await async_client.post(
+            "/api/v1/subscriptions",
+            json={"tier": "basic", "trial_days": 0},
+            headers=headers,
+        )
+        subscription_id = create_response.json()["id"]
+
+        # Upgrade to premium
+        response = await async_client.put(
+            "/api/v1/subscriptions/upgrade",
+            json={
+                "subscription_id": subscription_id,
+                "new_tier": "premium",
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["tier"] == "premium"
+        assert data["price"] == 19.99
+
+    @pytest.mark.asyncio
+    async def test_cancel_subscription(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test canceling subscription at period end."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create subscription
+        create_response = await async_client.post(
+            "/api/v1/subscriptions",
+            json={"tier": "premium", "payment_method_id": "pm_test_123", "payment_method_id": "pm_test_123", "trial_days": 0},
+            headers=headers,
+        )
+        subscription_id = create_response.json()["id"]
+
+        # Cancel subscription
+        response = await async_client.post(
+            "/api/v1/subscriptions/cancel",
+            json={
+                "subscription_id": subscription_id,
+                "immediate": False,
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["cancelled_at"] is not None
+        assert data["status"] == "active"  # Still active until period end
+
+    @pytest.mark.asyncio
+    async def test_cancel_subscription_immediately(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test canceling subscription immediately."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create subscription
+        create_response = await async_client.post(
+            "/api/v1/subscriptions",
+            json={"tier": "basic", "trial_days": 0},
+            headers=headers,
+        )
+        subscription_id = create_response.json()["id"]
+
+        # Cancel immediately
+        response = await async_client.post(
+            "/api/v1/subscriptions/cancel",
+            json={
+                "subscription_id": subscription_id,
+                "immediate": True,
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "canceled"
+
+    @pytest.mark.asyncio
+    async def test_cannot_create_duplicate_subscription(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test that users cannot create duplicate active subscriptions."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create first subscription
+        await async_client.post(
+            "/api/v1/subscriptions",
+            json={"tier": "basic", "trial_days": 0},
+            headers=headers,
+        )
+
+        # Try to create second subscription
+        response = await async_client.post(
+            "/api/v1/subscriptions",
+            json={"tier": "premium", "trial_days": 0},
+            headers=headers,
+        )
+
+        assert response.status_code == 400
+        assert "already has an active subscription" in response.json()["detail"]
+
+
+# ============================================================================
+# PAYOUT TESTS
+# ============================================================================
+
+
+class TestPayouts:
+    """Test creator payout endpoints."""
+
+    @pytest.mark.asyncio
+    async def test_create_connect_account(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test creating Stripe Connect account."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create Connect account
+        response = await async_client.post(
+            "/api/v1/payouts/connect",
+            json={
+                "account_type": "express",
+                "country": "US",
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert "connect_account_id" in data
+        assert "onboarding_url" in data
+        assert data["status"] == "pending"
+        assert data["charges_enabled"] is False
+        assert data["payouts_enabled"] is False
+
+    @pytest.mark.asyncio
+    async def test_get_connect_account_status(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test getting Connect account status."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Get status
+        response = await async_client.get(
+            "/api/v1/payouts/connect/status",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "connect_account_id" in data
+        assert "status" in data
+        assert "available_balance" in data
+        assert "pending_balance" in data
+
+    @pytest.mark.asyncio
+    async def test_request_payout(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test requesting a payout."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Request payout
+        response = await async_client.post(
+            "/api/v1/payouts",
+            json={
+                "revenue_breakdown": {
+                    "subscription": 500.00,
+                    "tips": 150.00,
+                    "content_sales": 250.00,
+                    "ad_revenue": 100.00,
+                },
+                "period_start": datetime.now(timezone.utc).isoformat(),
+                "period_end": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["status"] == "pending"
+        assert data["gross_amount"] == 1000.00
+        assert data["platform_fee"] == 100.00  # 10%
+        assert data["net_amount"] < data["gross_amount"]
+        assert data["subscription_revenue"] == 500.00
+        assert data["tips_revenue"] == 150.00
+
+    @pytest.mark.asyncio
+    async def test_list_payouts(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test listing payouts."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create multiple payouts
+        for i in range(3):
+            await async_client.post(
+                "/api/v1/payouts",
+                json={
+                    "revenue_breakdown": {"subscription": 100.00 + i * 50},
+                    "period_start": datetime.now(timezone.utc).isoformat(),
+                    "period_end": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
+                },
+                headers=headers,
+            )
+
+        # List payouts
+        response = await async_client.get(
+            "/api/v1/payouts",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "payouts" in data
+        assert len(data["payouts"]) >= 3
+        assert data["total_amount"] > 0
+
+    @pytest.mark.asyncio
+    async def test_get_creator_earnings(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test getting creator earnings summary."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Get earnings
+        response = await async_client.get(
+            "/api/v1/payouts/earnings",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "total_earnings" in data
+        assert "pending_earnings" in data
+        assert "paid_earnings" in data
+        assert "subscription_earnings" in data
+        assert "tips_earnings" in data
+        assert "next_payout_date" in data
+
+
+# ============================================================================
+# ANALYTICS TESTS
+# ============================================================================
+
+
+class TestPaymentAnalytics:
+    """Test payment analytics endpoints."""
+
+    @pytest.mark.asyncio
+    async def test_get_payment_analytics(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test getting payment analytics."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Get analytics
+        start_date = datetime.now(timezone.utc) - timedelta(days=30)
+        end_date = datetime.now(timezone.utc)
+
+        response = await async_client.get(
+            "/api/v1/analytics/payments",
+            params={
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat(),
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "total_revenue" in data
+        assert "total_transactions" in data
+        assert "successful_transactions" in data
+        assert "failed_transactions" in data
+        assert "average_transaction_value" in data
+        assert "net_revenue" in data
+
+    @pytest.mark.asyncio
+    async def test_get_subscription_analytics(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test getting subscription analytics."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Get analytics
+        start_date = datetime.now(timezone.utc) - timedelta(days=30)
+        end_date = datetime.now(timezone.utc)
+
+        response = await async_client.get(
+            "/api/v1/analytics/subscriptions",
+            params={
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat(),
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "active_subscriptions" in data
+        assert "trial_subscriptions" in data
+        assert "monthly_recurring_revenue" in data
+        assert "annual_recurring_revenue" in data
+        assert "churn_rate" in data
+        assert "retention_rate" in data
+
+
+# ============================================================================
+# EDGE CASES
+# ============================================================================
+
+
+class TestPaymentEdgeCases:
+    """Test payment edge cases and error handling."""
+
+    @pytest.mark.asyncio
+    async def test_get_nonexistent_payment(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test getting a payment that doesn't exist."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Try to get nonexistent payment
+        fake_uuid = "00000000-0000-0000-0000-000000000000"
+        response = await async_client.get(
+            f"/api/v1/payments/{fake_uuid}",
+            headers=headers,
+        )
+
+        assert response.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_refund_non_succeeded_payment_fails(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test that only succeeded payments can be refunded."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create payment (pending)
+        create_response = await async_client.post(
+            "/api/v1/payments/intent",
+            json={"amount": 50.00, "currency": "usd"},
+            headers=headers,
+        )
+        payment_id = create_response.json()["payment_id"]
+
+        # Try to refund pending payment
+        response = await async_client.post(
+            f"/api/v1/payments/{payment_id}/refund",
+            json={"amount": 50.00, "reason": "Test refund"},
+            headers=headers,
+        )
+
+        assert response.status_code == 400
+        assert "Only completed payments" in response.json()["detail"]
+
+    @pytest.mark.asyncio
+    async def test_refund_exceeds_amount_fails(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test that refund amount cannot exceed payment amount."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create and confirm payment
+        create_response = await async_client.post(
+            "/api/v1/payments/intent",
+            json={"amount": 50.00, "currency": "usd"},
+            headers=headers,
+        )
+        payment_id = create_response.json()["payment_id"]
+
+        await async_client.post(
+            f"/api/v1/payments/{payment_id}/confirm",
+            headers=headers,
+        )
+
+        # Try to refund more than payment amount
+        response = await async_client.post(
+            f"/api/v1/payments/{payment_id}/refund",
+            json={"amount": 100.00, "reason": "Test refund"},
+            headers=headers,
+        )
+
+        assert response.status_code == 400
+        assert "exceeds remaining refundable amount" in response.json()["detail"]
+
+    @pytest.mark.asyncio
+    async def test_get_subscription_without_active_fails(
+        self,
+        async_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+    ):
+        """Test getting current subscription when none exists."""
+        # Login
+        login_response = await async_client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.email, "password": "TestPassword123"},
+        )
+        token = login_response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Try to get current subscription
+        response = await async_client.get(
+            "/api/v1/subscriptions/current",
+            headers=headers,
+        )
+
+        assert response.status_code == 404
+        assert "No active subscription" in response.json()["detail"]
+
+    @pytest.mark.asyncio
+    async def test_create_payment_requires_authentication(
+        self,
+        async_client: AsyncClient,
+    ):
+        """Test that creating payment requires authentication."""
+        response = await async_client.post(
+            "/api/v1/payments/intent",
+            json={"amount": 50.00, "currency": "usd"},
+        )
+
+        assert response.status_code == 401

@@ -6,18 +6,19 @@ and related functionality.
 """
 
 import pytest
-from unittest.mock import Mock, patch
-from app.services.auth import AuthService
+import pytest_asyncio
+from unittest.mock import Mock, patch, AsyncMock
+from app.auth.services.auth import AuthService
 from app.core.exceptions import AuthServiceError
 
 
 class TestAuthService:
     """Test cases for AuthService."""
 
-    @pytest.fixture
-    def auth_service(self):
+    @pytest_asyncio.fixture
+    async def auth_service(self, db_session):
         """Create AuthService instance for testing."""
-        return AuthService()
+        return AuthService(db=db_session)
 
     @pytest.mark.asyncio
     async def test_register_user_with_verification_success(self, auth_service):

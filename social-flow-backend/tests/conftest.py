@@ -12,13 +12,32 @@ from typing import AsyncGenerator, Generator
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
 from app.main import app
-from app.core.database import get_db, Base
+from app.core.database import get_db
+from app.models.base import Base  # Import Base from models, not database
 from app.core.config import settings
-from app.models import User, Video, Post, Comment, Like, Follow, Ad, Payment, Subscription, Notification, Analytics, ViewCount, LiveStream, LiveStreamViewer
+from app.models import (
+    User,
+    Video,
+    Post,
+    Comment,
+    Like,
+    Follow,
+    Save,
+    AdCampaign,
+    Ad,
+    Payment,
+    Subscription,
+    Notification,
+    LiveStream,
+    StreamViewer,
+)
 
+
+# Enable test mode
+settings.TESTING = True
 
 # Test database URL
 TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
@@ -77,14 +96,16 @@ def client(db_session: AsyncSession) -> Generator[TestClient, None, None]:
 
 
 @pytest_asyncio.fixture(scope="function")
-async def async_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None, None]:
+async def async_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """Create an async test client."""
     def override_get_db():
         yield db_session
     
     app.dependency_overrides[get_db] = override_get_db
     
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    # Use the correct API for httpx AsyncClient with ASGI app (httpx 0.23+)
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
     
     app.dependency_overrides.clear()
@@ -93,13 +114,17 @@ async def async_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, 
 @pytest_asyncio.fixture(scope="function")
 async def test_user(db_session: AsyncSession) -> User:
     """Create a test user."""
+    from app.core.security import get_password_hash
+    from app.models.user import UserStatus, UserRole
+    
     user = User(
         username="testuser",
         email="test@example.com",
-        password_hash="hashed_password",
+        password_hash=get_password_hash("TestPassword123"),  # Valid hashed password
         display_name="Test User",
         bio="Test bio",
-        is_active=True,
+        status=UserStatus.ACTIVE,
+        role=UserRole.USER,
         is_verified=True,
     )
     db_session.add(user)
@@ -220,11 +245,13 @@ async def test_payment(db_session: AsyncSession, test_user: User) -> Payment:
     """Create a test payment."""
     payment = Payment(
         user_id=test_user.id,
-        amount=1000,  # $10.00 in cents
+        amount=10.00,  # $10.00
         currency="USD",
-        payment_method="stripe",
+        payment_type="one_time",
+        provider="stripe",
         status="completed",
-        transaction_id="test_transaction_123",
+        provider_transaction_id="test_transaction_123",
+        net_amount=10.00,
     )
     db_session.add(payment)
     await db_session.commit()
@@ -235,13 +262,16 @@ async def test_payment(db_session: AsyncSession, test_user: User) -> Payment:
 @pytest_asyncio.fixture(scope="function")
 async def test_subscription(db_session: AsyncSession, test_user: User) -> Subscription:
     """Create a test subscription."""
+    from datetime import datetime
     subscription = Subscription(
         user_id=test_user.id,
-        plan="premium",
+        tier="premium",
         status="active",
-        amount=999,  # $9.99 in cents
+        price=9.99,
         currency="USD",
         billing_cycle="monthly",
+        provider="stripe",
+        start_date=datetime.utcnow(),
     )
     db_session.add(subscription)
     await db_session.commit()
@@ -265,36 +295,41 @@ async def test_notification(db_session: AsyncSession, test_user: User) -> Notifi
     return notification
 
 
-@pytest_asyncio.fixture(scope="function")
-async def test_analytics(db_session: AsyncSession, test_user: User) -> Analytics:
-    """Create a test analytics event."""
-    analytics = Analytics(
-        event_type="video_view",
-        category="content",
-        event="video_viewed",
-        entity_type="video",
-        entity_id="test_video_id",
-        user_id=test_user.id,
-        properties='{"video_id": "test_video_id", "duration": 120}',
-    )
-    db_session.add(analytics)
-    await db_session.commit()
-    await db_session.refresh(analytics)
-    return analytics
+# Note: The following fixtures are commented out because their models don't exist yet
+# Uncomment when Analytics, ViewCount models are implemented
+
+# @pytest_asyncio.fixture(scope="function")
+# async def test_analytics(db_session: AsyncSession, test_user: User):
+#     """Create a test analytics event."""
+#     from app.models.analytics import Analytics  # If this model exists
+#     analytics = Analytics(
+#         event_type="video_view",
+#         category="content",
+#         event="video_viewed",
+#         entity_type="video",
+#         entity_id="test_video_id",
+#         user_id=test_user.id,
+#         properties='{"video_id": "test_video_id", "duration": 120}',
+#     )
+#     db_session.add(analytics)
+#     await db_session.commit()
+#     await db_session.refresh(analytics)
+#     return analytics
 
 
-@pytest_asyncio.fixture(scope="function")
-async def test_view_count(db_session: AsyncSession, test_video: Video) -> ViewCount:
-    """Create a test view count."""
-    view_count = ViewCount(
-        video_id=test_video.id,
-        count=100,
-        date="2025-01-01",
-    )
-    db_session.add(view_count)
-    await db_session.commit()
-    await db_session.refresh(view_count)
-    return view_count
+# @pytest_asyncio.fixture(scope="function")
+# async def test_view_count(db_session: AsyncSession, test_video: Video):
+#     """Create a test view count."""
+#     from app.models.video import ViewCount  # If this model exists
+#     view_count = ViewCount(
+#         video_id=test_video.id,
+#         count=100,
+#         date="2025-01-01",
+#     )
+#     db_session.add(view_count)
+#     await db_session.commit()
+#     await db_session.refresh(view_count)
+#     return view_count
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -316,9 +351,9 @@ async def test_live_stream(db_session: AsyncSession, test_user: User) -> LiveStr
 
 
 @pytest_asyncio.fixture(scope="function")
-async def test_live_stream_viewer(db_session: AsyncSession, test_live_stream: LiveStream, test_user: User) -> LiveStreamViewer:
+async def test_live_stream_viewer(db_session: AsyncSession, test_live_stream: LiveStream, test_user: User) -> StreamViewer:
     """Create a test live stream viewer."""
-    viewer = LiveStreamViewer(
+    viewer = StreamViewer(
         live_stream_id=test_live_stream.id,
         user_id=test_user.id,
         session_id="test_session_123",

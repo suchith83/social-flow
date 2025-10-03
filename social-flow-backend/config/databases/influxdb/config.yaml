@@ -1,9 +1,0 @@
-﻿# InfluxDB cluster configuration (URLs, org, bucket, tokens)
-influxdb:
-  org: socialflow-org
-  bucket: socialflow-metrics
-  token: super_secure_influx_token_here
-  nodes:
-    - url: https://influx-node-1.local:8086
-    - url: https://influx-node-2.local:8086
-    - url: https://influx-node-3.local:8086

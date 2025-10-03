@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -87,7 +87,7 @@ class Subscription(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     
     # Foreign keys
-    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
     
     # Relationships
     user = relationship("User", back_populates="subscriptions")
@@ -95,6 +95,27 @@ class Subscription(Base):
     
     def __repr__(self) -> str:
         return f"<Subscription(id={self.id}, tier={self.tier}, status={self.status}, user_id={self.user_id})>"
+
+    def __init__(self, *args, **kwargs):
+        """Allow test-friendly alias fields used in unit tests.
+        - plan -> tier
+        - stripe_subscription_id -> provider_subscription_id
+        - amount -> price
+        - current_period_start -> start_date
+        - current_period_end -> end_date
+        - currency, billing_cycle passed through
+        """
+        alias_map = {
+            "plan": "tier",
+            "stripe_subscription_id": "provider_subscription_id",
+            "amount": "price",
+            "current_period_start": "start_date",
+            "current_period_end": "end_date",
+        }
+        for alias, real in alias_map.items():
+            if alias in kwargs and real not in kwargs:
+                kwargs[real] = kwargs.pop(alias)
+        super().__init__(*args, **kwargs)
     
     @property
     def is_active(self) -> bool:

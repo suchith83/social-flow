@@ -6,6 +6,7 @@ routers, and configurations for the Social Flow backend.
 """
 
 from contextlib import asynccontextmanager
+import os
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
@@ -27,8 +28,21 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager for startup and shutdown events."""
     # Startup
     setup_logging()
-    await init_db()
-    await init_redis()
+    
+    # Skip database initialization in test mode (tests manage their own database)
+    if not settings.TESTING:
+        await init_db()
+        await init_redis()
+        
+        # Initialize unified storage infrastructure
+        from app.infrastructure.storage import initialize_storage
+        try:
+            await initialize_storage()
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to initialize storage infrastructure: {e}")
+            logger.warning("Application will continue but storage functionality may be limited")
     
     yield
     
@@ -102,10 +116,13 @@ app = create_application()
 if __name__ == "__main__":
     import uvicorn
     
+    # Bind to localhost by default for safety; allow override via env for containers
+    server_host = os.getenv("HOST", "127.0.0.1")
+    server_port = int(os.getenv("PORT", "8000"))
     uvicorn.run(
         "app.main:app",
-        host="0.0.0.0",
-        port=8000,
+        host=server_host,
+        port=server_port,
         reload=settings.DEBUG,
         log_level="info",
     )

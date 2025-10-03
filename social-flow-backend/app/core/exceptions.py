@@ -169,6 +169,18 @@ class FileUploadError(SocialFlowException):
         )
 
 
+class StorageServiceError(SocialFlowException):
+    """Storage service error exception."""
+    
+    def __init__(self, message: str = "Storage service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="STORAGE_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
 class VideoProcessingError(SocialFlowException):
     """Video processing error exception."""
     
@@ -284,6 +296,30 @@ class MLServiceError(SocialFlowException):
         super().__init__(
             message=message,
             error_code="ML_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
+class AuthServiceError(SocialFlowException):
+    """Auth service error exception."""
+    
+    def __init__(self, message: str = "Auth service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="AUTH_SERVICE_ERROR",
+            status_code=500,
+            details=details,
+        )
+
+
+class PostServiceError(SocialFlowException):
+    """Post service error exception."""
+    
+    def __init__(self, message: str = "Post service error", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message,
+            error_code="POST_SERVICE_ERROR",
             status_code=500,
             details=details,
         )

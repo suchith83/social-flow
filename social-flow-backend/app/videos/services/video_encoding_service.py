@@ -19,7 +19,7 @@ from sqlalchemy import select, update
 
 from app.core.config import settings
 from app.core.redis import get_cache
-from app.videos.models.video import Video, VideoStatus
+from app.models.video import Video, VideoStatus
 from app.models.encoding_job import EncodingJob, EncodingStatus
 
 logger = logging.getLogger(__name__)
@@ -738,3 +738,4 @@ def get_encoding_service() -> VideoEncodingService:
     if _encoding_service is None:
         _encoding_service = VideoEncodingService()
     return _encoding_service
+

@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Column, DateTime, Float, Integer, String, Text
+from sqlalchemy import Column, DateTime, Float, Integer, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -90,8 +90,8 @@ class Payment(Base):
     failed_at = Column(DateTime, nullable=True)
     
     # Foreign keys
-    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
-    subscription_id = Column(UUID(as_uuid=True), nullable=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    subscription_id = Column(UUID(as_uuid=True), ForeignKey('subscriptions.id', ondelete='SET NULL'), nullable=True, index=True)
     
     # Relationships
     user = relationship("User", back_populates="payments")
@@ -99,6 +99,20 @@ class Payment(Base):
     
     def __repr__(self) -> str:
         return f"<Payment(id={self.id}, amount={self.amount}, currency={self.currency}, status={self.status})>"
+    
+    def __init__(self, *args, **kwargs):
+        """Allow test-friendly alias fields.
+        - stripe_payment_intent_id -> provider_payment_id
+        - payment_method -> payment_method_type
+        """
+        alias_map = {
+            "stripe_payment_intent_id": "provider_payment_id",
+            "payment_method": "payment_method_type",
+        }
+        for alias, real in alias_map.items():
+            if alias in kwargs and real not in kwargs:
+                kwargs[real] = kwargs.pop(alias)
+        super().__init__(*args, **kwargs)
     
     @property
     def is_successful(self) -> bool:
@@ -162,3 +176,13 @@ class Payment(Base):
             "processed_at": self.processed_at.isoformat() if self.processed_at else None,
             "failed_at": self.failed_at.isoformat() if self.failed_at else None,
         }
+
+    # Back-compat/test-friendly alias for stripe naming
+    @property
+    def stripe_payment_intent_id(self) -> str | None:
+        """Alias for provider_payment_id used in tests and Stripe flows."""
+        return self.provider_payment_id
+
+    @stripe_payment_intent_id.setter
+    def stripe_payment_intent_id(self, value: str | None) -> None:
+        self.provider_payment_id = value

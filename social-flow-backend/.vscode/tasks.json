@@ -1,45 +1,55 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Install (Node workspaces)",
-      "type": "shell",
-      "command": "pnpm i || npm i"
-    },
-    {
-      "label": "Lint (all)",
-      "type": "shell",
-      "command": "pnpm -r lint || npm run -ws lint || ruff check ."
-    },
-    {
-      "label": "Typecheck (TS & Python)",
-      "type": "shell",
-      "command": "pnpm -r typecheck || npm run -ws typecheck || mypy . || echo 'skip mypy'"
-    },
-    {
-      "label": "Test (all)",
-      "type": "shell",
-      "command": "pnpm -r test || npm run -ws test || pytest -q"
-    },
-    {
-      "label": "Docker Compose Up",
-      "type": "shell",
-      "command": "docker compose up -d"
-    },
-    {
-      "label": "Docker Compose Down",
-      "type": "shell",
-      "command": "docker compose down"
-    },
-    {
-      "label": "DB Migrate",
-      "type": "shell",
-      "command": "make migrate || alembic upgrade head || prisma migrate deploy || echo 'hook your migrate tool here'"
-    },
-    {
-      "label": "Generate OpenAPI Clients",
-      "type": "shell",
-      "command": "openapi-generator-cli generate -g typescript-axios -i openapi.yaml -o ./clients/ts || echo 'install openapi-generator'"
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install (Node workspaces)",
+			"type": "shell",
+			"command": "pnpm i || npm i"
+		},
+		{
+			"label": "Lint (all)",
+			"type": "shell",
+			"command": "pnpm -r lint || npm run -ws lint || ruff check ."
+		},
+		{
+			"label": "Typecheck (TS & Python)",
+			"type": "shell",
+			"command": "pnpm -r typecheck || npm run -ws typecheck || mypy . || echo 'skip mypy'"
+		},
+		{
+			"label": "Test (all)",
+			"type": "shell",
+			"command": "pnpm -r test || npm run -ws test || pytest -q"
+		},
+		{
+			"label": "Docker Compose Up",
+			"type": "shell",
+			"command": "docker compose up -d"
+		},
+		{
+			"label": "Docker Compose Down",
+			"type": "shell",
+			"command": "docker compose down"
+		},
+		{
+			"label": "DB Migrate",
+			"type": "shell",
+			"command": "make migrate || alembic upgrade head || prisma migrate deploy || echo 'hook your migrate tool here'"
+		},
+		{
+			"label": "Generate OpenAPI Clients",
+			"type": "shell",
+			"command": "openapi-generator-cli generate -g typescript-axios -i openapi.yaml -o ./clients/ts || echo 'install openapi-generator'"
+		},
+		{
+			"label": "pytest unit auth subset",
+			"type": "shell",
+			"command": "pytest -q tests/unit/test_auth.py -q",
+			"isBackground": false,
+			"problemMatcher": [
+				"$pytest"
+			],
+			"group": "build"
+		}
+	]
 }

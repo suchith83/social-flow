@@ -11,6 +11,7 @@ Provides comprehensive metrics for:
 from typing import Callable
 from functools import wraps
 import time
+import asyncio
 
 from prometheus_client import (
     Counter,
@@ -161,8 +162,9 @@ celery_workers_active = Gauge(
 ml_predictions_total = Counter(
     "ml_predictions_total",
     "Total ML predictions",
-    ["model_name", "status"],  # status: success, failure, cached
+    ["model_name", "status"],
 )
+# status label values: success, failure, cached
 
 ml_prediction_duration_seconds = Histogram(
     "ml_prediction_duration_seconds",
@@ -200,8 +202,9 @@ videos_uploaded_total = Counter(
 videos_total = Gauge(
     "videos_total",
     "Total number of videos",
-    ["status"],  # status: uploaded, processing, processed, failed
+    ["status"],
 )
+# status label values: uploaded, processing, processed, failed
 
 posts_created_total = Counter(
     "posts_created_total",
@@ -221,14 +224,16 @@ live_streams_active = Gauge(
 payments_total = Counter(
     "payments_total",
     "Total payments processed",
-    ["type", "status"],  # type: one_time, subscription; status: success, failed
+    ["type", "status"],
 )
+# type label values: one_time, subscription; status: success, failed
 
 revenue_total = Counter(
     "revenue_total_usd",
     "Total revenue in USD",
-    ["type"],  # type: subscription, tips, ads, content_sales
+    ["type"],
 )
+# type label values: subscription, tips, ads, content_sales
 
 
 # ============================================================================
@@ -397,7 +402,6 @@ def track_count(metric: Counter, *labels):
 # METRICS ENDPOINT
 # ============================================================================
 
-import asyncio
 
 async def metrics_endpoint() -> Response:
     """

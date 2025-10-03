@@ -53,15 +53,20 @@ class Settings(BaseSettings):
     def assemble_db_connection(cls, v: Optional[str], info) -> Any:
         if isinstance(v, str):
             return v
-        # Access other field values from info.data
-        data = info.data if hasattr(info, 'data') else {}
+        # In Pydantic V2, use info.data to access other fields
+        postgres_user = info.data.get("POSTGRES_USER")
+        postgres_password = info.data.get("POSTGRES_PASSWORD")
+        postgres_server = info.data.get("POSTGRES_SERVER")
+        postgres_port = info.data.get("POSTGRES_PORT", "5432")
+        postgres_db = info.data.get("POSTGRES_DB")
+        
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
-            username=data.get("POSTGRES_USER"),
-            password=data.get("POSTGRES_PASSWORD"),
-            host=data.get("POSTGRES_SERVER"),
-            port=int(data.get("POSTGRES_PORT", 5432)),
-            path=f"/{data.get('POSTGRES_DB') or ''}",
+            username=postgres_user,
+            password=postgres_password,
+            host=postgres_server,
+            port=int(postgres_port),
+            path=f"/{postgres_db or ''}",
         )
     
     # Redis
@@ -76,17 +81,21 @@ class Settings(BaseSettings):
     def assemble_redis_connection(cls, v: Optional[str], info) -> Any:
         if isinstance(v, str):
             return v
-        # Access other field values from info.data
-        data = info.data if hasattr(info, 'data') else {}
-        password = data.get("REDIS_PASSWORD")
-        auth = f":{password}@" if password else ""
-        return f"redis://{auth}{data.get('REDIS_HOST')}:{data.get('REDIS_PORT')}/{data.get('REDIS_DB')}"
+        # In Pydantic V2, use info.data to access other fields
+        redis_password = info.data.get("REDIS_PASSWORD")
+        redis_host = info.data.get("REDIS_HOST")
+        redis_port = info.data.get("REDIS_PORT")
+        redis_db = info.data.get("REDIS_DB")
+        
+        auth = f":{redis_password}@" if redis_password else ""
+        return f"redis://{auth}{redis_host}:{redis_port}/{redis_db}"
     
     # AWS Configuration
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
     AWS_REGION: str = "us-east-1"
     AWS_S3_BUCKET: str = "social-flow-videos"
+    S3_BUCKET_NAME: str = "social-flow-videos"  # Alias for compatibility
     AWS_S3_REGION: str = "us-east-1"
     AWS_CLOUDFRONT_DOMAIN: Optional[str] = None
     
@@ -174,6 +183,7 @@ class Settings(BaseSettings):
     # Development
     DEBUG: bool = False
     TESTING: bool = False
+    ENVIRONMENT: str = "development"  # development, staging, production
     
     # Rate Limiting
     RATE_LIMIT_ENABLED: bool = True

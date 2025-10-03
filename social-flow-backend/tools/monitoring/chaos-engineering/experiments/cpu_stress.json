@@ -1,7 +1,0 @@
-{
-  "name": "cpu-stress",
-  "description": "Burn CPU cycles to test autoscaling and resilience",
-  "type": "system",
-  "duration": 120,
-  "command": "stress --cpu 4 --timeout 120"
-}

@@ -1,183 +1,141 @@
 """
-Stripe Connect and Payout models.
+Stripe Connect models for creator payouts.
 
-Models for managing creator payouts through Stripe Connect.
+This module defines models for Stripe Connect integration and creator payouts.
 """
 
 import uuid
 from datetime import datetime
-from enum import Enum
+from decimal import Decimal
 
-from sqlalchemy import Boolean, Column, DateTime, Float, String, Text, Integer
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Text, Numeric
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
 
-class ConnectAccountStatus(str, Enum):
-    """Stripe Connect account status."""
-    PENDING = "pending"
-    ACTIVE = "active"
-    RESTRICTED = "restricted"
-    DISABLED = "disabled"
-
-
-class PayoutStatus(str, Enum):
-    """Payout status."""
-    PENDING = "pending"
-    PROCESSING = "processing"
-    IN_TRANSIT = "in_transit"
-    PAID = "paid"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
-
-
 class StripeConnectAccount(Base):
-    """Stripe Connect account for creator payouts."""
+    """Stripe Connect account model for creator payouts."""
     
     __tablename__ = "stripe_connect_accounts"
     
+    # Primary key
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), nullable=False, unique=True, index=True)
     
-    # Stripe account details
+    # Stripe details
     stripe_account_id = Column(String(255), unique=True, nullable=False, index=True)
-    account_type = Column(String(50), nullable=False)  # express, standard, custom
-    country = Column(String(2), nullable=False)
+    stripe_customer_id = Column(String(255), nullable=True)
     
     # Account status
-    status = Column(String(20), default=ConnectAccountStatus.PENDING, nullable=False)
-    charges_enabled = Column(Boolean, default=False, nullable=False)
-    payouts_enabled = Column(Boolean, default=False, nullable=False)
-    details_submitted = Column(Boolean, default=False, nullable=False)
-    
-    # Requirements
-    requirements_currently_due = Column(Text, nullable=True)  # JSON array
-    requirements_eventually_due = Column(Text, nullable=True)  # JSON array
-    requirements_past_due = Column(Text, nullable=True)  # JSON array
+    is_active = Column(Boolean, default=True, nullable=False)
+    is_verified = Column(Boolean, default=False, nullable=False)
+    is_onboarded = Column(Boolean, default=False, nullable=False)
     
     # Account details
+    account_type = Column(String(50), nullable=True)  # standard, express, custom
     business_type = Column(String(50), nullable=True)  # individual, company
-    business_name = Column(String(255), nullable=True)
-    business_url = Column(String(500), nullable=True)
-    support_email = Column(String(255), nullable=True)
-    support_phone = Column(String(50), nullable=True)
+    country = Column(String(2), nullable=True)
+    currency = Column(String(3), default='USD', nullable=False)
     
-    # Bank account
-    external_account_id = Column(String(255), nullable=True)
-    bank_name = Column(String(255), nullable=True)
-    bank_last_four = Column(String(4), nullable=True)
+    # Verification
+    verification_status = Column(String(50), nullable=True)
+    verification_fields_needed = Column(Text, nullable=True)  # JSON array
     
-    # Revenue tracking
-    total_volume = Column(Float, default=0.0, nullable=False)
-    available_balance = Column(Float, default=0.0, nullable=False)
-    pending_balance = Column(Float, default=0.0, nullable=False)
-    currency = Column(String(3), default="USD", nullable=False)
-    
-    # Onboarding
-    onboarding_url = Column(Text, nullable=True)
-    onboarding_completed_at = Column(DateTime, nullable=True)
+    # Capabilities
+    charges_enabled = Column(Boolean, default=False, nullable=False)
+    payouts_enabled = Column(Boolean, default=False, nullable=False)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False
+    )
+    verified_at = Column(DateTime, nullable=True)
+    
+    # Foreign keys
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey('users.id', ondelete='CASCADE'),
+        nullable=False,
+        unique=True,
+        index=True
+    )
     
     # Relationships
-    payouts = relationship("CreatorPayout", back_populates="connect_account", cascade="all, delete-orphan")
+    user = relationship("User", backref="stripe_connect_account", uselist=False)
+    payouts = relationship("CreatorPayout", back_populates="stripe_account", cascade="all, delete-orphan")
     
     def __repr__(self) -> str:
-        return f"<StripeConnectAccount(id={self.id}, stripe_account_id={self.stripe_account_id}, status={self.status})>"
-    
-    @property
-    def is_fully_onboarded(self) -> bool:
-        """Check if account is fully onboarded."""
-        return (
-            self.details_submitted
-            and self.charges_enabled
-            and self.payouts_enabled
-            and self.status == ConnectAccountStatus.ACTIVE
-        )
+        return f"<StripeConnectAccount(id={self.id}, user_id={self.user_id}, stripe_account_id={self.stripe_account_id})>"
 
 
 class CreatorPayout(Base):
-    """Creator payout tracking."""
+    """Creator payout model for tracking payments to creators."""
     
     __tablename__ = "creator_payouts"
     
+    # Primary key
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
-    connect_account_id = Column(UUID(as_uuid=True), nullable=False, index=True)
     
-    # Payout details
-    amount = Column(Float, nullable=False)
-    currency = Column(String(3), default="USD", nullable=False)
-    status = Column(String(20), default=PayoutStatus.PENDING, nullable=False)
+    # Payment details
+    amount = Column(Numeric(10, 2), nullable=False)
+    currency = Column(String(3), default='USD', nullable=False)
+    description = Column(Text, nullable=True)
     
-    # Stripe payout details
+    # Stripe details
     stripe_payout_id = Column(String(255), unique=True, nullable=True, index=True)
     stripe_transfer_id = Column(String(255), unique=True, nullable=True)
     
-    # Payout breakdown
-    gross_amount = Column(Float, nullable=False)
-    platform_fee = Column(Float, default=0.0, nullable=False)
-    stripe_fee = Column(Float, default=0.0, nullable=False)
-    net_amount = Column(Float, nullable=False)
+    # Status
+    status = Column(
+        String(50),
+        default='pending',
+        nullable=False
+    )  # pending, processing, paid, failed, cancelled
     
-    # Revenue source breakdown
-    subscription_revenue = Column(Float, default=0.0, nullable=False)
-    tips_revenue = Column(Float, default=0.0, nullable=False)
-    content_sales_revenue = Column(Float, default=0.0, nullable=False)
-    ad_revenue = Column(Float, default=0.0, nullable=False)
+    # Payment breakdown
+    watch_time_earnings = Column(Numeric(10, 2), default=Decimal('0'), nullable=False)
+    ad_revenue = Column(Numeric(10, 2), default=Decimal('0'), nullable=False)
+    subscription_revenue = Column(Numeric(10, 2), default=Decimal('0'), nullable=False)
+    donation_revenue = Column(Numeric(10, 2), default=Decimal('0'), nullable=False)
     
-    # Payout period
+    # Period
     period_start = Column(DateTime, nullable=False)
     period_end = Column(DateTime, nullable=False)
     
-    # Description and notes
-    description = Column(Text, nullable=True)
-    stripe_metadata = Column(Text, nullable=True)  # JSON
-    failure_message = Column(Text, nullable=True)
-    
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-    scheduled_at = Column(DateTime, nullable=True)
-    processed_at = Column(DateTime, nullable=True)
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False
+    )
     paid_at = Column(DateTime, nullable=True)
     failed_at = Column(DateTime, nullable=True)
+    failure_reason = Column(Text, nullable=True)
+    
+    # Foreign keys
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey('users.id', ondelete='CASCADE'),
+        nullable=False,
+        index=True
+    )
+    stripe_account_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey('stripe_connect_accounts.id', ondelete='CASCADE'),
+        nullable=False,
+        index=True
+    )
     
     # Relationships
-    connect_account = relationship("StripeConnectAccount", back_populates="payouts")
+    user = relationship("User", backref="creator_payouts")
+    stripe_account = relationship("StripeConnectAccount", back_populates="payouts")
     
     def __repr__(self) -> str:
-        return f"<CreatorPayout(id={self.id}, amount={self.amount}, status={self.status})>"
-
-
-class WebhookEvent(Base):
-    """Stripe webhook event tracking."""
-    
-    __tablename__ = "stripe_webhook_events"
-    
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    
-    # Stripe event details
-    stripe_event_id = Column(String(255), unique=True, nullable=False, index=True)
-    event_type = Column(String(100), nullable=False, index=True)
-    event_version = Column(String(50), nullable=True)
-    
-    # Event data
-    event_data = Column(Text, nullable=False)  # Full JSON payload
-    
-    # Processing status
-    is_processed = Column(Boolean, default=False, nullable=False)
-    processed_at = Column(DateTime, nullable=True)
-    processing_error = Column(Text, nullable=True)
-    retry_count = Column(Integer, default=0, nullable=False)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-    
-    def __repr__(self) -> str:
-        return f"<WebhookEvent(id={self.id}, event_type={self.event_type}, is_processed={self.is_processed})>"
+        return f"<CreatorPayout(id={self.id}, user_id={self.user_id}, amount={self.amount}, status={self.status})>"
