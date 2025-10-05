@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import uuid4
 
 from app.auth.models.user import User
-from app.livestream.models.livestream import LiveStream, StreamViewer
+from app.models.livestream import LiveStream, StreamViewer
 
 
 @pytest.mark.asyncio

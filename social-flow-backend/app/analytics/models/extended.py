@@ -18,7 +18,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import JSON
 from sqlalchemy.orm import relationship
 
-from app.core.database import Base
+from app.models.base import Base
 
 
 class VideoMetrics(Base):
@@ -98,6 +98,18 @@ class VideoMetrics(Base):
     
     def __repr__(self) -> str:
         return f"<VideoMetrics(video_id={self.video_id}, views={self.total_views})>"
+    
+    def __init__(self, *args, **kwargs):
+        """Allow test-friendly alias fields used in tests."""
+        alias_map = {
+            "views_count": "total_views",
+            "unique_viewers": "unique_views",
+            "watch_time_total": "total_watch_time",
+        }
+        for alias, real_name in alias_map.items():
+            if alias in kwargs and real_name not in kwargs:
+                kwargs[real_name] = kwargs.pop(alias)
+        super().__init__(*args, **kwargs)
 
 
 class UserBehaviorMetrics(Base):

@@ -11,7 +11,7 @@ from typing import List
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.models.user import User
-from app.auth.models.subscription import Subscription
+from app.models.payment import Subscription
 
 router = APIRouter(prefix="/subscriptions", tags=["subscriptions"])
 

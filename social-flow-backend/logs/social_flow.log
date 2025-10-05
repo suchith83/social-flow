@@ -1738,3 +1738,629 @@ ImportError: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\D
 2025-10-05 13:43:01 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
 2025-10-05 13:43:01 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
 2025-10-05 13:43:01 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 14:30:01 - app.ml_pipelines.scheduler - INFO - scheduler - _execute_scheduled_task - 234 - Executing scheduled task: Hourly Cache Warming
+2025-10-05 14:30:02 - app.ml_pipelines.orchestrator - INFO - orchestrator - _execute_task - 290 - Starting task execution: 2b1cbf38-0cc0-4a19-8fc7-7edcbd42f19e (cache_warming)
+2025-10-05 14:30:02 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - warm_cache - 205 - Starting cache warming for 500 users with hybrid algorithm
+2025-10-05 14:30:02 - app.ml_pipelines.recommendation_precomputer - ERROR - recommendation_precomputer - warm_cache - 242 - Error warming cache: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\users\models\__init__.py)
+Traceback (most recent call last):
+  File "C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\ml_pipelines\recommendation_precomputer.py", line 211, in warm_cache
+    from app.users.models import User
+ImportError: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\users\models\__init__.py). Did you mean: 'users'?
+2025-10-05 14:30:02 - app.ml_pipelines.orchestrator - INFO - orchestrator - _execute_task - 311 - Task completed: 2b1cbf38-0cc0-4a19-8fc7-7edcbd42f19e in 0.22s
+2025-10-05 14:30:05 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 14:30:05 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 14:30:05 - app.ml_pipelines.orchestrator - INFO - orchestrator - submit_task - 197 - Task submitted: 2b1cbf38-0cc0-4a19-8fc7-7edcbd42f19e (cache_warming) priority=3, queue_size=0
+2025-10-05 14:30:05 - app.ml_pipelines.scheduler - INFO - scheduler - _execute_scheduled_task - 256 - Scheduled task submitted: Hourly Cache Warming (task_id=2b1cbf38-0cc0-4a19-8fc7-7edcbd42f19e)
+2025-10-05 14:30:09 - app.ml_pipelines.orchestrator - ERROR - orchestrator - _save_task_to_redis - 413 - Error saving task to Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 14:30:14 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 14:30:14 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 14:30:14 - app.ml_pipelines.scheduler - INFO - scheduler - _execute_scheduled_task - 234 - Executing scheduled task: Hourly Cache Warming
+2025-10-05 14:30:15 - app.ml_pipelines.orchestrator - INFO - orchestrator - _execute_task - 290 - Starting task execution: 9f67a80a-0d75-4b59-a918-ebd2a735a513 (cache_warming)
+2025-10-05 14:30:15 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - warm_cache - 205 - Starting cache warming for 500 users with hybrid algorithm
+2025-10-05 14:30:15 - app.ml_pipelines.recommendation_precomputer - ERROR - recommendation_precomputer - warm_cache - 242 - Error warming cache: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\users\models\__init__.py)
+Traceback (most recent call last):
+  File "C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\ml_pipelines\recommendation_precomputer.py", line 211, in warm_cache
+    from app.users.models import User
+ImportError: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\users\models\__init__.py). Did you mean: 'users'?
+2025-10-05 14:30:15 - app.ml_pipelines.orchestrator - INFO - orchestrator - _execute_task - 311 - Task completed: 9f67a80a-0d75-4b59-a918-ebd2a735a513 in 0.02s
+2025-10-05 14:30:18 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 14:30:18 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 14:30:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - submit_task - 197 - Task submitted: 9f67a80a-0d75-4b59-a918-ebd2a735a513 (cache_warming) priority=3, queue_size=0
+2025-10-05 14:30:18 - app.ml_pipelines.scheduler - INFO - scheduler - _execute_scheduled_task - 256 - Scheduled task submitted: Hourly Cache Warming (task_id=9f67a80a-0d75-4b59-a918-ebd2a735a513)
+2025-10-05 14:30:22 - app.ml_pipelines.orchestrator - ERROR - orchestrator - _save_task_to_redis - 413 - Error saving task to Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 14:30:26 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 14:30:26 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:13:09 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:14:06 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:14:06 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:14:14 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'chat_messages.deleted_by_user_id' could not find table 'users' with which to generate a foreign key to target column 'id'
+2025-10-05 15:14:14 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:14:18 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:14:18 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:14:18 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:14:18 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:14:18 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:14:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:14:18 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:14:18 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:14:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:14:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:14:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:14:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:14:18 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:14:18 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:14:18 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:14:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:14:18 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:14:25 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'chat_messages.deleted_by_user_id' could not find table 'users' with which to generate a foreign key to target column 'id'
+2025-10-05 15:14:25 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:14:29 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:14:29 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:14:29 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:14:29 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:14:29 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:14:29 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:14:29 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:14:29 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:14:29 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:14:29 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:14:29 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:14:29 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:14:29 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:14:29 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:14:29 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:14:29 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:14:29 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:15:50 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:16:29 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:16:29 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:16:40 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'chat_messages.deleted_by_user_id' could not find table 'users' with which to generate a foreign key to target column 'id'
+2025-10-05 15:16:40 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:16:44 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:16:44 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:16:44 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:16:44 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:16:44 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:16:44 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:16:44 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:16:44 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:16:44 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:16:44 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:16:44 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:16:44 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:16:44 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:16:44 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:16:44 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:16:44 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:16:44 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:20:07 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:20:44 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:20:44 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:20:51 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'chat_messages.user_id' could not find table 'users' with which to generate a foreign key to target column 'id'
+2025-10-05 15:20:51 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:20:55 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:20:55 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:20:55 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:20:55 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:20:55 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:20:55 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:20:55 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:20:55 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:20:55 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:20:55 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:20:55 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:20:55 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:20:55 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:20:55 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:20:55 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:20:55 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:20:55 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:23:25 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:23:55 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:23:55 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:24:04 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'chat_messages.user_id' could not find table 'users' with which to generate a foreign key to target column 'id'
+2025-10-05 15:24:04 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:24:08 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:24:08 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:24:08 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:24:08 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:24:08 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:24:08 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:24:08 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:24:08 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:24:08 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:24:08 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:24:08 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:24:08 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:24:08 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:24:08 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:24:08 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:24:08 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:24:08 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:24:14 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'chat_messages.user_id' could not find table 'users' with which to generate a foreign key to target column 'id'
+2025-10-05 15:24:14 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:24:18 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:24:18 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:24:18 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:24:18 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:24:18 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:24:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:24:18 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:24:18 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:24:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:24:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:24:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:24:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:24:18 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:24:18 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:24:18 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:24:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:24:18 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:24:21 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:25:18 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:25:18 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:25:26 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:25:26 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:25:30 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:25:30 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:25:30 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:25:30 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:25:30 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:25:30 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:25:30 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:25:30 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:25:30 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:25:30 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:25:30 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:25:30 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:25:30 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:25:30 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:25:30 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:25:30 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:25:30 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:26:10 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:26:30 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:26:30 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:26:39 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:26:39 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:26:44 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:26:44 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:26:44 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:26:44 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:26:44 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:26:44 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:26:44 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:26:44 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:26:44 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:26:44 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:26:44 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:26:44 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:26:44 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:26:44 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:26:44 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:26:44 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:26:44 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:27:38 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:27:44 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:27:44 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:27:55 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:27:55 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:27:59 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:27:59 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:27:59 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:27:59 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:27:59 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:27:59 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:27:59 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:27:59 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:27:59 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:27:59 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:27:59 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:27:59 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:27:59 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:27:59 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:27:59 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:27:59 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:27:59 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:28:00 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:28:59 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:28:59 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:29:09 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:29:09 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:29:13 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:29:13 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:29:13 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:29:13 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:29:13 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:29:13 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:29:13 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:29:13 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:29:13 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:29:13 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:29:13 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 10:00:00)
+2025-10-05 15:29:13 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:29:13 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:29:13 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:29:13 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:29:13 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:29:13 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:30:13 - app.ml_pipelines.scheduler - INFO - scheduler - _execute_scheduled_task - 234 - Executing scheduled task: Hourly Cache Warming
+2025-10-05 15:30:14 - app.ml_pipelines.orchestrator - INFO - orchestrator - _execute_task - 290 - Starting task execution: 5e602b78-f09a-44b5-ac9a-7aa2ebb5c368 (cache_warming)
+2025-10-05 15:30:14 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - warm_cache - 205 - Starting cache warming for 500 users with hybrid algorithm
+2025-10-05 15:30:14 - app.ml_pipelines.recommendation_precomputer - ERROR - recommendation_precomputer - warm_cache - 242 - Error warming cache: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\users\models\__init__.py)
+Traceback (most recent call last):
+  File "C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\ml_pipelines\recommendation_precomputer.py", line 211, in warm_cache
+    from app.users.models import User
+ImportError: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\users\models\__init__.py). Did you mean: 'users'?
+2025-10-05 15:30:14 - app.ml_pipelines.orchestrator - INFO - orchestrator - _execute_task - 311 - Task completed: 5e602b78-f09a-44b5-ac9a-7aa2ebb5c368 in 0.02s
+2025-10-05 15:30:17 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:30:17 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:30:17 - app.ml_pipelines.orchestrator - INFO - orchestrator - submit_task - 197 - Task submitted: 5e602b78-f09a-44b5-ac9a-7aa2ebb5c368 (cache_warming) priority=3, queue_size=0
+2025-10-05 15:30:17 - app.ml_pipelines.scheduler - INFO - scheduler - _execute_scheduled_task - 256 - Scheduled task submitted: Hourly Cache Warming (task_id=5e602b78-f09a-44b5-ac9a-7aa2ebb5c368)
+2025-10-05 15:30:19 - app.ml_pipelines.scheduler - INFO - scheduler - _execute_scheduled_task - 234 - Executing scheduled task: Hourly Cache Warming
+2025-10-05 15:30:19 - app.ml_pipelines.orchestrator - INFO - orchestrator - _execute_task - 290 - Starting task execution: 7b016296-f5b3-47b8-b8c3-7096f253a0d3 (cache_warming)
+2025-10-05 15:30:19 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - warm_cache - 205 - Starting cache warming for 500 users with hybrid algorithm
+2025-10-05 15:30:19 - app.ml_pipelines.recommendation_precomputer - ERROR - recommendation_precomputer - warm_cache - 242 - Error warming cache: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\users\models\__init__.py)
+Traceback (most recent call last):
+  File "C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\ml_pipelines\recommendation_precomputer.py", line 211, in warm_cache
+    from app.users.models import User
+ImportError: cannot import name 'User' from 'app.users.models' (C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\users\models\__init__.py). Did you mean: 'users'?
+2025-10-05 15:30:19 - app.ml_pipelines.orchestrator - INFO - orchestrator - _execute_task - 311 - Task completed: 7b016296-f5b3-47b8-b8c3-7096f253a0d3 in 0.05s
+2025-10-05 15:30:21 - app.ml_pipelines.orchestrator - ERROR - orchestrator - _save_task_to_redis - 413 - Error saving task to Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:30:23 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:30:23 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:30:23 - app.ml_pipelines.orchestrator - INFO - orchestrator - submit_task - 197 - Task submitted: 7b016296-f5b3-47b8-b8c3-7096f253a0d3 (cache_warming) priority=3, queue_size=0
+2025-10-05 15:30:23 - app.ml_pipelines.scheduler - INFO - scheduler - _execute_scheduled_task - 256 - Scheduled task submitted: Hourly Cache Warming (task_id=7b016296-f5b3-47b8-b8c3-7096f253a0d3)
+2025-10-05 15:30:25 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:30:25 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:30:27 - app.ml_pipelines.orchestrator - ERROR - orchestrator - _save_task_to_redis - 413 - Error saving task to Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:30:31 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:30:31 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:45:09 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:45:17 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:45:17 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:45:31 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:45:31 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:45:35 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:45:35 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:45:35 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:45:35 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:45:35 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:45:35 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:45:35 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:45:35 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:45:35 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:45:35 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:45:35 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 15:45:35 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:45:35 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:45:35 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:45:35 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:45:35 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:45:35 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:54:30 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:54:35 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:54:35 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:54:46 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:54:46 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:54:50 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:54:50 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:54:50 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:54:50 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:54:50 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:54:50 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:54:50 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:54:50 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:54:50 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:54:50 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:54:50 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 15:54:50 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:54:50 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:54:50 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:54:50 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:54:50 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:54:50 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:55:33 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:55:50 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:55:50 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:55:57 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:55:57 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:56:01 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:56:01 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:56:01 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:56:01 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:56:01 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:56:01 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:56:01 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:56:01 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:56:01 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:56:01 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:56:01 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 15:56:01 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:56:01 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:56:01 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:56:01 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:56:01 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:56:01 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:58:52 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 15:59:01 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 15:59:01 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 15:59:11 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:59:11 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:59:15 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:59:15 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:59:15 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:59:15 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:59:15 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:59:15 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:59:15 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:59:15 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:59:15 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:59:15 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:59:15 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 15:59:15 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:59:15 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:59:15 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:59:15 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:59:15 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:59:15 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:59:20 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:59:20 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:59:24 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:59:24 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:59:24 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:59:24 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:59:24 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:59:24 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:59:24 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:59:24 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:59:24 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:59:24 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:59:24 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 15:59:24 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:59:24 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:59:24 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:59:24 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:59:24 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:59:24 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 15:59:29 - app.core.database - ERROR - database - init_db - 129 - Failed to initialize database: Foreign key associated with column 'video_metrics.video_id' could not find table 'videos' with which to generate a foreign key to target column 'id'
+2025-10-05 15:59:29 - app.core.database - WARNING - database - init_db - 130 - Application will continue but database functionality may be limited
+2025-10-05 15:59:33 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 15:59:33 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 15:59:33 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 15:59:33 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 15:59:33 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 15:59:33 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 15:59:33 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 15:59:33 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 15:59:33 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 15:59:33 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 15:59:33 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 15:59:33 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 15:59:33 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 15:59:33 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 15:59:33 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 15:59:33 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 15:59:33 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:00:55 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 16:01:33 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 16:01:33 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 16:01:43 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:01:47 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:01:47 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:01:47 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:01:47 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:01:47 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:01:47 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:01:47 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:01:47 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:01:47 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:01:47 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:01:47 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:01:47 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:01:47 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:01:47 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:01:47 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:01:47 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:01:47 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:02:18 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 16:02:47 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 16:02:47 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 16:02:58 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:03:02 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:03:02 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:03:02 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:03:02 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:03:02 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:03:02 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:03:02 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:03:02 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:03:02 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:03:02 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:03:02 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:03:02 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:03:02 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:03:02 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:03:02 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:03:02 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:03:02 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:04:17 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 16:05:02 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 16:05:02 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 16:05:12 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:05:16 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:05:16 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:05:16 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:05:16 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:05:16 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:05:16 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:05:16 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:05:16 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:05:16 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:05:16 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:05:16 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:05:16 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:05:16 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:05:16 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:05:16 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:05:16 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:05:16 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:06:30 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 16:07:16 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 16:07:16 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 16:07:34 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:07:38 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:07:38 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:07:38 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:07:38 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:07:38 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:07:38 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:07:38 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:07:38 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:07:38 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:07:38 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:07:38 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:07:38 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:07:38 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:07:38 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:07:38 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:07:38 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:07:38 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:07:54 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 16:08:38 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 16:08:38 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 16:08:49 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:08:53 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:08:53 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:08:53 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:08:53 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:08:53 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:08:53 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:08:53 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:08:53 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:08:53 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:08:53 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:08:53 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:08:53 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:08:53 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:08:53 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:08:53 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:08:53 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:08:53 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:09:03 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:09:07 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:09:07 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:09:07 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:09:07 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:09:07 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:09:07 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:09:07 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:09:07 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:09:07 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:09:07 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:09:07 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:09:07 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:09:07 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:09:07 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:09:07 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:09:07 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:09:07 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:09:07 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 16:10:07 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 16:10:07 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 16:10:14 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:10:18 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:10:18 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:10:18 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:10:18 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:10:18 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:10:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:10:18 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:10:18 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:10:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:10:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:10:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:10:18 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:10:18 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:10:18 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:10:18 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:10:18 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:10:18 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:10:24 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 16:11:18 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 16:11:18 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 16:11:26 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:11:30 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:11:30 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:11:30 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:11:30 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:11:30 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:11:30 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:11:30 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:11:30 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:11:30 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:11:30 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:11:30 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:11:30 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:11:30 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:11:30 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:11:30 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:11:30 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:11:30 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:11:39 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:11:43 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:11:43 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:11:43 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:11:43 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:11:43 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:11:43 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:11:43 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:11:43 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:11:43 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:11:43 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:11:43 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:11:43 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:11:43 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:11:43 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:11:43 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:11:43 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:11:43 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:22:42 - app.ml_pipelines.scheduler - INFO - scheduler - stop - 206 - Stopping pipeline scheduler
+2025-10-05 16:22:43 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 230 - Scheduler loop stopped
+2025-10-05 16:22:43 - app.main - INFO - main - lifespan - 78 - AI Pipeline services shut down gracefully
+2025-10-05 16:22:54 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:22:58 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:22:58 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:22:58 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:22:58 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:22:58 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:22:58 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:22:58 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:22:58 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:22:58 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:22:58 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:22:58 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:22:58 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:22:58 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:22:58 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:22:58 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:22:58 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:22:58 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started
+2025-10-05 16:23:03 - app.core.database - INFO - database - init_db - 127 - Database initialized successfully
+2025-10-05 16:23:07 - app.core.redis - ERROR - redis - init_redis - 48 - Failed to initialize Redis: Error Multiple exceptions: [Errno 10061] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2025-10-05 16:23:07 - app.core.redis - WARNING - redis - init_redis - 49 - Application will continue but caching and session features may be limited
+2025-10-05 16:23:07 - app.infrastructure.storage.manager - INFO - manager - _initialize_backends - 46 - S3 backend initialized successfully
+2025-10-05 16:23:07 - app.infrastructure.storage.manager - INFO - manager - initialize_storage - 392 - Storage manager initialized successfully
+2025-10-05 16:23:07 - app.ml_pipelines.monitor - INFO - monitor - __init__ - 47 - Pipeline monitor initialized
+2025-10-05 16:23:07 - app.ml_pipelines.orchestrator - INFO - orchestrator - __init__ - 133 - Pipeline orchestrator initialized with max 3 concurrent tasks
+2025-10-05 16:23:07 - app.ml_pipelines.batch_processor - INFO - batch_processor - __init__ - 43 - Batch processor initialized with max 5 concurrent videos
+2025-10-05 16:23:07 - app.ml_pipelines.recommendation_precomputer - INFO - recommendation_precomputer - __init__ - 42 - Recommendation pre-computer initialized with max 10 concurrent users
+2025-10-05 16:23:07 - app.ml_pipelines.orchestrator - INFO - orchestrator - initialize - 146 - Pipeline orchestrator components initialized
+2025-10-05 16:23:07 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Daily Recommendation Pre-computation (daily, next run: 2025-10-06 02:00:00)
+2025-10-05 16:23:07 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Hourly Cache Warming (hourly, next run: 2025-10-05 11:00:00)
+2025-10-05 16:23:07 - app.ml_pipelines.scheduler - INFO - scheduler - add_task - 167 - Scheduled task added: Weekly Data Cleanup (weekly, next run: 2025-10-06 03:00:00)
+2025-10-05 16:23:07 - app.ml_pipelines.scheduler - INFO - scheduler - __init__ - 120 - Pipeline scheduler initialized
+2025-10-05 16:23:07 - app.ml_pipelines.scheduler - INFO - scheduler - start - 201 - Starting pipeline scheduler
+2025-10-05 16:23:07 - app.main - INFO - main - lifespan - 59 - AI Pipeline Orchestrator and Scheduler initialized successfully
+2025-10-05 16:23:07 - app.ml_pipelines.orchestrator - INFO - orchestrator - _executor_loop - 263 - Pipeline executor loop started
+2025-10-05 16:23:07 - app.ml_pipelines.scheduler - INFO - scheduler - _scheduler_loop - 214 - Scheduler loop started

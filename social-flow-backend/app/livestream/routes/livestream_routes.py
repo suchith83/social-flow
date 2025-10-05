@@ -23,7 +23,7 @@ from app.livestream.services.stream_service import (
     StreamNotFoundError,
     StreamAlreadyLiveError
 )
-from app.livestream.models.livestream import (
+from app.models.livestream import (
     StreamQuality, ChatMessageType, StreamViewer
 )
 from app.livestream.websocket.chat_handler import handle_websocket_chat, manager

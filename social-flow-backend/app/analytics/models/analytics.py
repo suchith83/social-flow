@@ -12,7 +12,7 @@ from enum import Enum
 from sqlalchemy import Column, DateTime, Float, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.core.database import Base
+from app.models.base import Base
 
 
 class AnalyticsType(str, Enum):

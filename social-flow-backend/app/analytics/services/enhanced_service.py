@@ -18,7 +18,7 @@ from app.analytics.models.extended import (
     AggregatedMetrics, ViewSession
 )
 from app.videos.models.video import Video
-from app.models.user import User
+from app.auth.models.user import User
 # Payments models are optional in some test scenarios; guard imports
 try:
     from app.payments.models.subscription import Subscription  # type: ignore
@@ -54,17 +54,20 @@ class EnhancedAnalyticsService:
     async def calculate_video_metrics(self, video_id: str) -> VideoMetrics:
         """Calculate comprehensive metrics for a video."""
         try:
+            import uuid as uuid_module
+            video_uuid = uuid_module.UUID(video_id) if isinstance(video_id, str) else video_id
+            
             # Check if metrics exist
-            stmt = select(VideoMetrics).where(VideoMetrics.video_id == video_id)
+            stmt = select(VideoMetrics).where(VideoMetrics.video_id == video_uuid)
             result = await self.db.execute(stmt)
             metrics = result.scalar_one_or_none()
             
             if not metrics:
-                metrics = VideoMetrics(video_id=video_id)
+                metrics = VideoMetrics(video_id=video_uuid)
                 self.db.add(metrics)
             
             # Get all view sessions for this video
-            stmt = select(ViewSession).where(ViewSession.video_id == video_id)
+            stmt = select(ViewSession).where(ViewSession.video_id == video_uuid)
             result = await self.db.execute(stmt)
             sessions = result.scalars().all()
             
@@ -95,7 +98,7 @@ class EnhancedAnalyticsService:
             metrics.completion_rate = (len(completed_sessions) / len(sessions) * 100) if sessions else 0
             
             # Get video for engagement metrics
-            stmt = select(Video).where(Video.id == video_id)
+            stmt = select(Video).where(Video.id == video_uuid)
             result = await self.db.execute(stmt)
             video = result.scalar_one_or_none()
             
@@ -197,7 +200,10 @@ class EnhancedAnalyticsService:
     
     async def get_video_metrics(self, video_id: str) -> Optional[VideoMetrics]:
         """Get video metrics, calculating if necessary."""
-        stmt = select(VideoMetrics).where(VideoMetrics.video_id == video_id)
+        import uuid as uuid_module
+        video_uuid = uuid_module.UUID(video_id) if isinstance(video_id, str) else video_id
+        
+        stmt = select(VideoMetrics).where(VideoMetrics.video_id == video_uuid)
         result = await self.db.execute(stmt)
         metrics = result.scalar_one_or_none()
         
@@ -212,17 +218,20 @@ class EnhancedAnalyticsService:
     async def calculate_user_metrics(self, user_id: str) -> UserBehaviorMetrics:
         """Calculate comprehensive metrics for a user."""
         try:
+            import uuid as uuid_module
+            user_uuid = uuid_module.UUID(user_id) if isinstance(user_id, str) else user_id
+            
             # Check if metrics exist
-            stmt = select(UserBehaviorMetrics).where(UserBehaviorMetrics.user_id == user_id)
+            stmt = select(UserBehaviorMetrics).where(UserBehaviorMetrics.user_id == user_uuid)
             result = await self.db.execute(stmt)
             metrics = result.scalar_one_or_none()
             
             if not metrics:
-                metrics = UserBehaviorMetrics(user_id=user_id)
+                metrics = UserBehaviorMetrics(user_id=user_uuid)
                 self.db.add(metrics)
             
             # Get user
-            stmt = select(User).where(User.id == user_id)
+            stmt = select(User).where(User.id == user_uuid)
             result = await self.db.execute(stmt)
             user = result.scalar_one_or_none()
             
@@ -231,7 +240,7 @@ class EnhancedAnalyticsService:
                 return metrics
             
             # Get view sessions for this user
-            stmt = select(ViewSession).where(ViewSession.user_id == user_id)
+            stmt = select(ViewSession).where(ViewSession.user_id == user_uuid)
             result = await self.db.execute(stmt)
             view_sessions = result.scalars().all()
             
@@ -246,7 +255,7 @@ class EnhancedAnalyticsService:
                 metrics.avg_daily_watch_time = metrics.total_watch_time / 30
             
             # Get user's videos if they are a creator
-            stmt = select(Video).where(Video.user_id == user_id)
+            stmt = select(Video).where(Video.user_id == user_uuid)
             result = await self.db.execute(stmt)
             user_videos = result.scalars().all()
             
@@ -653,9 +662,14 @@ class EnhancedAnalyticsService:
             watch_percentage = (duration / video_duration * 100) if video_duration > 0 else 0
             completed = watch_percentage >= 90  # Consider 90%+ as completed
             
+            # Convert string IDs to UUID objects
+            import uuid as uuid_module
+            video_uuid = uuid_module.UUID(video_id) if isinstance(video_id, str) else video_id
+            user_uuid = uuid_module.UUID(user_id) if user_id and isinstance(user_id, str) else user_id
+            
             session = ViewSession(
-                video_id=video_id,
-                user_id=user_id,
+                video_id=video_uuid,
+                user_id=user_uuid,
                 session_id=session_id,
                 started_at=kwargs.get('started_at', datetime.utcnow()),
                 ended_at=kwargs.get('ended_at'),
@@ -692,5 +706,3 @@ class EnhancedAnalyticsService:
             logger.error(f"Error recording view session: {e}")
             await self.db.rollback()
             raise
-
-

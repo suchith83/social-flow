@@ -14,7 +14,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.livestream.services.stream_service import LiveStreamService
-from app.livestream.models.livestream import ChatMessageType
+from app.models.livestream import ChatMessageType
 from app.core.logging import get_logger
 from app.core.redis import get_redis
 

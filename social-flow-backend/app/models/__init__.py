@@ -85,6 +85,7 @@ from app.models.livestream import (
     StreamVisibility,
     StreamQuality,
     DonationStatus,
+    ChatMessageType,
 )
 
 # ==================== Notification Models ====================
@@ -96,6 +97,21 @@ from app.models.notification import (
     NotificationChannel,
     NotificationStatus,
     PushPlatform,
+)
+
+# ==================== Analytics Models ====================
+from app.analytics.models.extended import (
+    VideoMetrics,
+    UserBehaviorMetrics,
+    RevenueMetrics,
+    AggregatedMetrics,
+    ViewSession,
+)
+
+from app.analytics.models.analytics import (
+    Analytics,
+    AnalyticsType,
+    AnalyticsCategory,
 )
 
 
@@ -166,6 +182,7 @@ __all__ = [
     "StreamVisibility",
     "StreamQuality",
     "DonationStatus",
+    "ChatMessageType",
     
     # Notification
     "Notification",
@@ -175,6 +192,16 @@ __all__ = [
     "NotificationChannel",
     "NotificationStatus",
     "PushPlatform",
+    
+    # Analytics
+    "VideoMetrics",
+    "UserBehaviorMetrics",
+    "RevenueMetrics",
+    "AggregatedMetrics",
+    "ViewSession",
+    "Analytics",
+    "AnalyticsType",
+    "AnalyticsCategory",
 ]
 
 
@@ -218,5 +245,13 @@ MODEL_REGISTRY = [
     Notification,
     NotificationSettings,
     PushToken,
+    
+    # Analytics models
+    VideoMetrics,
+    UserBehaviorMetrics,
+    RevenueMetrics,
+    AggregatedMetrics,
+    ViewSession,
+    Analytics,
 ]
 

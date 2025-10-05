@@ -63,6 +63,15 @@ class DonationStatus(str, PyEnum):
     FAILED = "failed"
 
 
+class ChatMessageType(str, PyEnum):
+    """Chat message type enumeration."""
+    MESSAGE = "message"
+    SYSTEM = "system"
+    DONATION = "donation"
+    SUBSCRIPTION = "subscription"
+    MODERATOR_ACTION = "moderator_action"
+
+
 class LiveStream(CommonBase):
     """
     Live stream model for AWS IVS integration.

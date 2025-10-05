@@ -2,6 +2,7 @@
 Auth models package.
 
 This module exports all authentication-related models.
+Note: Subscription is now consolidated in app.models.payment
 """
 
 from app.auth.models.user import User

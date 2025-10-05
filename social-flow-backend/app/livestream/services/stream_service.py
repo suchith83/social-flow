@@ -15,8 +15,8 @@ from botocore.exceptions import ClientError
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.livestream.models.livestream import (
-    LiveStream, StreamViewer, ChatMessage,
+from app.models.livestream import (
+    LiveStream, StreamViewer, StreamChat as ChatMessage,
     StreamStatus, StreamQuality, ChatMessageType
 )
 from app.core.config import settings

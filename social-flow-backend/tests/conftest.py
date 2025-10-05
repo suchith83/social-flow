@@ -35,6 +35,15 @@ from app.models import (
     StreamViewer,
 )
 
+# Import analytics models to ensure tables are created
+from app.analytics.models.extended import (
+    VideoMetrics,
+    UserBehaviorMetrics,
+    RevenueMetrics,
+    AggregatedMetrics,
+    ViewSession,
+)
+
 
 # Enable test mode
 settings.TESTING = True
