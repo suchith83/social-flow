@@ -20,6 +20,7 @@ from app.api.v1.endpoints import (
     users_new,
     videos_new,
     posts_new,
+    ai_pipelines,
 )
 
 # Import from modules
@@ -74,6 +75,8 @@ api_router.include_router(search.router, prefix="/search", tags=["search"])
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
 api_router.include_router(moderation.router, prefix="/moderation", tags=["moderation"])
 api_router.include_router(ml.router, prefix="/ml", tags=["ml-ai"])
+# AI Pipelines & Advanced Recommendations
+api_router.include_router(ai_pipelines.router, prefix="/ai", tags=["ai-pipelines"])
 # Livestream API (mounted without extra prefix; router provides '/livestream')
 api_router.include_router(livestream.router)
 

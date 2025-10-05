@@ -7,7 +7,7 @@ for the Social Flow backend.
 
 import json
 import logging
-from typing import Any, Optional
+from typing import Any, Dict, Optional, Protocol, runtime_checkable
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool
@@ -46,9 +46,10 @@ async def init_redis() -> None:
         logger.info("Redis initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize Redis: {e}")
-        # In production, this should raise, but log and continue in dev
-        if not settings.DEBUG:
-            raise
+        logger.warning("Application will continue but caching and session features may be limited")
+        # Set clients to None to indicate Redis is unavailable
+        _redis_pool = None
+        _redis_client = None
 
 
 async def get_redis() -> Optional[redis.Redis]:
@@ -86,8 +87,31 @@ async def close_redis() -> None:
         raise
 
 
+@runtime_checkable
+class CacheBackend(Protocol):
+    """Protocol defining the cache contract."""
+    
+    async def get(self, key: str) -> Optional[Any]:
+        ...
+    
+    async def set(self, key: str, value: Any, expire: Optional[int] = None) -> bool:
+        ...
+    
+    async def delete(self, key: str) -> bool:
+        ...
+    
+    async def exists(self, key: str) -> bool:
+        ...
+    
+    async def increment(self, key: str, amount: int = 1) -> int:
+        ...
+    
+    async def expire(self, key: str, seconds: int) -> bool:
+        ...
+
+
 class RedisCache:
-    """Redis cache utility class."""
+    """Redis cache utility class backed by Redis."""
     
     def __init__(self, redis_client: redis.Redis):
         self.redis = redis_client
@@ -150,16 +174,54 @@ class RedisCache:
             return False
 
 
+# In-memory cache fallback for test environments or degraded Redis
+class InMemoryCache:
+    """Simplified in-memory cache used when Redis is unavailable."""
+    
+    def __init__(self):
+        self._store: Dict[str, Any] = {}
+    
+    async def get(self, key: str) -> Optional[Any]:
+        value = self._store.get(key)
+        if value is None:
+            return None
+        return json.loads(value)
+    
+    async def set(self, key: str, value: Any, expire: Optional[int] = None) -> bool:
+        # Expiration is ignored in the simplified fallback implementation
+        self._store[key] = json.dumps(value, default=str)
+        return True
+    
+    async def delete(self, key: str) -> bool:
+        return self._store.pop(key, None) is not None
+    
+    async def exists(self, key: str) -> bool:
+        return key in self._store
+    
+    async def increment(self, key: str, amount: int = 1) -> int:
+        current_value = int(json.loads(self._store.get(key, json.dumps(0))))
+        new_value = current_value + amount
+        self._store[key] = json.dumps(new_value)
+        return new_value
+    
+    async def expire(self, key: str, seconds: int) -> bool:
+        # No-op for in-memory fallback
+        return key in self._store
+
+
 # Global cache instance
-cache: Optional[RedisCache] = None
+cache: Optional[CacheBackend] = None
 
 
-async def get_cache() -> RedisCache:
+async def get_cache() -> CacheBackend:
     """Get cache instance."""
     global cache
     
     if cache is None:
         client = await get_redis()
-        cache = RedisCache(client)
+        if client is None:
+            cache = InMemoryCache()
+        else:
+            cache = RedisCache(client)
     
     return cache

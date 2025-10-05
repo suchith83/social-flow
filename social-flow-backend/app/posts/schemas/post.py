@@ -67,7 +67,6 @@ class PostResponse(PostBase):
     
     class Config:
         from_attributes = True
-        orm_mode = True
 
 
 class PostListResponse(BaseModel):
@@ -106,7 +105,6 @@ class CommentResponse(BaseModel):
     
     class Config:
         from_attributes = True
-        orm_mode = True
 
 
 class LikeResponse(BaseModel):
@@ -118,4 +116,3 @@ class LikeResponse(BaseModel):
     
     class Config:
         from_attributes = True
-        orm_mode = True

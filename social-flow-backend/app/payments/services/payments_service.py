@@ -9,12 +9,6 @@ import logging
 import uuid
 from typing import Any, Dict
 from datetime import datetime
-from pathlib import Path
-import sys
-
-# Add monetization to path
-sys.path.append(str(Path(__file__).parent.parent.parent / "services" / "monetization-service"))
-sys.path.append(str(Path(__file__).parent.parent.parent / "services" / "payment-service"))
 
 from app.core.config import settings
 from app.core.exceptions import PaymentServiceError

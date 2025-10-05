@@ -46,12 +46,14 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "password"
     POSTGRES_DB: str = "social_flow"
     POSTGRES_PORT: str = "5432"
-    DATABASE_URL: Optional[PostgresDsn] = None
+    # Allow any database URL (PostgreSQL or SQLite for development)
+    DATABASE_URL: Optional[str] = None
     
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def assemble_db_connection(cls, v: Optional[str], info) -> Any:
         if isinstance(v, str):
+            # Return as-is if already a string (allows SQLite URLs for development)
             return v
         # In Pydantic V2, use info.data to access other fields
         postgres_user = info.data.get("POSTGRES_USER")
@@ -60,14 +62,8 @@ class Settings(BaseSettings):
         postgres_port = info.data.get("POSTGRES_PORT", "5432")
         postgres_db = info.data.get("POSTGRES_DB")
         
-        return PostgresDsn.build(
-            scheme="postgresql+asyncpg",
-            username=postgres_user,
-            password=postgres_password,
-            host=postgres_server,
-            port=int(postgres_port),
-            path=f"/{postgres_db or ''}",
-        )
+        # Build PostgreSQL URL by default
+        return f"postgresql+asyncpg://{postgres_user}:{postgres_password}@{postgres_server}:{postgres_port}/{postgres_db}"
     
     # Redis
     REDIS_HOST: str = "localhost"

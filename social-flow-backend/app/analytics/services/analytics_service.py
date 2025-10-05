@@ -8,12 +8,6 @@ into the FastAPI application.
 import logging
 from typing import Any, Dict, List
 from datetime import datetime, timedelta
-from pathlib import Path
-import sys
-
-# Add analytics to path
-sys.path.append(str(Path(__file__).parent.parent.parent / "analytics"))
-sys.path.append(str(Path(__file__).parent.parent.parent / "ml-pipelines"))
 
 from app.core.exceptions import AnalyticsServiceError
 from app.core.redis import get_cache

@@ -90,6 +90,10 @@ def create_refresh_token(
 
 def verify_token(token: str) -> Optional[Dict[str, Any]]:
     """Verify JWT token and return payload."""
+    # Type validation - must be a string
+    if not isinstance(token, str):
+        return None
+    
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return payload

@@ -65,7 +65,9 @@ class TestE2ESmoke:
     
     def test_health_check(self, base_url):
         """Test 1: System is alive and responding"""
-        response = requests.get(f"{base_url}/health")
+        # Health endpoint is at root level, not /api/v1
+        root_url = base_url.replace("/api/v1", "")
+        response = requests.get(f"{root_url}/health")
         assert response.status_code == 200
         data = response.json()
         assert data.get("status") == "healthy"

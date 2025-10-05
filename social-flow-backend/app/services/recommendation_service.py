@@ -16,14 +16,22 @@ from datetime import datetime, timedelta
 from uuid import UUID
 import random
 
-from sqlalchemy import select, func, and_, desc, or_
+from sqlalchemy import select, func, and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.video import Video, VideoStatus, VideoVisibility
-from app.models.social import Post
+from app.models.video import Video, VideoStatus, VideoVisibility, VideoView, ModerationStatus
+from app.models.social import Post, PostVisibility
 from app.models.social import Follow
 from app.core.redis import get_redis
 from app.ml.services.ml_service import MLService
+
+# Import ml_service for advanced AI recommendations
+try:
+    from app.ml.services.ml_service import ml_service as global_ml_service
+    ADVANCED_ML_AVAILABLE = True
+except ImportError:
+    ADVANCED_ML_AVAILABLE = False
+    global_ml_service = None
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +80,15 @@ class RecommendationService:
         Args:
             user_id: User ID for personalization (None for anonymous)
             limit: Number of recommendations
-            algorithm: Algorithm to use (hybrid, trending, collaborative, content_based)
+            algorithm: Algorithm to use:
+                - hybrid: Combined approach (traditional)
+                - trending: Popular videos
+                - collaborative: Similar users
+                - content_based: Similar content
+                - transformer: BERT-based semantic matching (NEW)
+                - neural_cf: Neural collaborative filtering (NEW)
+                - graph: Social network-aware (NEW)
+                - smart: Auto-select best algorithm with bandit (NEW)
             exclude_ids: Video IDs to exclude
             
         Returns:
@@ -109,6 +125,22 @@ class RecommendationService:
             videos = await self._get_content_based_video_recommendations(
                 user_id, limit, exclude_ids
             )
+        elif algorithm == "transformer" and ADVANCED_ML_AVAILABLE:
+            videos = await self._get_transformer_video_recommendations(
+                user_id, limit, exclude_ids
+            )
+        elif algorithm == "neural_cf" and ADVANCED_ML_AVAILABLE:
+            videos = await self._get_neural_cf_video_recommendations(
+                user_id, limit, exclude_ids
+            )
+        elif algorithm == "graph" and ADVANCED_ML_AVAILABLE:
+            videos = await self._get_graph_video_recommendations(
+                user_id, limit, exclude_ids
+            )
+        elif algorithm == "smart" and ADVANCED_ML_AVAILABLE:
+            videos = await self._get_smart_video_recommendations(
+                user_id, limit, exclude_ids
+            )
         else:
             # Default to hybrid
             videos = await self._get_hybrid_video_recommendations(
@@ -140,7 +172,15 @@ class RecommendationService:
         """
         Hybrid algorithm combining multiple signals.
         
-        Weights:
+        With Advanced ML (when available):
+        - 20% Transformer-based (semantic matching)
+        - 20% Neural Collaborative Filtering
+        - 20% Graph-based (social network)
+        - 20% Traditional Collaborative
+        - 10% Trending
+        - 10% Diversity
+        
+        Without Advanced ML (fallback):
         - 40% Collaborative filtering (similar users)
         - 30% Content-based (similar content)
         - 20% Trending (popular now)
@@ -148,29 +188,77 @@ class RecommendationService:
         """
         recommendations = []
         
-        # Get collaborative recommendations (40%)
-        collab_videos = await self._get_collaborative_video_recommendations(
-            user_id, int(limit * 0.4), exclude_ids
-        )
-        recommendations.extend(collab_videos)
+        if ADVANCED_ML_AVAILABLE and global_ml_service and user_id:
+            # Advanced ML-enhanced hybrid approach
+            try:
+                # Transformer recommendations (20%)
+                transformer_videos = await self._get_transformer_video_recommendations(
+                    user_id, int(limit * 0.2), exclude_ids
+                )
+                recommendations.extend(transformer_videos)
+                
+                # Neural CF recommendations (20%)
+                neural_cf_videos = await self._get_neural_cf_video_recommendations(
+                    user_id, int(limit * 0.2), exclude_ids
+                )
+                recommendations.extend(neural_cf_videos)
+                
+                # Graph-based recommendations (20%)
+                graph_videos = await self._get_graph_video_recommendations(
+                    user_id, int(limit * 0.2), exclude_ids
+                )
+                recommendations.extend(graph_videos)
+                
+                # Traditional collaborative (20%)
+                collab_videos = await self._get_collaborative_video_recommendations(
+                    user_id, int(limit * 0.2), exclude_ids
+                )
+                recommendations.extend(collab_videos)
+                
+                # Trending (10%)
+                trending_videos = await self._get_trending_videos(
+                    int(limit * 0.1), exclude_ids
+                )
+                recommendations.extend(trending_videos)
+                
+                # Diverse/exploratory (10%)
+                diverse_videos = await self._get_diverse_videos(
+                    user_id, int(limit * 0.1), exclude_ids
+                )
+                recommendations.extend(diverse_videos)
+                
+                logger.info(f"Using advanced ML hybrid recommendations for user {user_id}")
+                
+            except Exception as e:
+                logger.error(f"Error in advanced ML hybrid recommendations: {e}", exc_info=True)
+                # Fallback to traditional approach
+                recommendations = []
         
-        # Get content-based recommendations (30%)
-        content_videos = await self._get_content_based_video_recommendations(
-            user_id, int(limit * 0.3), exclude_ids
-        )
-        recommendations.extend(content_videos)
-        
-        # Get trending videos (20%)
-        trending_videos = await self._get_trending_videos(
-            int(limit * 0.2), exclude_ids
-        )
-        recommendations.extend(trending_videos)
-        
-        # Get diverse/exploratory content (10%)
-        diverse_videos = await self._get_diverse_videos(
-            user_id, int(limit * 0.1), exclude_ids
-        )
-        recommendations.extend(diverse_videos)
+        # Traditional hybrid approach (fallback or when ML unavailable)
+        if not recommendations:
+            # Get collaborative recommendations (40%)
+            collab_videos = await self._get_collaborative_video_recommendations(
+                user_id, int(limit * 0.4), exclude_ids
+            )
+            recommendations.extend(collab_videos)
+            
+            # Get content-based recommendations (30%)
+            content_videos = await self._get_content_based_video_recommendations(
+                user_id, int(limit * 0.3), exclude_ids
+            )
+            recommendations.extend(content_videos)
+            
+            # Get trending videos (20%)
+            trending_videos = await self._get_trending_videos(
+                int(limit * 0.2), exclude_ids
+            )
+            recommendations.extend(trending_videos)
+            
+            # Get diverse/exploratory content (10%)
+            diverse_videos = await self._get_diverse_videos(
+                user_id, int(limit * 0.1), exclude_ids
+            )
+            recommendations.extend(diverse_videos)
         
         # Remove duplicates
         seen_ids = set()
@@ -209,7 +297,7 @@ class RecommendationService:
             Video.owner_id.in_(following_ids),
             Video.visibility == VideoVisibility.PUBLIC,
             Video.status == VideoStatus.PROCESSED,
-            Video.is_approved.is_(True),
+            Video.moderation_status == ModerationStatus.APPROVED,
         ]
         
         if exclude_ids:
@@ -219,7 +307,7 @@ class RecommendationService:
             select(Video)
             .where(and_(*filters))
             .order_by(
-                desc(Video.likes_count + Video.views_count * 0.1)
+                desc(Video.like_count + Video.view_count * 0.1)
             )
             .limit(limit)
         )
@@ -243,7 +331,7 @@ class RecommendationService:
         filters = [
             Video.visibility == VideoVisibility.PUBLIC,
             Video.status == VideoStatus.PROCESSED,
-            Video.is_approved.is_(True),
+            Video.moderation_status == ModerationStatus.APPROVED,
         ]
         
         if exclude_ids:
@@ -254,7 +342,7 @@ class RecommendationService:
             select(Video)
             .where(and_(*filters))
             .where(Video.tags.isnot(None))
-            .order_by(desc(Video.views_count))
+            .order_by(desc(Video.view_count))
             .limit(limit)
         )
         
@@ -272,7 +360,7 @@ class RecommendationService:
         filters = [
             Video.visibility == VideoVisibility.PUBLIC,
             Video.status == VideoStatus.PROCESSED,
-            Video.is_approved.is_(True),
+            Video.moderation_status == ModerationStatus.APPROVED,
             Video.created_at >= cutoff_date,
         ]
         
@@ -281,10 +369,10 @@ class RecommendationService:
         
         # Trending score: weighted engagement with recency boost
         trending_score = (
-            Video.views_count * 1.0 +
-            Video.likes_count * 5.0 +
-            Video.comments_count * 10.0 +
-            Video.shares_count * 15.0
+            Video.view_count * 1.0 +
+            Video.like_count * 5.0 +
+            Video.comment_count * 10.0 +
+            Video.share_count * 15.0
         )
         
         stmt = (
@@ -307,7 +395,7 @@ class RecommendationService:
         filters = [
             Video.visibility == VideoVisibility.PUBLIC,
             Video.status == VideoStatus.PROCESSED,
-            Video.is_approved.is_(True),
+            Video.moderation_status == ModerationStatus.APPROVED,
         ]
         
         if exclude_ids:
@@ -317,7 +405,7 @@ class RecommendationService:
         stmt = (
             select(Video)
             .where(and_(*filters))
-            .where(Video.views_count > 100)  # Quality filter
+            .where(Video.view_count > 100)  # Quality filter
             .order_by(func.random())
             .limit(limit * 2)
         )
@@ -327,6 +415,403 @@ class RecommendationService:
         
         # Return random subset
         return random.sample(videos, min(limit, len(videos)))
+    
+    # Advanced ML-based Video Recommendations
+    
+    async def _get_transformer_video_recommendations(
+        self,
+        user_id: Optional[UUID],
+        limit: int,
+        exclude_ids: Optional[List[UUID]] = None,
+    ) -> List[Video]:
+        """
+        Get video recommendations using transformer-based (BERT) semantic matching.
+        
+        This method uses pre-trained BERT models to understand semantic similarity
+        between video content and user preferences based on watch history.
+        """
+        if not user_id or not ADVANCED_ML_AVAILABLE or not global_ml_service:
+            logger.warning("Transformer recommendations unavailable, falling back to trending")
+            return await self._get_trending_videos(limit, exclude_ids)
+        
+        try:
+            # Get user's interaction history (watched/liked videos)
+            history_stmt = (
+                select(Video)
+                .join(VideoView, Video.id == VideoView.video_id)
+                .where(VideoView.user_id == user_id)
+                .order_by(desc(VideoView.created_at))
+                .limit(50)  # Last 50 interactions
+            )
+            history_result = await self.db.execute(history_stmt)
+            history_videos = list(history_result.scalars().all())
+            
+            if not history_videos:
+                logger.info(f"No history for user {user_id}, using trending")
+                return await self._get_trending_videos(limit, exclude_ids)
+            
+            # Format user history for transformer model
+            user_history = [
+                {
+                    "item_id": str(video.id),
+                    "title": video.title or "",
+                    "description": video.description or "",
+                    "tags": video.tags or [],
+                }
+                for video in history_videos
+            ]
+            
+            # Get candidate videos to recommend
+            filters = [
+                Video.visibility == VideoVisibility.PUBLIC,
+                Video.status == VideoStatus.PROCESSED,
+                Video.moderation_status == ModerationStatus.APPROVED,
+            ]
+            
+            if exclude_ids:
+                filters.append(Video.id.notin_(exclude_ids))
+            
+            # Exclude already watched videos
+            watched_ids = [video.id for video in history_videos]
+            filters.append(Video.id.notin_(watched_ids))
+            
+            candidate_stmt = (
+                select(Video)
+                .where(and_(*filters))
+                .order_by(desc(Video.created_at))
+                .limit(500)  # Pool of recent videos
+            )
+            candidate_result = await self.db.execute(candidate_stmt)
+            candidate_videos = list(candidate_result.scalars().all())
+            
+            if not candidate_videos:
+                logger.warning("No candidate videos available")
+                return []
+            
+            # Format candidates for transformer model
+            candidate_items = [
+                {
+                    "item_id": str(video.id),
+                    "title": video.title or "",
+                    "description": video.description or "",
+                    "tags": video.tags or [],
+                }
+                for video in candidate_videos
+            ]
+            
+            # Get transformer recommendations from ML service
+            recommendations = await global_ml_service.get_transformer_recommendations(
+                user_id=str(user_id),
+                user_history=user_history,
+                candidate_items=candidate_items,
+                limit=limit,
+            )
+            
+            if not recommendations:
+                logger.warning("Transformer model returned no recommendations")
+                return await self._get_trending_videos(limit, exclude_ids)
+            
+            # Map recommendations back to Video objects
+            video_map = {str(video.id): video for video in candidate_videos}
+            recommended_videos = []
+            
+            for rec in recommendations:
+                video_id = rec.get("item_id")
+                if video_id and video_id in video_map:
+                    recommended_videos.append(video_map[video_id])
+            
+            logger.info(
+                f"Transformer recommendations: returned {len(recommended_videos)} "
+                f"videos for user {user_id}"
+            )
+            return recommended_videos[:limit]
+            
+        except Exception as e:
+            logger.error(f"Error in transformer recommendations: {e}", exc_info=True)
+            return await self._get_trending_videos(limit, exclude_ids)
+    
+    async def _get_neural_cf_video_recommendations(
+        self,
+        user_id: Optional[UUID],
+        limit: int,
+        exclude_ids: Optional[List[UUID]] = None,
+    ) -> List[Video]:
+        """
+        Get video recommendations using neural collaborative filtering.
+        
+        This method uses deep neural networks to learn complex user-item interactions
+        beyond traditional matrix factorization approaches.
+        """
+        if not user_id or not ADVANCED_ML_AVAILABLE or not global_ml_service:
+            logger.warning("Neural CF recommendations unavailable, falling back to collaborative")
+            return await self._get_collaborative_video_recommendations(user_id, limit, exclude_ids)
+        
+        try:
+            # Get candidate videos
+            filters = [
+                Video.visibility == VideoVisibility.PUBLIC,
+                Video.status == VideoStatus.PROCESSED,
+                Video.moderation_status == ModerationStatus.APPROVED,
+            ]
+            
+            if exclude_ids:
+                filters.append(Video.id.notin_(exclude_ids))
+            
+            # Exclude already watched videos
+            watched_stmt = (
+                select(VideoView.video_id)
+                .where(VideoView.user_id == user_id)
+            )
+            watched_result = await self.db.execute(watched_stmt)
+            watched_ids = [row[0] for row in watched_result.all()]
+            
+            if watched_ids:
+                filters.append(Video.id.notin_(watched_ids))
+            
+            candidate_stmt = (
+                select(Video)
+                .where(and_(*filters))
+                .order_by(desc(Video.created_at))
+                .limit(500)  # Pool of candidates
+            )
+            candidate_result = await self.db.execute(candidate_stmt)
+            candidate_videos = list(candidate_result.scalars().all())
+            
+            if not candidate_videos:
+                logger.warning("No candidate videos for neural CF")
+                return []
+            
+            # Get neural CF predictions from ML service
+            candidate_item_ids = [str(video.id) for video in candidate_videos]
+            recommendations = await global_ml_service.get_neural_cf_recommendations(
+                user_id=str(user_id),
+                candidate_item_ids=candidate_item_ids,
+                limit=limit,
+            )
+            
+            if not recommendations:
+                logger.warning("Neural CF model returned no recommendations")
+                return await self._get_collaborative_video_recommendations(
+                    user_id, limit, exclude_ids
+                )
+            
+            # Map predictions to Video objects
+            video_map = {str(video.id): video for video in candidate_videos}
+            recommended_videos = []
+            
+            for rec in recommendations:
+                video_id = rec.get("item_id")
+                if video_id and video_id in video_map:
+                    recommended_videos.append(video_map[video_id])
+            
+            logger.info(
+                f"Neural CF recommendations: returned {len(recommended_videos)} "
+                f"videos for user {user_id}"
+            )
+            return recommended_videos[:limit]
+            
+        except Exception as e:
+            logger.error(f"Error in neural CF recommendations: {e}", exc_info=True)
+            return await self._get_collaborative_video_recommendations(
+                user_id, limit, exclude_ids
+            )
+    
+    async def _get_graph_video_recommendations(
+        self,
+        user_id: Optional[UUID],
+        limit: int,
+        exclude_ids: Optional[List[UUID]] = None,
+    ) -> List[Video]:
+        """
+        Get video recommendations using graph neural networks.
+        
+        This method leverages the social network graph structure to provide
+        network-aware recommendations based on follower/following relationships.
+        """
+        if not user_id or not ADVANCED_ML_AVAILABLE or not global_ml_service:
+            logger.warning("Graph recommendations unavailable, falling back to collaborative")
+            return await self._get_collaborative_video_recommendations(user_id, limit, exclude_ids)
+        
+        try:
+            # Build user social network
+            from app.users.models import Follow
+            
+            # Get followers
+            followers_stmt = select(Follow.follower_id).where(Follow.followed_id == user_id)
+            followers_result = await self.db.execute(followers_stmt)
+            followers = [str(row[0]) for row in followers_result.all()]
+            
+            # Get following
+            following_stmt = select(Follow.followed_id).where(Follow.follower_id == user_id)
+            following_result = await self.db.execute(following_stmt)
+            following = [str(row[0]) for row in following_result.all()]
+            
+            # Build network structure
+            user_network = {
+                "followers": followers,
+                "following": following,
+            }
+            
+            # Get user's interaction history
+            history_stmt = (
+                select(Video.id)
+                .join(VideoView, Video.id == VideoView.video_id)
+                .where(VideoView.user_id == user_id)
+                .order_by(desc(VideoView.created_at))
+                .limit(100)
+            )
+            history_result = await self.db.execute(history_stmt)
+            user_items = [str(row[0]) for row in history_result.all()]
+            
+            # Get graph-based recommendations from ML service
+            recommendations = await global_ml_service.get_graph_recommendations(
+                user_id=str(user_id),
+                user_network=user_network,
+                user_items=user_items,
+                limit=limit * 2,  # Get more for filtering
+            )
+            
+            if not recommendations:
+                logger.warning("Graph model returned no recommendations")
+                return await self._get_collaborative_video_recommendations(
+                    user_id, limit, exclude_ids
+                )
+            
+            # Get Video objects for recommendations
+            recommended_video_ids = [
+                UUID(rec.get("item_id"))
+                for rec in recommendations
+                if rec.get("item_id")
+            ]
+            
+            if not recommended_video_ids:
+                return []
+            
+            filters = [
+                Video.id.in_(recommended_video_ids),
+                Video.visibility == VideoVisibility.PUBLIC,
+                Video.status == VideoStatus.PROCESSED,
+                Video.moderation_status == ModerationStatus.APPROVED,
+            ]
+            
+            if exclude_ids:
+                filters.append(Video.id.notin_(exclude_ids))
+            
+            video_stmt = select(Video).where(and_(*filters))
+            video_result = await self.db.execute(video_stmt)
+            videos = list(video_result.scalars().all())
+            
+            # Sort by recommendation order
+            video_map = {video.id: video for video in videos}
+            sorted_videos = []
+            for video_id in recommended_video_ids:
+                if video_id in video_map:
+                    sorted_videos.append(video_map[video_id])
+            
+            logger.info(
+                f"Graph recommendations: returned {len(sorted_videos)} "
+                f"videos for user {user_id}"
+            )
+            return sorted_videos[:limit]
+            
+        except Exception as e:
+            logger.error(f"Error in graph recommendations: {e}", exc_info=True)
+            return await self._get_collaborative_video_recommendations(
+                user_id, limit, exclude_ids
+            )
+    
+    async def _get_smart_video_recommendations(
+        self,
+        user_id: Optional[UUID],
+        limit: int,
+        exclude_ids: Optional[List[UUID]] = None,
+    ) -> List[Video]:
+        """
+        Get video recommendations using multi-armed bandit algorithm selection.
+        
+        This method intelligently selects the best recommendation algorithm
+        for each user based on past performance, balancing exploration and exploitation.
+        """
+        if not user_id or not ADVANCED_ML_AVAILABLE or not global_ml_service:
+            logger.warning("Smart recommendations unavailable, falling back to hybrid")
+            return await self._get_hybrid_video_recommendations(user_id, limit, exclude_ids)
+        
+        try:
+            # Define available recommendation algorithms
+            available_algorithms = [
+                "transformer",
+                "neural_cf",
+                "graph",
+                "collaborative",
+                "hybrid",
+            ]
+            
+            # Select best algorithm using multi-armed bandit
+            algorithm_index = await global_ml_service.select_recommendation_algorithm(
+                user_id=str(user_id),
+                available_algorithms=available_algorithms,
+                exploration_rate=0.2,  # 20% exploration, 80% exploitation
+            )
+            
+            selected_algorithm = available_algorithms[algorithm_index]
+            logger.info(f"Smart recommendations selected algorithm: {selected_algorithm}")
+            
+            # Execute selected algorithm
+            start_time = datetime.utcnow()
+            
+            if selected_algorithm == "transformer":
+                recommendations = await self._get_transformer_video_recommendations(
+                    user_id, limit, exclude_ids
+                )
+            elif selected_algorithm == "neural_cf":
+                recommendations = await self._get_neural_cf_video_recommendations(
+                    user_id, limit, exclude_ids
+                )
+            elif selected_algorithm == "graph":
+                recommendations = await self._get_graph_video_recommendations(
+                    user_id, limit, exclude_ids
+                )
+            elif selected_algorithm == "collaborative":
+                recommendations = await self._get_collaborative_video_recommendations(
+                    user_id, limit, exclude_ids
+                )
+            else:  # hybrid
+                recommendations = await self._get_hybrid_video_recommendations(
+                    user_id, limit, exclude_ids
+                )
+            
+            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            
+            # Calculate reward based on recommendation quality
+            # Higher reward for faster execution and more results
+            reward = 0.0
+            if recommendations:
+                # Base reward for returning results
+                reward = 1.0
+                # Bonus for returning requested number of results
+                if len(recommendations) >= limit:
+                    reward += 0.5
+                # Penalty for slow execution (>5 seconds)
+                if execution_time > 5.0:
+                    reward -= 0.3
+            
+            # Update bandit with performance feedback
+            await global_ml_service.update_recommendation_feedback(
+                algorithm_index=algorithm_index,
+                reward=reward,
+            )
+            
+            logger.info(
+                f"Smart recommendations: algorithm={selected_algorithm}, "
+                f"returned {len(recommendations)} videos, "
+                f"time={execution_time:.2f}s, reward={reward:.2f}"
+            )
+            
+            return recommendations
+            
+        except Exception as e:
+            logger.error(f"Error in smart recommendations: {e}", exc_info=True)
+            return await self._get_hybrid_video_recommendations(user_id, limit, exclude_ids)
     
     # Post/Feed Recommendations
     
@@ -441,9 +926,8 @@ class RecommendationService:
         
         filters = [
             Post.owner_id.in_(following_ids),
-            Post.is_approved.is_(True),
-            Post.is_flagged.is_(False),
-        ]
+            Post.visibility == PostVisibility.PUBLIC,
+]
         
         if exclude_ids:
             filters.append(Post.id.notin_(exclude_ids))
@@ -467,19 +951,18 @@ class RecommendationService:
         cutoff_date = datetime.utcnow() - timedelta(days=3)
         
         filters = [
-            Post.is_approved.is_(True),
-            Post.is_flagged.is_(False),
-            Post.created_at >= cutoff_date,
+            Post.visibility == PostVisibility.PUBLIC,
+Post.created_at >= cutoff_date,
         ]
         
         if exclude_ids:
             filters.append(Post.id.notin_(exclude_ids))
         
         trending_score = (
-            Post.likes_count * 1.0 +
+            Post.like_count * 1.0 +
             Post.reposts_count * 3.0 +
-            Post.comments_count * 2.0 +
-            Post.shares_count * 2.5
+            Post.comment_count * 2.0 +
+            Post.share_count * 2.5
         )
         
         stmt = (
@@ -500,9 +983,8 @@ class RecommendationService:
     ) -> List[Post]:
         """Get diverse posts for exploration."""
         filters = [
-            Post.is_approved.is_(True),
-            Post.is_flagged.is_(False),
-        ]
+            Post.visibility == PostVisibility.PUBLIC,
+]
         
         if exclude_ids:
             filters.append(Post.id.notin_(exclude_ids))
@@ -510,7 +992,7 @@ class RecommendationService:
         stmt = (
             select(Post)
             .where(and_(*filters))
-            .where(Post.likes_count > 10)
+            .where(Post.like_count > 10)
             .order_by(func.random())
             .limit(limit * 2)
         )
@@ -589,10 +1071,10 @@ class RecommendationService:
         """Calculate recommendation score for a video."""
         # Engagement score
         engagement = (
-            video.views_count * 0.1 +
-            video.likes_count * 5.0 +
-            video.comments_count * 10.0 +
-            video.shares_count * 15.0
+            video.view_count * 0.1 +
+            video.like_count * 5.0 +
+            video.comment_count * 10.0 +
+            video.share_count * 15.0
         )
         
         # Recency boost
@@ -610,10 +1092,10 @@ class RecommendationService:
     def _calculate_post_score(self, post: Post) -> float:
         """Calculate recommendation score for a post."""
         engagement = (
-            post.likes_count * 1.0 +
+            post.like_count * 1.0 +
             post.reposts_count * 3.0 +
-            post.comments_count * 2.0 +
-            post.shares_count * 2.5
+            post.comment_count * 2.0 +
+            post.share_count * 2.5
         )
         
         hours_old = (datetime.utcnow() - post.created_at).total_seconds() / 3600
@@ -633,8 +1115,8 @@ class RecommendationService:
             "description": video.description,
             "thumbnail_url": video.thumbnail_url,
             "duration": video.duration,
-            "views_count": video.views_count,
-            "likes_count": video.likes_count,
+            "view_count": video.view_count,
+            "like_count": video.like_count,
             "owner_id": str(video.owner_id),
             "created_at": video.created_at.isoformat(),
             "engagement_rate": video.engagement_rate,
@@ -647,9 +1129,9 @@ class RecommendationService:
             "content": post.content,
             "media_url": post.media_url,
             "hashtags": post.hashtags,
-            "likes_count": post.likes_count,
+            "like_count": post.like_count,
             "reposts_count": post.reposts_count,
-            "comments_count": post.comments_count,
+            "comment_count": post.comment_count,
             "owner_id": str(post.owner_id),
             "created_at": post.created_at.isoformat(),
             "engagement_rate": post.engagement_rate,

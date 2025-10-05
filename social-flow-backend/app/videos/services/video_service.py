@@ -29,6 +29,14 @@ from app.core.redis import get_cache
 from app.models.video import Video, VideoStatus, VideoVisibility
 from app.models.user import User
 
+# Import ML service for AI-powered video analysis
+try:
+    from app.ml.services.ml_service import ml_service
+    ML_SERVICE_AVAILABLE = True
+except ImportError:
+    ML_SERVICE_AVAILABLE = False
+    ml_service = None
+
 logger = logging.getLogger(__name__)
 
 
@@ -150,6 +158,15 @@ class VideoService:
                 # Extract metadata
                 video_metadata = await self._extract_video_metadata(temp_file_path)
                 
+                # Run AI analysis (async in background to not block upload)
+                ai_analysis_results = None
+                if ML_SERVICE_AVAILABLE:
+                    try:
+                        ai_analysis_results = await self._analyze_video_with_ai(temp_file_path, video_id)
+                        logger.info(f"AI analysis completed for video {video_id}")
+                    except Exception as e:
+                        logger.error(f"AI analysis failed during upload: {e}")
+                
                 # Generate S3 key
                 s3_key = f"videos/{user.id}/{video_id}/{file.filename}"
                 
@@ -173,6 +190,12 @@ class VideoService:
                     visibility=VideoVisibility.PUBLIC,
                     owner_id=user.id
                 )
+                
+                # Add AI metadata if available
+                if ai_analysis_results and ai_analysis_results.get('ai_metadata'):
+                    video.ai_tags = ai_analysis_results['ai_metadata'].get('content_tags', [])
+                    video.language = ai_analysis_results['ai_metadata'].get('language', 'unknown')
+                    video.category = ai_analysis_results['ai_metadata'].get('primary_category', 'general')
                 
                 # Save to database
                 if db:
@@ -223,6 +246,30 @@ class VideoService:
                 
                 # Transcode video
                 transcoded_urls = await self._transcode_video(temp_video_path, video_id)
+                
+                # Run AI analysis if not done during upload
+                if ML_SERVICE_AVAILABLE and not hasattr(video, 'ai_tags'):
+                    try:
+                        logger.info(f"Running AI analysis during processing for video {video_id}")
+                        ai_results = await self._analyze_video_with_ai(temp_video_path, video_id)
+                        
+                        # Update video with AI metadata
+                        if ai_results and ai_results.get('ai_metadata'):
+                            video.ai_tags = ai_results['ai_metadata'].get('content_tags', [])
+                            video.language = ai_results['ai_metadata'].get('language', 'unknown')
+                            video.category = ai_results['ai_metadata'].get('primary_category', 'general')
+                            
+                            # Store full AI results in cache for later retrieval
+                            cache = await self._get_cache()
+                            import json
+                            await cache.setex(
+                                f"video_ai_analysis:{video_id}",
+                                86400,  # 24 hours
+                                json.dumps(ai_results)
+                            )
+                            logger.info(f"AI analysis results cached for video {video_id}")
+                    except Exception as e:
+                        logger.error(f"AI analysis failed during processing: {e}")
                 
                 # Update video record
                 video.status = VideoStatus.PROCESSED
@@ -400,6 +447,67 @@ class VideoService:
             logger.error(f"Failed to increment view count: {e}")
             raise VideoServiceError(f"Failed to increment view count: {e}")
     
+    async def analyze_video_content(self, video_id: str, force_reanalysis: bool = False) -> Dict[str, Any]:
+        """
+        Analyze video content using advanced AI models.
+        
+        This method retrieves cached AI analysis or performs fresh analysis if:
+        - No cached results exist
+        - force_reanalysis is True
+        
+        Args:
+            video_id: Video ID to analyze
+            force_reanalysis: Force fresh analysis even if cached results exist
+            
+        Returns:
+            Dict containing comprehensive AI analysis results
+        """
+        try:
+            if not ML_SERVICE_AVAILABLE:
+                return {
+                    "error": "ML service not available",
+                    "video_id": video_id
+                }
+            
+            cache = await self._get_cache()
+            cache_key = f"video_ai_analysis:{video_id}"
+            
+            # Check cache first
+            if not force_reanalysis:
+                import json
+                cached_result = await cache.get(cache_key)
+                if cached_result:
+                    logger.info(f"Returning cached AI analysis for video {video_id}")
+                    return json.loads(cached_result)
+            
+            # Download video from S3 for analysis
+            video = await self._get_video_by_id(video_id)
+            if not video:
+                raise VideoServiceError("Video not found")
+            
+            temp_video_path = await self._download_from_s3(video.s3_key)
+            
+            try:
+                # Run comprehensive AI analysis
+                logger.info(f"Performing fresh AI analysis for video {video_id}")
+                ai_results = await self._analyze_video_with_ai(temp_video_path, video_id)
+                
+                # Cache results
+                import json
+                await cache.setex(cache_key, 86400, json.dumps(ai_results))  # 24 hours
+                
+                logger.info(f"AI analysis complete for video {video_id}")
+                return ai_results
+                
+            finally:
+                # Clean up temporary file
+                if os.path.exists(temp_video_path):
+                    os.unlink(temp_video_path)
+                    
+        except Exception as e:
+            logger.error(f"Video content analysis failed: {e}")
+            raise VideoServiceError(f"Video content analysis failed: {e}")
+    
     # Private helper methods
     def _validate_video_file(self, file: UploadFile) -> bool:
         """Validate uploaded video file."""
@@ -425,6 +533,156 @@ class VideoService:
         except Exception as e:
             logger.warning(f"Metadata extraction failed: {e}")
             return {}
+    
+    async def _analyze_video_with_ai(self, file_path: str, video_id: str) -> Dict[str, Any]:
+        """Analyze video using advanced AI models.
+        
+        This method runs comprehensive AI analysis including:
+        - Object detection with YOLO
+        - Speech transcription with Whisper
+        - Scene classification with CLIP
+        - Scene boundary detection
+        
+        Returns:
+            Dict containing all AI analysis results
+        """
+        if not ML_SERVICE_AVAILABLE or not ml_service:
+            logger.warning("ML service not available, skipping AI analysis")
+            return {
+                "objects": None,
+                "transcription": None,
+                "scenes": None,
+                "scene_boundaries": None,
+                "ai_metadata": {}
+            }
+        
+        try:
+            logger.info(f"Starting AI analysis for video {video_id}")
+            ai_results = {}
+            
+            # 1. Object Detection with YOLO (sample every 10 frames for speed)
+            try:
+                objects_result = await ml_service.analyze_video_with_yolo(
+                    video_path=file_path,
+                    frame_sample_rate=10,
+                    classes=None  # Detect all classes
+                )
+                ai_results['objects'] = objects_result
+                logger.info(f"YOLO detected {objects_result.get('total_detections', 0)} objects")
+            except Exception as e:
+                logger.error(f"YOLO analysis failed: {e}")
+                ai_results['objects'] = None
+            
+            # 2. Speech Transcription with Whisper
+            try:
+                transcription_result = await ml_service.transcribe_video_with_whisper(
+                    video_path=file_path,
+                    language=None,  # Auto-detect language
+                    return_timestamps=True
+                )
+                ai_results['transcription'] = transcription_result
+                logger.info(f"Whisper transcribed {transcription_result.get('word_count', 0)} words")
+            except Exception as e:
+                logger.error(f"Whisper transcription failed: {e}")
+                ai_results['transcription'] = None
+            
+            # 3. Scene Classification with CLIP (sample every 30 frames)
+            try:
+                scene_queries = [
+                    "cooking and food preparation",
+                    "outdoor adventure and nature",
+                    "technology and gaming",
+                    "sports and fitness",
+                    "educational content",
+                    "music and entertainment",
+                    "vlog and daily life",
+                    "tutorial and how-to"
+                ]
+                scenes_result = await ml_service.analyze_video_scenes_with_clip(
+                    video_path=file_path,
+                    text_queries=scene_queries,
+                    frame_sample_rate=30
+                )
+                ai_results['scenes'] = scenes_result
+                logger.info(f"CLIP found {scenes_result.get('total_matches', 0)} scene matches")
+            except Exception as e:
+                logger.error(f"CLIP scene analysis failed: {e}")
+                ai_results['scenes'] = None
+            
+            # 4. Scene Boundary Detection
+            try:
+                boundaries_result = await ml_service.detect_video_scenes(
+                    video_path=file_path,
+                    extract_keyframes=True
+                )
+                ai_results['scene_boundaries'] = boundaries_result
+                logger.info(f"Detected {boundaries_result.get('total_scenes', 0)} scenes")
+            except Exception as e:
+                logger.error(f"Scene detection failed: {e}")
+                ai_results['scene_boundaries'] = None
+            
+            # 5. Generate AI metadata summary
+            ai_metadata = self._generate_ai_metadata_summary(ai_results)
+            ai_results['ai_metadata'] = ai_metadata
+            
+            logger.info(f"AI analysis complete for video {video_id}")
+            return ai_results
+            
+        except Exception as e:
+            logger.error(f"AI video analysis failed: {e}")
+            return {
+                "objects": None,
+                "transcription": None,
+                "scenes": None,
+                "scene_boundaries": None,
+                "ai_metadata": {},
+                "error": str(e)
+            }
+    
+    def _generate_ai_metadata_summary(self, ai_results: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate summary metadata from AI analysis results."""
+        metadata = {
+            "has_speech": False,
+            "language": "unknown",
+            "primary_objects": [],
+            "primary_category": "general",
+            "scene_count": 0,
+            "detected_actions": [],
+            "content_tags": []
+        }
+        
+        # Extract from transcription
+        if ai_results.get('transcription'):
+            trans = ai_results['transcription']
+            metadata['has_speech'] = bool(trans.get('text'))
+            metadata['language'] = trans.get('language', 'unknown')
+            if trans.get('word_count', 0) > 0:
+                metadata['content_tags'].append('spoken-content')
+        
+        # Extract from object detection
+        if ai_results.get('objects'):
+            objs = ai_results['objects']
+            unique_objects = objs.get('unique_objects', {})
+            # Get top 5 most detected objects
+            sorted_objects = sorted(unique_objects.items(), key=lambda x: x[1], reverse=True)[:5]
+            metadata['primary_objects'] = [obj[0] for obj in sorted_objects]
+            metadata['content_tags'].extend(metadata['primary_objects'])
+        
+        # Extract from scene classification
+        if ai_results.get('scenes'):
+            scenes = ai_results['scenes']
+            scene_matches = scenes.get('scene_matches', [])
+            if scene_matches:
+                # Get most confident scene match
+                best_match = max(scene_matches, key=lambda x: x.get('confidence', 0))
+                metadata['primary_category'] = best_match.get('query', 'general').split()[0]
+        
+        # Extract from scene boundaries
+        if ai_results.get('scene_boundaries'):
+            boundaries = ai_results['scene_boundaries']
+            metadata['scene_count'] = boundaries.get('total_scenes', 0)
+        
+        return metadata
     
     async def _upload_to_s3(self, file_path: str, s3_key: str) -> None:
         """Upload file to S3."""

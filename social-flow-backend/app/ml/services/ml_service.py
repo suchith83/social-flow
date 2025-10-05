@@ -13,14 +13,32 @@ try:
     import numpy as np  # type: ignore
 except Exception:  # pragma: no cover - optional dependency in tests
     np = None  # Fallback: operate without numpy in lightweight environments
-from pathlib import Path
-import sys
-
-# Add ai-models to path
-sys.path.append(str(Path(__file__).parent.parent.parent / "ai-models"))
-sys.path.append(str(Path(__file__).parent.parent.parent / "ml-pipelines"))
 
 from app.core.exceptions import MLServiceError
+
+# Import advanced video analyzers
+try:
+    from app.ai_models.video_analysis.advanced_analyzers import (
+        YOLOVideoAnalyzer,
+        WhisperAudioAnalyzer,
+        CLIPVideoAnalyzer,
+        AdvancedSceneDetector
+    )
+    ADVANCED_ANALYZERS_AVAILABLE = True
+except ImportError:
+    ADVANCED_ANALYZERS_AVAILABLE = False
+
+# Import advanced recommenders
+try:
+    from app.ai_models.recommendation.advanced_recommenders import (
+        TransformerRecommender,
+        NeuralCollaborativeFiltering,
+        GraphNeuralRecommender,
+        MultiArmedBanditRecommender
+    )
+    ADVANCED_RECOMMENDERS_AVAILABLE = True
+except ImportError:
+    ADVANCED_RECOMMENDERS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -51,68 +69,161 @@ class MLService:
             logger.info("ML Service initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize ML Service: {e}")
-            raise MLServiceError(f"ML Service initialization failed: {e}")
+            logger.warning("ML Service will operate in fallback mode")
+            # Don't raise - allow service to continue without ML models
     
     def _init_content_analysis(self):
         """Initialize content analysis models."""
         try:
-            # Audio analysis
-            from ai_models.content_analysis.audio_analysis.models import AudioClassifier
-            self.models['audio_classifier'] = AudioClassifier()
+            # Initialize advanced video analyzers (lazy loading)
+            if ADVANCED_ANALYZERS_AVAILABLE:
+                try:
+                    # YOLO for object detection (lazy loaded on first use)
+                    self.models['yolo_analyzer'] = YOLOVideoAnalyzer(
+                        model_version="yolov8n",  # Start with nano for speed
+                        confidence_threshold=0.5
+                    )
+                    logger.info("YOLOVideoAnalyzer initialized")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize YOLOVideoAnalyzer: {e}")
+                
+                try:
+                    # Whisper for speech recognition (lazy loaded)
+                    self.models['whisper_analyzer'] = WhisperAudioAnalyzer(
+                        model_size="base",  # Balance speed and accuracy
+                        language=None  # Auto-detect
+                    )
+                    logger.info("WhisperAudioAnalyzer initialized")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize WhisperAudioAnalyzer: {e}")
+                
+                try:
+                    # CLIP for multimodal understanding (lazy loaded)
+                    self.models['clip_analyzer'] = CLIPVideoAnalyzer(
+                        model_name="openai/clip-vit-base-patch32"
+                    )
+                    logger.info("CLIPVideoAnalyzer initialized")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize CLIPVideoAnalyzer: {e}")
+                
+                try:
+                    # Advanced scene detection
+                    self.models['advanced_scene_detector'] = AdvancedSceneDetector(
+                        threshold=27.0,
+                        min_scene_length=15
+                    )
+                    logger.info("AdvancedSceneDetector initialized")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize AdvancedSceneDetector: {e}")
             
-            # Object recognition
-            from ai_models.content_analysis.object_recognition.models import ObjectDetector
-            self.models['object_detector'] = ObjectDetector()
-            
-            # Scene detection
-            from ai_models.content_analysis.scene_detection.models import SceneDetector
-            self.models['scene_detector'] = SceneDetector()
-            
-            logger.info("Content analysis models initialized")
-        except ImportError as e:
-            logger.warning(f"Content analysis models not available: {e}")
+            # Fallback to basic models
+            try:
+                from app.ai_models.video_analysis import SceneDetector, ObjectDetector
+                from app.ai_models.sentiment_analysis import SentimentAnalyzer
+                
+                if 'scene_detector' not in self.models:
+                    self.models['scene_detector'] = SceneDetector()
+                if 'object_detector' not in self.models:
+                    self.models['object_detector'] = ObjectDetector()
+                self.models['sentiment_analyzer'] = SentimentAnalyzer()
+                
+                logger.info("Basic content analysis models initialized")
+            except ImportError as e:
+                logger.warning(f"Basic content analysis models not available: {e}")
+        except Exception as e:
+            logger.error(f"Content analysis initialization failed: {e}")
     
     def _init_recommendation_models(self):
         """Initialize recommendation models."""
         try:
-            # Content-based recommendation
-            from ai_models.recommendation_engine.content_based.recommender import ContentBasedRecommender
-            self.models['content_based_recommender'] = ContentBasedRecommender()
+            # Initialize advanced recommenders (lazy loading)
+            if ADVANCED_RECOMMENDERS_AVAILABLE:
+                try:
+                    # Transformer-based recommender with BERT embeddings (lazy loaded)
+                    self.models['transformer_recommender'] = TransformerRecommender(
+                        model_name="bert-base-uncased",
+                        max_length=512,
+                        embedding_dim=768
+                    )
+                    logger.info("TransformerRecommender initialized")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize TransformerRecommender: {e}")
+                
+                try:
+                    # Neural collaborative filtering (lazy loaded)
+                    self.models['neural_cf_recommender'] = NeuralCollaborativeFiltering(
+                        num_users=100000,  # Will be updated dynamically
+                        num_items=50000,   # Will be updated dynamically
+                        embedding_dim=64,
+                        hidden_layers=[128, 64, 32]
+                    )
+                    logger.info("NeuralCollaborativeFiltering initialized")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize NeuralCollaborativeFiltering: {e}")
+                
+                try:
+                    # Graph neural network recommender (lazy loaded)
+                    # Initialize with default values, will be updated dynamically
+                    self.models['graph_recommender'] = GraphNeuralRecommender(
+                        num_users=100000,  # Will be updated dynamically
+                        num_items=50000,   # Will be updated dynamically
+                        embedding_dim=64,
+                        num_layers=2
+                    )
+                    logger.info("GraphNeuralRecommender initialized")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize GraphNeuralRecommender: {e}")
+                
+                try:
+                    # Multi-armed bandit for exploration/exploitation
+                    self.models['bandit_recommender'] = MultiArmedBanditRecommender(
+                        num_arms=10,  # Number of recommendation algorithms
+                        algorithm="thompson_sampling"
+                    )
+                    logger.info("MultiArmedBanditRecommender initialized")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize MultiArmedBanditRecommender: {e}")
             
-            # Collaborative filtering
-            from ai_models.recommendation_engine.collaborative_filtering.model import CollaborativeFilteringRecommender
-            self.models['collaborative_recommender'] = CollaborativeFilteringRecommender()
-            
-            # Deep learning recommendation
-            from ai_models.recommendation_engine.deep_learning.recommender import DeepLearningRecommender
-            self.models['deep_learning_recommender'] = DeepLearningRecommender()
-            
-            # Trending recommendation
-            from ai_models.recommendation_engine.trending.recommender import TrendingRecommender
-            self.models['trending_recommender'] = TrendingRecommender()
-            
-            # Viral prediction
-            from ai_models.recommendation_engine.viral_prediction.predictor import ViralPredictor
-            self.models['viral_predictor'] = ViralPredictor()
-            
-            logger.info("Recommendation models initialized")
-        except ImportError as e:
-            logger.warning(f"Recommendation models not available: {e}")
+            # Fallback to basic recommenders
+            try:
+                from app.ai_models.recommendation import (
+                    ContentBasedRecommender,
+                    CollaborativeFilteringRecommender,
+                    DeepLearningRecommender,
+                    TrendingRecommender,
+                    ViralPredictor
+                )
+                
+                if 'content_based_recommender' not in self.models:
+                    self.models['content_based_recommender'] = ContentBasedRecommender()
+                if 'collaborative_recommender' not in self.models:
+                    self.models['collaborative_recommender'] = CollaborativeFilteringRecommender()
+                if 'deep_learning_recommender' not in self.models:
+                    self.models['deep_learning_recommender'] = DeepLearningRecommender()
+                self.models['trending_recommender'] = TrendingRecommender()
+                self.models['viral_predictor'] = ViralPredictor()
+                
+                logger.info("Basic recommendation models initialized")
+            except ImportError as e:
+                logger.warning(f"Basic recommendation models not available: {e}")
+        except Exception as e:
+            logger.error(f"Recommendation models initialization failed: {e}")
     
     def _init_content_moderation(self):
         """Initialize content moderation models."""
         try:
-            # NSFW detection
-            from ai_models.content_moderation.nsfw_detection.model import NSFWDetector
+            # NSFW, spam, and violence detection
+            from app.ai_models.content_moderation import (
+                NSFWDetector,
+                SpamDetector,
+                ViolenceDetector,
+                ToxicityDetector
+            )
+            
             self.models['nsfw_detector'] = NSFWDetector()
-            
-            # Spam detection
-            from ai_models.content_moderation.spam_detection.model import SpamDetector
             self.models['spam_detector'] = SpamDetector()
-            
-            # Violence detection
-            from ai_models.content_moderation.violence_detection.model import ViolenceDetector
             self.models['violence_detector'] = ViolenceDetector()
+            self.models['toxicity_detector'] = ToxicityDetector()
             
             logger.info("Content moderation models initialized")
         except ImportError as e:
@@ -121,17 +232,12 @@ class MLService:
     def _init_generation_models(self):
         """Initialize content generation models."""
         try:
-            # Caption generation
-            from ai_models.generation.caption_generation.captioner import CaptionGenerator
-            self.models['caption_generator'] = CaptionGenerator()
-            
-            # Summary generation
-            from ai_models.generation.summary_generation.summarizer import SummaryGenerator
-            self.models['summary_generator'] = SummaryGenerator()
-            
             # Thumbnail generation
-            from ai_models.generation.thumbnail_generation.generator import ThumbnailGenerator
+            from app.ai_models.video_analysis import ThumbnailGenerator
+            from app.ai_models.sentiment_analysis import EmotionDetector
+            
             self.models['thumbnail_generator'] = ThumbnailGenerator()
+            self.models['emotion_detector'] = EmotionDetector()
             
             logger.info("Generation models initialized")
         except ImportError as e:
@@ -712,13 +818,469 @@ class MLService:
         """Remove duplicates and rank recommendations."""
         # TODO: Implement deduplication and ranking logic
         return recommendations[:limit]
+    
+    # ============================================================================
+    # Advanced AI Methods - Using State-of-the-Art Models
+    # ============================================================================
+    
+    async def analyze_video_with_yolo(
+        self,
+        video_path: str,
+        frame_sample_rate: int = 5,
+        classes: List[int] = None
+    ) -> Dict[str, Any]:
+        """
+        Analyze video using YOLOv8/v9 for object detection and tracking.
+        
+        Args:
+            video_path: Path to video file
+            frame_sample_rate: Process every Nth frame
+            classes: Optional list of class IDs to detect
+            
+        Returns:
+            Dict with detected objects, tracking IDs, and statistics
+        """
+        try:
+            if 'yolo_analyzer' in self.models:
+                result = await self.models['yolo_analyzer'].detect_objects(
+                    video_path=video_path,
+                    frame_sample_rate=frame_sample_rate,
+                    classes=classes
+                )
+                logger.info(f"YOLO analysis complete: {result.get('total_detections', 0)} detections")
+                return result
+            else:
+                logger.warning("YOLO analyzer not available, using fallback")
+                return {
+                    "total_detections": 0,
+                    "unique_objects": {},
+                    "detections": [],
+                    "message": "YOLO not available"
+                }
+        except Exception as e:
+            logger.error(f"YOLO video analysis failed: {e}")
+            raise MLServiceError(f"YOLO video analysis failed: {e}")
+    
+    async def transcribe_video_with_whisper(
+        self,
+        video_path: str,
+        language: str = None,
+        return_timestamps: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Transcribe video audio using OpenAI Whisper.
+        
+        Args:
+            video_path: Path to video file
+            language: Target language code (None for auto-detect)
+            return_timestamps: Include word-level timestamps
+            
+        Returns:
+            Dict with transcription, segments, and timestamps
+        """
+        try:
+            if 'whisper_analyzer' in self.models:
+                # Update language if provided
+                if language:
+                    self.models['whisper_analyzer'].language = language
+                
+                result = await self.models['whisper_analyzer'].transcribe_video(
+                    video_path=video_path,
+                    extract_audio=True,
+                    return_timestamps=return_timestamps
+                )
+                logger.info(f"Whisper transcription complete: {result.get('word_count', 0)} words")
+                return result
+            else:
+                logger.warning("Whisper analyzer not available, using fallback")
+                return {
+                    "language": "unknown",
+                    "text": "",
+                    "segments": [],
+                    "duration": 0,
+                    "word_count": 0,
+                    "message": "Whisper not available"
+                }
+        except Exception as e:
+            logger.error(f"Whisper transcription failed: {e}")
+            raise MLServiceError(f"Whisper transcription failed: {e}")
+    
+    async def analyze_video_scenes_with_clip(
+        self,
+        video_path: str,
+        text_queries: List[str],
+        frame_sample_rate: int = 30
+    ) -> Dict[str, Any]:
+        """
+        Analyze video scenes using CLIP for zero-shot classification.
+        
+        Args:
+            video_path: Path to video file
+            text_queries: List of text descriptions to match against
+            frame_sample_rate: Process every Nth frame
+            
+        Returns:
+            Dict with scene matches and similarity scores
+        """
+        try:
+            if 'clip_analyzer' in self.models:
+                result = await self.models['clip_analyzer'].analyze_scenes(
+                    video_path=video_path,
+                    text_queries=text_queries,
+                    frame_sample_rate=frame_sample_rate
+                )
+                logger.info(f"CLIP analysis complete: {result.get('total_matches', 0)} matches")
+                return result
+            else:
+                logger.warning("CLIP analyzer not available, using fallback")
+                return {
+                    "total_matches": 0,
+                    "scene_matches": [],
+                    "message": "CLIP not available"
+                }
+        except Exception as e:
+            logger.error(f"CLIP scene analysis failed: {e}")
+            raise MLServiceError(f"CLIP scene analysis failed: {e}")
+    
+    async def detect_video_scenes(
+        self,
+        video_path: str,
+        extract_keyframes: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Detect scene boundaries in video.
+        
+        Args:
+            video_path: Path to video file
+            extract_keyframes: Extract representative keyframe for each scene
+            
+        Returns:
+            Dict with detected scenes and timestamps
+        """
+        try:
+            if 'advanced_scene_detector' in self.models:
+                result = await self.models['advanced_scene_detector'].detect_scenes(
+                    video_path=video_path,
+                    extract_keyframes=extract_keyframes
+                )
+                logger.info(f"Scene detection complete: {result.get('total_scenes', 0)} scenes")
+                return result
+            else:
+                logger.warning("Advanced scene detector not available, using fallback")
+                return {
+                    "total_scenes": 1,
+                    "scenes": [],
+                    "message": "Scene detector not available"
+                }
+        except Exception as e:
+            logger.error(f"Scene detection failed: {e}")
+            raise MLServiceError(f"Scene detection failed: {e}")
+    
+    async def get_transformer_recommendations(
+        self,
+        user_id: str,
+        user_history: List[Dict[str, Any]],
+        candidate_items: List[Dict[str, Any]],
+        limit: int = 10
+    ) -> Dict[str, Any]:
+        """
+        Get recommendations using transformer-based semantic matching.
+        
+        Args:
+            user_id: User ID
+            user_history: List of user's interaction history with 'title' and 'description'
+            candidate_items: List of candidate items to rank with 'id', 'title', 'description'
+            limit: Number of recommendations to return
+            
+        Returns:
+            Dict with ranked recommendations
+        """
+        try:
+            if 'transformer_recommender' in self.models:
+                recommender = self.models['transformer_recommender']
+                
+                # Build user profile from history
+                user_texts = [
+                    f"{item.get('title', '')} {item.get('description', '')}"
+                    for item in user_history
+                ]
+                
+                # Encode candidate items
+                candidate_texts = [
+                    f"{item.get('title', '')} {item.get('description', '')}"
+                    for item in candidate_items
+                ]
+                
+                # Get recommendations
+                recommendations = await recommender.recommend_content(
+                    user_history=user_texts,
+                    candidate_items=candidate_texts,
+                    top_k=limit
+                )
+                
+                # Map back to items with scores
+                results = []
+                for idx, score in recommendations:
+                    if idx < len(candidate_items):
+                        item = candidate_items[idx].copy()
+                        item['recommendation_score'] = float(score)
+                        results.append(item)
+                
+                logger.info(f"Transformer recommendations: {len(results)} items")
+                return {
+                    "user_id": user_id,
+                    "recommendations": results,
+                    "algorithm": "transformer_bert",
+                    "count": len(results),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            else:
+                logger.warning("Transformer recommender not available, using fallback")
+                return await self._get_content_based_recommendations(user_id, "video", limit)
+        except Exception as e:
+            logger.error(f"Transformer recommendations failed: {e}")
+            raise MLServiceError(f"Transformer recommendations failed: {e}")
+    
+    async def get_neural_cf_recommendations(
+        self,
+        user_id: int,
+        candidate_item_ids: List[int],
+        limit: int = 10
+    ) -> Dict[str, Any]:
+        """
+        Get recommendations using neural collaborative filtering.
+        
+        Args:
+            user_id: User ID (integer)
+            candidate_item_ids: List of candidate item IDs to rank
+            limit: Number of recommendations to return
+            
+        Returns:
+            Dict with ranked recommendations
+        """
+        try:
+            if 'neural_cf_recommender' in self.models:
+                recommender = self.models['neural_cf_recommender']
+                
+                # Get recommendations
+                recommendations = await recommender.recommend_for_user(
+                    user_id=user_id,
+                    candidate_items=candidate_item_ids,
+                    top_k=limit
+                )
+                
+                # Format results
+                results = [
+                    {
+                        "item_id": int(item_id),
+                        "predicted_score": float(score)
+                    }
+                    for item_id, score in recommendations
+                ]
+                
+                logger.info(f"Neural CF recommendations: {len(results)} items")
+                return {
+                    "user_id": user_id,
+                    "recommendations": results,
+                    "algorithm": "neural_collaborative_filtering",
+                    "count": len(results),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            else:
+                logger.warning("Neural CF recommender not available, using fallback")
+                return {
+                    "user_id": user_id,
+                    "recommendations": [],
+                    "algorithm": "fallback",
+                    "count": 0,
+                    "message": "Neural CF not available"
+                }
+        except Exception as e:
+            logger.error(f"Neural CF recommendations failed: {e}")
+            raise MLServiceError(f"Neural CF recommendations failed: {e}")
+    
+    async def get_graph_recommendations(
+        self,
+        user_id: int,
+        user_network: Dict[int, List[int]],
+        user_items: Dict[int, List[int]],
+        limit: int = 10
+    ) -> Dict[str, Any]:
+        """
+        Get recommendations using graph neural networks considering social network.
+        
+        Args:
+            user_id: User ID
+            user_network: Dict mapping user IDs to their friend IDs
+            user_items: Dict mapping user IDs to their item interactions
+            limit: Number of recommendations to return
+            
+        Returns:
+            Dict with ranked recommendations
+        """
+        try:
+            if 'graph_recommender' in self.models:
+                recommender = self.models['graph_recommender']
+                
+                # Get recommendations
+                recommendations = await recommender.recommend_from_network(
+                    user_id=user_id,
+                    user_network=user_network,
+                    user_items=user_items,
+                    top_k=limit
+                )
+                
+                # Format results
+                results = [
+                    {
+                        "item_id": int(item_id),
+                        "network_score": float(score)
+                    }
+                    for item_id, score in recommendations
+                ]
+                
+                logger.info(f"Graph recommendations: {len(results)} items")
+                return {
+                    "user_id": user_id,
+                    "recommendations": results,
+                    "algorithm": "graph_neural_network",
+                    "count": len(results),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            else:
+                logger.warning("Graph recommender not available, using fallback")
+                return {
+                    "user_id": user_id,
+                    "recommendations": [],
+                    "algorithm": "fallback",
+                    "count": 0,
+                    "message": "Graph recommender not available"
+                }
+        except Exception as e:
+            logger.error(f"Graph recommendations failed: {e}")
+            raise MLServiceError(f"Graph recommendations failed: {e}")
+    
+    async def select_recommendation_algorithm(
+        self,
+        user_id: str,
+        available_algorithms: List[str],
+        exploration_rate: float = 0.1
+    ) -> Dict[str, Any]:
+        """
+        Use multi-armed bandit to select best recommendation algorithm.
+        
+        Args:
+            user_id: User ID
+            available_algorithms: List of available algorithm names
+            exploration_rate: Rate of exploration vs exploitation
+            
+        Returns:
+            Dict with selected algorithm and confidence
+        """
+        try:
+            if 'bandit_recommender' in self.models:
+                recommender = self.models['bandit_recommender']
+                
+                # Select algorithm
+                selected_arm = await recommender.select_arm()
+                
+                # Map arm to algorithm
+                if selected_arm < len(available_algorithms):
+                    selected_algorithm = available_algorithms[selected_arm]
+                else:
+                    selected_algorithm = available_algorithms[0]  # Default
+                
+                logger.info(f"Bandit selected algorithm: {selected_algorithm}")
+                return {
+                    "user_id": user_id,
+                    "selected_algorithm": selected_algorithm,
+                    "arm_index": selected_arm,
+                    "exploration_rate": exploration_rate,
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            else:
+                logger.warning("Bandit recommender not available, using default")
+                return {
+                    "user_id": user_id,
+                    "selected_algorithm": available_algorithms[0] if available_algorithms else "default",
+                    "message": "Bandit not available, using default"
+                }
+        except Exception as e:
+            logger.error(f"Algorithm selection failed: {e}")
+            raise MLServiceError(f"Algorithm selection failed: {e}")
+    
+    async def update_recommendation_feedback(
+        self,
+        algorithm_index: int,
+        reward: float
+    ) -> Dict[str, Any]:
+        """
+        Update multi-armed bandit with feedback from recommendation.
+        
+        Args:
+            algorithm_index: Index of algorithm used
+            reward: Reward value (0.0 to 1.0)
+            
+        Returns:
+            Dict with update confirmation
+        """
+        try:
+            if 'bandit_recommender' in self.models:
+                await self.models['bandit_recommender'].update(algorithm_index, reward)
+                logger.info(f"Updated bandit feedback: arm={algorithm_index}, reward={reward}")
+                return {
+                    "message": "Feedback recorded",
+                    "algorithm_index": algorithm_index,
+                    "reward": reward,
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            else:
+                return {
+                    "message": "Bandit not available, feedback not recorded"
+                }
+        except Exception as e:
+            logger.error(f"Feedback update failed: {e}")
+            raise MLServiceError(f"Feedback update failed: {e}")
 
     async def get_models_status(self) -> Dict[str, Any]:
-        """Return a simple status summary of loaded ML models."""
+        """Return a comprehensive status summary of all loaded ML models."""
         try:
+            # Categorize models
+            advanced_video = []
+            advanced_recommendation = []
+            basic_models = []
+            
+            for model_name in self.models.keys():
+                if model_name in ['yolo_analyzer', 'whisper_analyzer', 'clip_analyzer', 'advanced_scene_detector']:
+                    advanced_video.append(model_name)
+                elif model_name in ['transformer_recommender', 'neural_cf_recommender', 'graph_recommender', 'bandit_recommender']:
+                    advanced_recommendation.append(model_name)
+                else:
+                    basic_models.append(model_name)
+            
             return {
-                "loaded_models": list(self.models.keys()),
-                "counts": {"models": len(self.models), "pipelines": len(self.pipelines)},
+                "total_models": len(self.models),
+                "advanced_models": {
+                    "video_analysis": advanced_video,
+                    "recommendations": advanced_recommendation,
+                    "count": len(advanced_video) + len(advanced_recommendation)
+                },
+                "basic_models": {
+                    "models": basic_models,
+                    "count": len(basic_models)
+                },
+                "pipelines": list(self.pipelines.keys()),
+                "pipeline_count": len(self.pipelines),
+                "advanced_features_available": {
+                    "yolo_object_detection": "yolo_analyzer" in self.models,
+                    "whisper_transcription": "whisper_analyzer" in self.models,
+                    "clip_scene_analysis": "clip_analyzer" in self.models,
+                    "advanced_scene_detection": "advanced_scene_detector" in self.models,
+                    "transformer_recommendations": "transformer_recommender" in self.models,
+                    "neural_collaborative_filtering": "neural_cf_recommender" in self.models,
+                    "graph_neural_recommendations": "graph_recommender" in self.models,
+                    "multi_armed_bandit": "bandit_recommender" in self.models
+                },
                 "timestamp": datetime.utcnow().isoformat(),
             }
         except Exception as e:

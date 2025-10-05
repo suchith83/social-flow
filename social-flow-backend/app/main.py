@@ -43,11 +43,43 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             logger = logging.getLogger(__name__)
             logger.error(f"Failed to initialize storage infrastructure: {e}")
             logger.warning("Application will continue but storage functionality may be limited")
+        
+        # Initialize AI Pipeline Orchestrator and Scheduler
+        try:
+            from app.ml_pipelines.orchestrator import get_orchestrator
+            from app.ml_pipelines.scheduler import get_scheduler
+            
+            # Initialize orchestrator singleton (assignment ensures initialization)
+            _ = await get_orchestrator()
+            scheduler = get_scheduler()
+            await scheduler.start()
+            
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info("AI Pipeline Orchestrator and Scheduler initialized successfully")
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to initialize AI Pipeline services: {e}")
+            logger.warning("Application will continue but AI pipeline functionality may be limited")
     
     yield
     
     # Shutdown
-    # Cleanup resources if needed
+    # Cleanup AI Pipeline resources
+    if not settings.TESTING:
+        try:
+            from app.ml_pipelines.scheduler import get_scheduler
+            scheduler = get_scheduler()
+            await scheduler.stop()
+            
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info("AI Pipeline services shut down gracefully")
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error during AI Pipeline shutdown: {e}")
 
 
 def create_application() -> FastAPI:

@@ -1,0 +1,219 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\nirma\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\nirma\Downloads\social-flow\social-flow-backend
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.11.0, Faker-20.0.3, asyncio-1.2.0, cov-7.0.0, mock-3.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 917 items
+
+tests/e2e/auth/test_auth_user_journey.py::TestAuthUserJourney::test_user_journey PASSED [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_health_check PASSED          [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_detailed_health_check FAILED [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_user_registration_and_login PASSED [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_get_current_user FAILED      [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_update_user_profile FAILED   [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_create_post FAILED           [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_get_post FAILED              [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_like_post FAILED             [  0%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_get_feed FAILED              [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_get_notifications FAILED     [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_token_refresh FAILED         [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_search_users PASSED          [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_ml_content_analysis FAILED   [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_get_recommendations FAILED   [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_analytics_endpoint FAILED    [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_rate_limiting FAILED         [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_cors_headers PASSED          [  1%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_error_handling FAILED        [  2%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_unauthorized_access PASSED   [  2%]
+tests/e2e/test_smoke.py::TestE2ESmoke::test_invalid_credentials PASSED   [  2%]
+tests/e2e/test_smoke.py::TestCriticalPaths::test_complete_user_journey FAILED [  2%]
+tests/e2e/test_smoke.py::TestCriticalPaths::test_content_creation_workflow FAILED [  2%]
+tests/e2e/test_smoke.py::TestSystemIntegration::test_database_connectivity PASSED [  2%]
+tests/e2e/test_smoke.py::TestSystemIntegration::test_redis_connectivity PASSED [  2%]
+tests/e2e/test_smoke.py::TestSystemIntegration::test_s3_connectivity SKIPPED [  2%]
+tests/e2e/test_smoke.py::TestSystemIntegration::test_stripe_connectivity SKIPPED [  2%]
+tests/e2e/test_smoke.py::test_smoke_suite_summary PASSED                 [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserRegistration::test_register_success PASSED [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserRegistration::test_register_duplicate_email PASSED [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserRegistration::test_register_duplicate_username PASSED [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserRegistration::test_register_invalid_email PASSED [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserRegistration::test_register_weak_password PASSED [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserLogin::test_oauth2_login_success PASSED [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserLogin::test_json_login_success PASSED [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserLogin::test_login_with_username PASSED [  3%]
+tests/integration/api/test_auth_endpoints.py::TestUserLogin::test_login_wrong_password PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestUserLogin::test_login_nonexistent_user PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestTokenRefresh::test_token_refresh_success PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestTokenRefresh::test_token_refresh_invalid_token PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestTwoFactorAuth::test_2fa_setup PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestTwoFactorAuth::test_2fa_setup_unauthenticated PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestTwoFactorAuth::test_2fa_disable PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestCurrentUser::test_get_current_user_success PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestCurrentUser::test_get_current_user_unauthenticated PASSED [  4%]
+tests/integration/api/test_auth_endpoints.py::TestCurrentUser::test_get_current_user_invalid_token PASSED [  5%]
+tests/integration/api/test_auth_endpoints.py::TestAuthEdgeCases::test_register_with_extra_fields PASSED [  5%]
+tests/integration/api/test_auth_endpoints.py::TestAuthEdgeCases::test_login_updates_last_login PASSED [  5%]
+tests/integration/api/test_auth_endpoints.py::TestAuthEdgeCases::test_multiple_logins_different_tokens PASSED [  5%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentIntents::test_create_payment_intent PASSED [  5%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentIntents::test_confirm_payment PASSED [  5%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentIntents::test_refund_payment PASSED [  5%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentIntents::test_list_payments PASSED [  5%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentIntents::test_get_payment_by_id PASSED [  5%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentIntents::test_confirm_other_user_payment_fails PASSED [  5%]
+tests/integration/api/test_payment_endpoints.py::TestSubscriptions::test_get_subscription_pricing PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestSubscriptions::test_create_subscription PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestSubscriptions::test_get_current_subscription PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestSubscriptions::test_upgrade_subscription PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestSubscriptions::test_cancel_subscription PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestSubscriptions::test_cancel_subscription_immediately PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestSubscriptions::test_cannot_create_duplicate_subscription PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestPayouts::test_create_connect_account PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestPayouts::test_get_connect_account_status PASSED [  6%]
+tests/integration/api/test_payment_endpoints.py::TestPayouts::test_request_payout PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPayouts::test_list_payouts PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPayouts::test_get_creator_earnings PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentAnalytics::test_get_payment_analytics PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentAnalytics::test_get_subscription_analytics PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentEdgeCases::test_get_nonexistent_payment PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentEdgeCases::test_refund_non_succeeded_payment_fails PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentEdgeCases::test_refund_exceeds_amount_fails PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentEdgeCases::test_get_subscription_without_active_fails PASSED [  7%]
+tests/integration/api/test_payment_endpoints.py::TestPaymentEdgeCases::test_create_payment_requires_authentication PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostCRUD::test_create_post PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostCRUD::test_list_posts PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostCRUD::test_get_post_by_id PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostCRUD::test_get_private_post_by_non_owner_fails PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostCRUD::test_update_post PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostCRUD::test_update_other_users_post_fails PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostCRUD::test_delete_post PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostFeeds::test_get_user_feed PASSED [  8%]
+tests/integration/api/test_social_endpoints.py::TestPostFeeds::test_get_trending_posts PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestCommentCRUD::test_create_comment_on_post PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestCommentCRUD::test_list_comments_on_post PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestCommentCRUD::test_get_comment_by_id PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestCommentCRUD::test_create_reply_to_comment PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestCommentCRUD::test_get_comment_replies PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestCommentCRUD::test_update_comment PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestCommentCRUD::test_delete_comment PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestLikes::test_like_post PASSED [  9%]
+tests/integration/api/test_social_endpoints.py::TestLikes::test_unlike_post PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestLikes::test_like_comment PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestLikes::test_unlike_comment PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestSaves::test_save_post PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestSaves::test_unsave_post PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestSaves::test_list_saved_posts PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestAdminModeration::test_admin_flag_post PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestEdgeCases::test_get_nonexistent_post PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestEdgeCases::test_comment_on_nonexistent_post_fails PASSED [ 10%]
+tests/integration/api/test_social_endpoints.py::TestEdgeCases::test_like_post_requires_authentication PASSED [ 11%]
+tests/integration/api/test_social_endpoints.py::TestEdgeCases::test_create_post_with_empty_content_fails PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserProfile::test_get_current_user_profile PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserProfile::test_update_current_user_profile PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserProfile::test_change_password PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserProfile::test_change_password_wrong_current PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserList::test_list_users_paginated PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserList::test_search_users_by_username PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserList::test_search_users_no_results PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserList::test_get_user_by_id PASSED [ 11%]
+tests/integration/api/test_user_endpoints.py::TestUserList::test_get_user_by_id_not_found PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestFollowSystem::test_follow_user PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestFollowSystem::test_unfollow_user PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestFollowSystem::test_follow_self_fails PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestFollowSystem::test_get_user_followers PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestFollowSystem::test_get_user_following PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestAdminOperations::test_update_user_admin_as_admin PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestAdminOperations::test_activate_user_as_admin PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestAdminOperations::test_suspend_user_as_admin PASSED [ 12%]
+tests/integration/api/test_user_endpoints.py::TestAdminOperations::test_non_admin_cannot_update_roles PASSED [ 13%]
+tests/integration/api/test_user_endpoints.py::TestUserDeletion::test_delete_own_account PASSED [ 13%]
+tests/integration/api/test_user_endpoints.py::TestUserDeletion::test_cannot_delete_other_user_account PASSED [ 13%]
+tests/integration/api/test_user_endpoints.py::TestEdgeCases::test_update_profile_unauthenticated PASSED [ 13%]
+tests/integration/api/test_user_endpoints.py::TestEdgeCases::test_search_with_empty_query PASSED [ 13%]
+tests/integration/api/test_user_endpoints.py::TestEdgeCases::test_pagination_out_of_bounds PASSED [ 13%]
+tests/integration/api/test_video_endpoints.py::TestVideoUpload::test_initiate_video_upload_as_creator PASSED [ 13%]
+tests/integration/api/test_video_endpoints.py::TestVideoUpload::test_initiate_upload_non_creator_fails PASSED [ 13%]
+tests/integration/api/test_video_endpoints.py::TestVideoUpload::test_complete_video_upload PASSED [ 13%]
+tests/integration/api/test_video_endpoints.py::TestVideoListing::test_list_public_videos PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoListing::test_get_trending_videos PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoListing::test_search_videos_by_title PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoListing::test_get_my_videos PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoCRUD::test_get_public_video_by_id PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoCRUD::test_get_private_video_by_owner PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoCRUD::test_get_private_video_by_non_owner_fails PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoCRUD::test_update_video PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoCRUD::test_delete_video PASSED [ 14%]
+tests/integration/api/test_video_endpoints.py::TestVideoStreaming::test_get_streaming_urls PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoInteractions::test_record_video_view PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoInteractions::test_like_video PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoInteractions::test_unlike_video PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoAnalytics::test_get_video_analytics PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoModeration::test_admin_approve_video PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoModeration::test_admin_reject_video PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoEdgeCases::test_get_nonexistent_video PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoEdgeCases::test_update_other_users_video_fails PASSED [ 15%]
+tests/integration/api/test_video_endpoints.py::TestVideoEdgeCases::test_search_with_empty_results PASSED [ 16%]
+tests/integration/auth/test_auth_flows.py::TestAuthFlows::test_authentication_flow PASSED [ 16%]
+tests/integration/auth/test_auth_token_refresh.py::TestAuthTokenRefresh::test_token_refresh PASSED [ 16%]
+tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_record_view_session FAILED [ 16%]
+tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_video_metrics FAILED [ 16%]
+tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_user_behavior_metrics FAILED [ 16%]
+tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_revenue_report FAILED [ 16%]
+
+================================== FAILURES ===================================
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:81: AssertionError: assert 'degraded' == 'healthy'
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:123: assert 403 == 200
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:141: assert 403 == 200
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:159: assert 405 == 201
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:159: assert 405 == 201
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:159: assert 405 == 201
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:204: assert 422 == 200
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:212: assert 403 == 200
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:223: assert 403 == 200
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:251: assert 500 in [200, 202, 501]
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:261: assert 500 in [200, 202, 404]
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:267: KeyError: 'id'
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:285: assert (429 in [405, 405, 405, 405, 405, 405, ...] or False)
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:303: assert 500 == 404
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:367: AssertionError: Post creation failed
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\tests\e2e\test_smoke.py:418: assert 405 == 201
+C:\Users\nirma\OneDrive\Desktop\social-flow-main\social-flow-backend\tests\integration\test_analytics_integration.py:70: assert 500 == 201
+C:\Users\nirma\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\mapper.py:4255: sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[Subscription(subscriptions)]'. Original exception was: When initializing mapper Mapper[Subscription(subscriptions)], expression 'User' failed to locate a name ('User'). If this is a class name, consider adding this relationship() to the <class 'app.auth.models.subscription.Subscription'> class after both dependent classes have been defined.
+C:\Users\nirma\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\orm\mapper.py:4255: sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[Subscription(subscriptions)]'. Original exception was: When initializing mapper Mapper[Subscription(subscriptions)], expression 'User' failed to locate a name ('User'). If this is a class name, consider adding this relationship() to the <class 'app.auth.models.subscription.Subscription'> class after both dependent classes have been defined.
+C:\Users\nirma\OneDrive\Desktop\social-flow-main\social-flow-backend\tests\integration\test_analytics_integration.py:162: assert 500 == 200
+============================ slowest 10 durations =============================
+143.27s call     tests/e2e/test_smoke.py::TestE2ESmoke::test_rate_limiting
+23.15s setup    tests/integration/api/test_social_endpoints.py::TestPostCRUD::test_update_other_users_post_fails
+15.11s setup    tests/integration/api/test_auth_endpoints.py::TestAuthEdgeCases::test_multiple_logins_different_tokens
+14.92s setup    tests/integration/api/test_payment_endpoints.py::TestPaymentIntents::test_confirm_payment
+13.89s setup    tests/integration/api/test_video_endpoints.py::TestVideoInteractions::test_like_video
+12.94s setup    tests/integration/api/test_payment_endpoints.py::TestPaymentIntents::test_create_payment_intent
+8.40s call     tests/e2e/test_smoke.py::TestSystemIntegration::test_database_connectivity
+8.39s call     tests/e2e/test_smoke.py::TestSystemIntegration::test_redis_connectivity
+8.35s setup    tests/integration/api/test_video_endpoints.py::TestVideoStreaming::test_get_streaming_urls
+7.99s call     tests/e2e/test_smoke.py::TestE2ESmoke::test_detailed_health_check
+=========================== short test summary info ===========================
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_detailed_health_check - As...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_get_current_user - assert ...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_update_user_profile - asse...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_create_post - assert 405 =...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_get_post - assert 405 == 201
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_like_post - assert 405 == 201
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_get_feed - assert 422 == 200
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_get_notifications - assert...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_token_refresh - assert 403...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_ml_content_analysis - asse...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_get_recommendations - asse...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_analytics_endpoint - KeyEr...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_rate_limiting - assert (42...
+FAILED tests/e2e/test_smoke.py::TestE2ESmoke::test_error_handling - assert 50...
+FAILED tests/e2e/test_smoke.py::TestCriticalPaths::test_complete_user_journey
+FAILED tests/e2e/test_smoke.py::TestCriticalPaths::test_content_creation_workflow
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_record_view_session
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_video_metrics
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_user_behavior_metrics
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_revenue_report
+!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 20 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+============ 20 failed, 131 passed, 2 skipped in 816.52s (0:13:36) ============

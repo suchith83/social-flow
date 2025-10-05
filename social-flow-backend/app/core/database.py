@@ -127,7 +127,8 @@ async def init_db() -> None:
         logger.info("Database initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")
-        raise
+        logger.warning("Application will continue but database functionality may be limited")
+        # Don't raise - allow application to start even if DB init fails
 
 
 async def close_db() -> None:

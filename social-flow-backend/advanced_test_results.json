@@ -1,0 +1,380 @@
+{
+  "summary": {
+    "total": 60,
+    "passed": 54,
+    "failed": 6,
+    "duration": 14.19586,
+    "timestamp": "2025-10-05T11:49:24.834817"
+  },
+  "results": {
+    "api_tests": [
+      {
+        "name": "API Router Integration",
+        "status": "PASS",
+        "details": "289 routes",
+        "timestamp": "2025-10-05T11:49:23.000563"
+      },
+      {
+        "name": "HTTP Methods Support",
+        "status": "PASS",
+        "details": "DELETE, GET, PATCH, POST, PUT",
+        "timestamp": "2025-10-05T11:49:23.001036"
+      },
+      {
+        "name": "API Router Integration",
+        "status": "PASS",
+        "details": "289 routes",
+        "timestamp": "2025-10-05T11:49:23.314073"
+      },
+      {
+        "name": "HTTP Methods Support",
+        "status": "PASS",
+        "details": "DELETE, GET, PATCH, POST, PUT",
+        "timestamp": "2025-10-05T11:49:23.314468"
+      }
+    ],
+    "database_tests": [],
+    "ml_tests": [
+      {
+        "name": "ML Service Initialization",
+        "status": "PASS",
+        "details": "16 models",
+        "timestamp": "2025-10-05T11:49:23.316163"
+      },
+      {
+        "name": "Text Moderation",
+        "status": "PASS",
+        "details": "<coroutine object MLService.moderate_text at 0x00000293E4F37E00>",
+        "timestamp": "2025-10-05T11:49:23.316308"
+      },
+      {
+        "name": "Sentiment Analysis",
+        "status": "PASS",
+        "details": "<coroutine object MLService.analyze_sentiment at 0x00000293E5462C20>",
+        "timestamp": "2025-10-05T11:49:23.316412"
+      },
+      {
+        "name": "Engagement Score",
+        "status": "PASS",
+        "details": "Score: 0.0",
+        "timestamp": "2025-10-05T11:49:23.316558"
+      },
+      {
+        "name": "Spam Detection",
+        "status": "PASS",
+        "details": "Result: <coroutine object MLService.detect_spam at 0x00000293E5462B50>",
+        "timestamp": "2025-10-05T11:49:23.316654"
+      },
+      {
+        "name": "Tag Generation",
+        "status": "PASS",
+        "details": "Graceful fallback",
+        "timestamp": "2025-10-05T11:49:23.316740"
+      },
+      {
+        "name": "ML Service Initialization",
+        "status": "PASS",
+        "details": "16 models",
+        "timestamp": "2025-10-05T11:49:23.322312"
+      },
+      {
+        "name": "Text Moderation",
+        "status": "PASS",
+        "details": "<coroutine object MLService.moderate_text at 0x00000293E4F37E00>",
+        "timestamp": "2025-10-05T11:49:23.322399"
+      },
+      {
+        "name": "Sentiment Analysis",
+        "status": "PASS",
+        "details": "<coroutine object MLService.analyze_sentiment at 0x00000293E5462B50>",
+        "timestamp": "2025-10-05T11:49:23.322498"
+      },
+      {
+        "name": "Engagement Score",
+        "status": "PASS",
+        "details": "Score: 0.0",
+        "timestamp": "2025-10-05T11:49:23.322586"
+      },
+      {
+        "name": "Spam Detection",
+        "status": "PASS",
+        "details": "Result: <coroutine object MLService.detect_spam at 0x00000293E5462C20>",
+        "timestamp": "2025-10-05T11:49:23.322664"
+      },
+      {
+        "name": "Tag Generation",
+        "status": "PASS",
+        "details": "Graceful fallback",
+        "timestamp": "2025-10-05T11:49:23.322787"
+      }
+    ],
+    "service_tests": [
+      {
+        "name": "Service Layer Integration",
+        "status": "FAIL",
+        "details": "RecommendationService.__init__() missing 1 required positional argument: 'db'",
+        "timestamp": "2025-10-05T11:49:23.323476"
+      },
+      {
+        "name": "Service Layer Integration",
+        "status": "FAIL",
+        "details": "RecommendationService.__init__() missing 1 required positional argument: 'db'",
+        "timestamp": "2025-10-05T11:49:23.326068"
+      }
+    ],
+    "integration_tests": [
+      {
+        "name": "Password Hashing",
+        "status": "PASS",
+        "details": "Hash created",
+        "timestamp": "2025-10-05T11:49:23.688510"
+      },
+      {
+        "name": "Password Verification",
+        "status": "PASS",
+        "details": "Verified",
+        "timestamp": "2025-10-05T11:49:24.037654"
+      },
+      {
+        "name": "Token Creation",
+        "status": "PASS",
+        "details": "Token generated",
+        "timestamp": "2025-10-05T11:49:24.083063"
+      },
+      {
+        "name": "AuthService Init",
+        "status": "PASS",
+        "details": "Fallback mode",
+        "timestamp": "2025-10-05T11:49:24.083249"
+      },
+      {
+        "name": "Password Hashing",
+        "status": "PASS",
+        "details": "Hash created",
+        "timestamp": "2025-10-05T11:49:24.431256"
+      },
+      {
+        "name": "Password Verification",
+        "status": "PASS",
+        "details": "Verified",
+        "timestamp": "2025-10-05T11:49:24.794224"
+      },
+      {
+        "name": "Token Creation",
+        "status": "PASS",
+        "details": "Token generated",
+        "timestamp": "2025-10-05T11:49:24.794611"
+      },
+      {
+        "name": "AuthService Init",
+        "status": "PASS",
+        "details": "Fallback mode",
+        "timestamp": "2025-10-05T11:49:24.794702"
+      },
+      {
+        "name": "StorageManager Init",
+        "status": "PASS",
+        "details": "Manager ready",
+        "timestamp": "2025-10-05T11:49:24.806211"
+      },
+      {
+        "name": "Storage Method upload_file",
+        "status": "PASS",
+        "details": "Method exists",
+        "timestamp": "2025-10-05T11:49:24.806329"
+      },
+      {
+        "name": "Storage Method download_file",
+        "status": "PASS",
+        "details": "Method exists",
+        "timestamp": "2025-10-05T11:49:24.806416"
+      },
+      {
+        "name": "Storage Method delete_file",
+        "status": "PASS",
+        "details": "Method exists",
+        "timestamp": "2025-10-05T11:49:24.806609"
+      },
+      {
+        "name": "StorageManager Init",
+        "status": "PASS",
+        "details": "Manager ready",
+        "timestamp": "2025-10-05T11:49:24.807564"
+      },
+      {
+        "name": "Storage Method upload_file",
+        "status": "PASS",
+        "details": "Method exists",
+        "timestamp": "2025-10-05T11:49:24.807729"
+      },
+      {
+        "name": "Storage Method download_file",
+        "status": "PASS",
+        "details": "Method exists",
+        "timestamp": "2025-10-05T11:49:24.807807"
+      },
+      {
+        "name": "Storage Method delete_file",
+        "status": "PASS",
+        "details": "Method exists",
+        "timestamp": "2025-10-05T11:49:24.807865"
+      },
+      {
+        "name": "Pipeline Orchestrator Init",
+        "status": "PASS",
+        "details": "Orchestrator ready",
+        "timestamp": "2025-10-05T11:49:24.808798"
+      },
+      {
+        "name": "Pipeline Orchestrator Init",
+        "status": "PASS",
+        "details": "Orchestrator ready",
+        "timestamp": "2025-10-05T11:49:24.809520"
+      },
+      {
+        "name": "User Registration Schema",
+        "status": "FAIL",
+        "details": "1 validation error for UserCreate\npassword\n  Value error, Password must contain at least one uppercase letter [type=value_error, input_value='securepassword123', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.11/v/value_error",
+        "timestamp": "2025-10-05T11:49:24.816741"
+      },
+      {
+        "name": "Real-world Scenarios",
+        "status": "FAIL",
+        "details": "No module named 'app.videos.schemas'",
+        "timestamp": "2025-10-05T11:49:24.817796"
+      },
+      {
+        "name": "User Registration Schema",
+        "status": "FAIL",
+        "details": "1 validation error for UserCreate\npassword\n  Value error, Password must contain at least one uppercase letter [type=value_error, input_value='securepassword123', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.11/v/value_error",
+        "timestamp": "2025-10-05T11:49:24.818779"
+      },
+      {
+        "name": "Real-world Scenarios",
+        "status": "FAIL",
+        "details": "No module named 'app.videos.schemas'",
+        "timestamp": "2025-10-05T11:49:24.819456"
+      },
+      {
+        "name": "Config PROJECT_NAME",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.819750"
+      },
+      {
+        "name": "Config VERSION",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.819911"
+      },
+      {
+        "name": "Config SECRET_KEY",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.819996"
+      },
+      {
+        "name": "Config DATABASE_URL",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820094"
+      },
+      {
+        "name": "Config REDIS_URL",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820174"
+      },
+      {
+        "name": "Config AWS_REGION",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820253"
+      },
+      {
+        "name": "Config S3_BUCKET_NAME",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820333"
+      },
+      {
+        "name": "Config PROJECT_NAME",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820596"
+      },
+      {
+        "name": "Config VERSION",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820676"
+      },
+      {
+        "name": "Config SECRET_KEY",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820740"
+      },
+      {
+        "name": "Config DATABASE_URL",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820813"
+      },
+      {
+        "name": "Config REDIS_URL",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820893"
+      },
+      {
+        "name": "Config AWS_REGION",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.820939"
+      },
+      {
+        "name": "Config S3_BUCKET_NAME",
+        "status": "PASS",
+        "details": "Configured",
+        "timestamp": "2025-10-05T11:49:24.821092"
+      },
+      {
+        "name": "UserRepository Init",
+        "status": "PASS",
+        "details": "Lazy initialization",
+        "timestamp": "2025-10-05T11:49:24.821430"
+      },
+      {
+        "name": "VideoRepository Init",
+        "status": "PASS",
+        "details": "Lazy initialization",
+        "timestamp": "2025-10-05T11:49:24.821484"
+      },
+      {
+        "name": "PostRepository Init",
+        "status": "PASS",
+        "details": "Lazy initialization",
+        "timestamp": "2025-10-05T11:49:24.821534"
+      },
+      {
+        "name": "UserRepository Init",
+        "status": "PASS",
+        "details": "Lazy initialization",
+        "timestamp": "2025-10-05T11:49:24.822029"
+      },
+      {
+        "name": "VideoRepository Init",
+        "status": "PASS",
+        "details": "Lazy initialization",
+        "timestamp": "2025-10-05T11:49:24.822176"
+      },
+      {
+        "name": "PostRepository Init",
+        "status": "PASS",
+        "details": "Lazy initialization",
+        "timestamp": "2025-10-05T11:49:24.822268"
+      }
+    ]
+  }
+}
