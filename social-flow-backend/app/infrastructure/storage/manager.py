@@ -7,7 +7,7 @@ automatically handling provider selection, multipart uploads, and error handling
 
 import logging
 import mimetypes
-from typing import Optional, Dict, Any, BinaryIO, Callable
+from typing import Optional, Dict, BinaryIO, Callable
 
 from app.infrastructure.storage.base import (
     IStorageManager,
@@ -16,6 +16,7 @@ from app.infrastructure.storage.base import (
     StorageProvider,
 )
 from app.infrastructure.storage.s3_backend import S3Backend
+from app.infrastructure.storage.memory_backend import MemoryBackend
 from app.core.config import settings
 from app.core.exceptions import StorageServiceError
 
@@ -56,7 +57,12 @@ class StorageManager(IStorageManager):
         #     self._backends[StorageProvider.GCS] = GCSBackend()
 
         if not self._backends:
-            raise StorageServiceError("No storage backends available. Please configure at least one provider.")
+            # Provide an in-memory fallback so tests and local dev do not fail hard
+            self._backends[StorageProvider.LOCAL] = MemoryBackend()
+            self._active_provider = StorageProvider.LOCAL
+            logger.warning(
+                "No cloud storage backends configured. Using in-memory MemoryBackend (ephemeral)."
+            )
 
         # Set active provider to first available if default is not available
         if self._active_provider not in self._backends:

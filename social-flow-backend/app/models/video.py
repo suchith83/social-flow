@@ -11,13 +11,12 @@ This module defines comprehensive video models with support for:
 
 from __future__ import annotations
 
-from datetime import datetime
 from enum import Enum as PyEnum
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     BigInteger, Boolean, Column, DateTime, Enum as SQLEnum,
-    Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint
+    Float, ForeignKey, Index, Integer, String, Text
 )
 from sqlalchemy.orm import Mapped, relationship
 
@@ -39,6 +38,8 @@ class VideoStatus(str, PyEnum):
     READY = "ready"
     FAILED = "failed"
     DELETED = "deleted"
+    # Compatibility alias used in tests
+    COMPLETED = "completed"
 
 
 class VideoVisibility(str, PyEnum):
@@ -638,11 +639,23 @@ class Video(CommonBase):
         
         Maps:
         - user_id -> owner_id (for backward compatibility with tests)
+        - is_approved -> moderation_status=APPROVED
         - Provides safe defaults for required fields if missing
         """
         # Map user_id to owner_id for backward compatibility
         if "user_id" in kwargs and "owner_id" not in kwargs:
             kwargs["owner_id"] = kwargs.pop("user_id")
+        # Map legacy approval flag
+        if kwargs.pop("is_approved", None) and "moderation_status" not in kwargs:
+            try:
+                kwargs["moderation_status"] = ModerationStatus.APPROVED
+            except Exception:
+                pass
+        # Legacy stat field aliases
+        if "views_count" in kwargs and "view_count" not in kwargs:
+            kwargs["view_count"] = kwargs.pop("views_count")
+        if "likes_count" in kwargs and "like_count" not in kwargs:
+            kwargs["like_count"] = kwargs.pop("likes_count")
         
         # Provide safe defaults for required fields if missing during tests
         if "file_size" not in kwargs:
@@ -666,6 +679,19 @@ class Video(CommonBase):
             and self.moderation_status == ModerationStatus.APPROVED
             and not self.is_deleted
         )
+
+    # ---------------- Compatibility Alias Properties -----------------
+    @property
+    def is_approved(self) -> bool:  # Legacy code expects attribute
+        return self.moderation_status == ModerationStatus.APPROVED
+
+    @property
+    def views_count(self) -> int:  # Legacy naming
+        return getattr(self, "view_count", 0)
+
+    @property
+    def likes_count(self) -> int:  # Legacy naming
+        return getattr(self, "like_count", 0)
     
     def is_available_in_country(self, country_code: str) -> bool:
         """Check if video is available in a specific country."""

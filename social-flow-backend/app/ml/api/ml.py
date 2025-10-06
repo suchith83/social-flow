@@ -12,7 +12,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.models.user import User
 from app.auth.api.auth import get_current_active_user
-from app.ml.services.ml_service import ml_service
+try:
+    from app.ai_ml_services import get_ai_ml_service
+    ml_service = get_ai_ml_service()
+except Exception:  # pragma: no cover
+    from app.ml.services.ml_service import ml_service  # type: ignore
 from app.analytics.services.analytics_service import analytics_service
 from app.ml.ai_processing import (
     analyze_content_task,

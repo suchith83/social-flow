@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker
 from httpx import AsyncClient, ASGITransport
 
 from app.main import app
+from app.application.container import get_container
 from app.core.database import get_db
 from app.models.base import Base  # Import Base from models, not database
 from app.core.config import settings
@@ -25,8 +26,6 @@ from app.models import (
     Comment,
     Like,
     Follow,
-    Save,
-    AdCampaign,
     Ad,
     Payment,
     Subscription,
@@ -36,13 +35,7 @@ from app.models import (
 )
 
 # Import analytics models to ensure tables are created
-from app.analytics.models.extended import (
-    VideoMetrics,
-    UserBehaviorMetrics,
-    RevenueMetrics,
-    AggregatedMetrics,
-    ViewSession,
-)
+from app.analytics.models.extended import VideoMetrics  # noqa: F401 import ensures table creation
 
 
 # Enable test mode
@@ -118,6 +111,17 @@ async def async_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, 
         yield ac
     
     app.dependency_overrides.clear()
+
+
+# -------------------- New Container / AI Fixtures --------------------
+@pytest.fixture(scope="session")
+def container():
+    return get_container()
+
+
+@pytest.fixture(scope="function")
+def ai_ml(container):
+    return container.ai_ml()
 
 
 @pytest_asyncio.fixture(scope="function")

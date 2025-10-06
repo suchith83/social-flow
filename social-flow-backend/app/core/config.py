@@ -175,6 +175,14 @@ class Settings(BaseSettings):
     ENABLE_METRICS: bool = True
     LOG_LEVEL: str = "INFO"
     SENTRY_DSN: Optional[HttpUrl] = None
+
+    # --- Feature Flags (Optional Subsystems) ---
+    # These allow the application to degrade gracefully when certain
+    # infrastructure components are intentionally disabled (e.g. local dev)
+    FEATURE_S3_ENABLED: bool = True
+    FEATURE_REDIS_ENABLED: bool = True
+    FEATURE_ML_ENABLED: bool = True
+    FEATURE_CELERY_ENABLED: bool = True
     
     # Development
     DEBUG: bool = False

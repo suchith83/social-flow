@@ -16,6 +16,8 @@ from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.core.config import settings
+from app.application.container import get_container
+from app.core.middleware import RequestContextMiddleware
 from app.core.database import init_db
 from app.core.logging import setup_logging
 from app.core.redis import init_redis
@@ -112,6 +114,12 @@ def create_application() -> FastAPI:
             allowed_hosts=settings.ALLOWED_HOSTS,
         )
     
+    # Attach container early (makes it discoverable in dependency graph / tests)
+    app.state.container = get_container()
+
+    # Request context middleware (request id, latency)
+    app.add_middleware(RequestContextMiddleware)  # type: ignore[arg-type]
+
     # Include API router
     app.include_router(api_router, prefix=settings.API_V1_STR)
     

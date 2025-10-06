@@ -224,6 +224,29 @@ class AnalyticsService:
         except Exception as e:
             logger.error(f"Platform analytics retrieval failed: {e}")
             raise AnalyticsServiceError(f"Platform analytics retrieval failed: {e}")
+
+    async def get_analytics(self, user_id: str, time_range: str = "7d", metric_type: str = "overview") -> Dict[str, Any]:  # noqa: D401
+        """Compatibility wrapper used by legacy analytics API endpoint.
+
+        metric_type values (future expansion): overview | user | platform
+        Currently returns a merged structure aligning with earlier expectations
+        to prevent 500 errors due to missing method.
+        """
+        try:
+            base_user = await self.get_user_analytics(user_id=user_id, time_period=time_range)
+            platform = await self.get_platform_analytics(time_period=time_range)
+
+            # Simple normalization layer
+            return {
+                "metric_type": metric_type,
+                "time_range": time_range,
+                "user": base_user,
+                "platform": platform,
+                "generated_at": datetime.utcnow().isoformat()
+            }
+        except Exception as e:
+            logger.error(f"General analytics retrieval failed: {e}")
+            raise AnalyticsServiceError(f"General analytics retrieval failed: {e}")
     
     async def generate_report(self, report_type: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """Generate analytics report."""

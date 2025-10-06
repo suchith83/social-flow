@@ -1,0 +1,120 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: C:\Users\nirma\Downloads\social-flow\social-flow-backend
+configfile: pytest.ini
+plugins: anyio-4.11.0, Faker-20.0.3, asyncio-1.2.0, cov-7.0.0, mock-3.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 840 items
+
+tests\unit\auth\test_auth_jwt.py ........                                [  0%]
+tests\unit\auth\test_auth_mfa.py ........                                [  1%]
+tests\unit\auth\test_auth_oauth.py ........                              [  2%]
+tests\unit\auth\test_auth_password.py ............                       [  4%]
+tests\unit\auth\test_auth_rbac.py ...........                            [  5%]
+tests\unit\auth\test_auth_session.py .............                       [  7%]
+tests\unit\auth\test_value_objects.py .................................. [ 11%]
+.                                                                        [ 11%]
+tests\unit\infrastructure\test_storage.py ..................             [ 13%]
+tests\unit\test_auth.py .F.E.E...............                            [ 15%]
+tests\unit\test_auth_comprehensive.py .................................. [ 20%]
+........................................................................ [ 28%]
+........................................................................ [ 37%]
+...............................................                          [ 42%]
+tests\unit\test_config.py ..................                             [ 44%]
+tests\unit\test_copyright_comprehensive.py ............................. [ 48%]
+.......                                                                  [ 49%]
+tests\unit\test_hello_world.py .                                         [ 49%]
+tests\unit\test_ml.py ..............                                     [ 50%]
+tests\unit\test_ml_service.py .....................                      [ 53%]
+tests\unit\test_payment_service.py ..................                    [ 55%]
+tests\unit\test_post_service.py .................                        [ 57%]
+tests\unit\test_video.py ................                                [ 59%]
+tests\integration\api\test_auth_endpoints.py .....................       [ 62%]
+tests\integration\api\test_payment_endpoints.py ........................ [ 64%]
+.                                                                        [ 65%]
+tests\integration\api\test_social_endpoints.py ......................... [ 67%]
+...                                                                      [ 68%]
+tests\integration\api\test_user_endpoints.py .......................     [ 71%]
+tests\integration\api\test_video_endpoints.py ......................     [ 73%]
+tests\integration\auth\test_auth_flows.py .                              [ 73%]
+tests\integration\auth\test_auth_token_refresh.py .                      [ 73%]
+tests\integration\test_analytics_integration.py ...FFFFF....F..F
+
+=================================== ERRORS ====================================
+______ ERROR at setup of TestAuthService.test_verify_email_invalid_token ______
+E   sqlite3.OperationalError: table password_reset_tokens already exists
+
+The above exception was the direct cause of the following exception:
+E   sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) table password_reset_tokens already exists
+    [SQL: 
+    CREATE TABLE password_reset_tokens (
+	user_id VARCHAR(36) NOT NULL, 
+	token VARCHAR(255) NOT NULL, 
+	expires_at DATETIME NOT NULL, 
+	used_at DATETIME, 
+	id VARCHAR(36) NOT NULL, 
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
+	deleted_at DATETIME, 
+	is_deleted BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+    
+    ]
+    (Background on this error at: https://sqlalche.me/e/20/e3q8)
+____ ERROR at setup of TestAuthService.test_login_with_credentials_invalid ____
+E   sqlite3.OperationalError: table password_reset_tokens already exists
+
+The above exception was the direct cause of the following exception:
+E   sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) table password_reset_tokens already exists
+    [SQL: 
+    CREATE TABLE password_reset_tokens (
+	user_id VARCHAR(36) NOT NULL, 
+	token VARCHAR(255) NOT NULL, 
+	expires_at DATETIME NOT NULL, 
+	used_at DATETIME, 
+	id VARCHAR(36) NOT NULL, 
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
+	deleted_at DATETIME, 
+	is_deleted BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+    
+    ]
+    (Background on this error at: https://sqlalche.me/e/20/e3q8)
+================================== FAILURES ===================================
+C:\Users\nirma\Downloads\social-flow\social-flow-backend\app\auth\services\auth.py:246: app.core.exceptions.ValidationError: Username already taken
+C:\Users\nirma\OneDrive\Desktop\social-flow-main\social-flow-backend\tests\integration\test_analytics_integration.py:162: assert 500 == 200
+C:\Users\nirma\OneDrive\Desktop\social-flow-main\social-flow-backend\tests\integration\test_analytics_integration.py:184: assert 422 in [200, 403]
+C:\Users\nirma\OneDrive\Desktop\social-flow-main\social-flow-backend\tests\integration\test_analytics_integration.py:199: assert 500 in [200, 403]
+C:\Users\nirma\OneDrive\Desktop\social-flow-main\social-flow-backend\tests\integration\test_analytics_integration.py:220: AssertionError: assert 'videos' in []
+C:\Users\nirma\OneDrive\Desktop\social-flow-main\social-flow-backend\tests\integration\test_analytics_integration.py:235: assert 500 == 200
+C:\Users\nirma\OneDrive\Desktop\social-flow-main\social-flow-backend\tests\integration\test_analytics_integration.py:385: assert 500 == 200
+C:\Users\nirma\AppData\Local\Programs\Python\Python313\Lib\site-packages\aiosqlite\core.py:105: sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: users.password_hash
+============================ slowest 10 durations =============================
+71.86s call     tests/unit/test_auth_comprehensive.py::TestAuthenticationEdgeCases::test_password_timing_attack_resistance
+37.25s call     tests/unit/test_auth_comprehensive.py::TestAuthenticationPerformance::test_password_verification_performance
+12.18s setup    tests/integration/api/test_video_endpoints.py::TestVideoListing::test_search_videos_by_title
+10.88s setup    tests/unit/test_copyright_comprehensive.py::TestRevenueSplitCalculations::test_revenue_split_multiple_claimants
+10.00s setup    tests/unit/test_copyright_comprehensive.py::TestRevenueSplitCalculations::test_revenue_split_exact_7_second_match
+9.32s setup    tests/unit/test_copyright_comprehensive.py::TestRevenueSplitCalculations::test_revenue_split_micro_amounts
+8.43s setup    tests/integration/api/test_video_endpoints.py::TestVideoListing::test_get_trending_videos
+8.25s setup    tests/integration/api/test_video_endpoints.py::TestVideoListing::test_list_public_videos
+4.11s setup    tests/integration/api/test_user_endpoints.py::TestUserList::test_search_users_by_username
+4.03s setup    tests/integration/api/test_auth_endpoints.py::TestAuthEdgeCases::test_multiple_logins_different_tokens
+=========================== short test summary info ===========================
+FAILED tests/unit/test_auth.py::TestAuthService::test_register_user_with_verification_duplicate_email
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_revenue_report
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_calculate_revenue_metrics
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_platform_overview
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_top_videos
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsAPI::test_get_creator_dashboard
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsWorkflow::test_complete_analytics_workflow
+FAILED tests/integration/test_analytics_integration.py::TestAnalyticsSecurity::test_user_data_privacy
+ERROR tests/unit/test_auth.py::TestAuthService::test_verify_email_invalid_token
+ERROR tests/unit/test_auth.py::TestAuthService::test_login_with_credentials_invalid
+!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 10 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+============= 8 failed, 627 passed, 2 errors in 889.01s (0:14:49) =============

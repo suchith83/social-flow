@@ -71,457 +71,172 @@ graph TB
 
 ---
 
-## 📁 **Complete File Structure**
+## 📁 **Current Repository Layout (Actual)**
+
+The previous version of this document mixed the *planned* long‑term architecture with the *current* codebase. This section now reflects what is **actually present** in the repository today. A later section lists planned / future directories that were previously shown.
 
 ```
 social-flow-backend/
-├── 📁 app/                                    # 🚀 Main FastAPI Application
-│   ├── 📄 __init__.py                        # Package initialization
-│   ├── 📄 main.py                            # 🎯 FastAPI application entry point
-│   │   ├── FastAPI app configuration
-│   │   ├── Middleware setup (CORS, security, logging)
-│   │   ├── Exception handlers
-│   │   ├── Health check endpoints
-│   │   └── Application lifespan management
-│   │
-│   ├── 📁 core/                              # 🔧 Core Application Components
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 config.py                      # ⚙️ Configuration Management
-│   │   │   ├── Environment variable handling
-│   │   │   ├── Settings validation
-│   │   │   ├── Database configuration
-│   │   │   ├── AWS service configuration
-│   │   │   ├── Security settings
-│   │   │   └── Feature flags
-│   │   ├── 📄 database.py                    # 🗄️ Database Connection & Session Management
-│   │   │   ├── SQLAlchemy engine configuration
-│   │   │   ├── Database session factory
-│   │   │   ├── Connection pooling
-│   │   │   ├── Transaction management
-│   │   │   └── Database health checks
-│   │   ├── 📄 redis.py                       # 🔴 Redis Connection & Client Management
-│   │   │   ├── Redis connection pool
-│   │   │   ├── Cache operations
-│   │   │   ├── Session storage
-│   │   │   ├── Rate limiting
-│   │   │   └── Pub/Sub messaging
-│   │   ├── 📄 logging.py                     # 📝 Structured Logging Configuration
-│   │   │   ├── Log format configuration
-│   │   │   ├── Log level management
-│   │   │   ├── Correlation ID tracking
-│   │   │   ├── Log aggregation setup
-│   │   │   └── Performance logging
-│   │   ├── 📄 security.py                    # 🔒 Security Utilities & JWT Management
-│   │   │   ├── Password hashing (Argon2)
-│   │   │   ├── JWT token generation/validation
-│   │   │   ├── OAuth2 integration
-│   │   │   ├── 2FA implementation
-│   │   │   ├── Rate limiting
-│   │   │   └── Input sanitization
-│   │   └── 📄 exceptions.py                  # ⚠️ Custom Exception Classes
-│   │       ├── Base exception classes
-│   │       ├── Service-specific exceptions
-│   │       ├── HTTP exception handlers
-│   │       └── Error response formatting
-│   │
-│   ├── 📁 models/                            # 🗃️ SQLAlchemy Database Models
-│   │   ├── 📄 __init__.py                    # Model exports
-│   │   ├── 📄 user.py                        # 👤 User & Authentication Models
-│   │   │   ├── User model with relationships
-│   │   │   ├── UserProfile model
-│   │   │   ├── UserPreferences model
-│   │   │   ├── UserSession model
-│   │   │   └── UserVerification model
-│   │   ├── 📄 video.py                       # 🎥 Video & Content Models
-│   │   │   ├── Video model with metadata
-│   │   │   ├── VideoQuality model
-│   │   │   ├── VideoThumbnail model
-│   │   │   ├── VideoChapter model
-│   │   │   └── VideoAnalytics model
-│   │   ├── 📄 post.py                        # 📝 Social Post Models
-│   │   │   ├── Post model
-│   │   │   ├── PostMedia model
-│   │   │   ├── PostTag model
-│   │   │   └── PostVisibility model
-│   │   ├── 📄 comment.py                     # 💬 Comment & Interaction Models
-│   │   │   ├── Comment model with threading
-│   │   │   ├── CommentReaction model
-│   │   │   └── CommentModeration model
-│   │   ├── 📄 like.py                        # ❤️ Like & Engagement Models
-│   │   │   ├── Like model
-│   │   │   ├── Reaction model
-│   │   │   └── Bookmark model
-│   │   ├── 📄 follow.py                      # 👥 Follow & Social Graph Models
-│   │   │   ├── Follow model
-│   │   │   ├── Block model
-│   │   │   └── Mute model
-│   │   ├── 📄 ad.py                          # 📺 Advertisement Models
-│   │   │   ├── Ad model
-│   │   │   ├── AdCampaign model
-│   │   │   ├── AdImpression model
-│   │   │   └── AdClick model
-│   │   ├── 📄 payment.py                     # 💳 Payment & Transaction Models
-│   │   │   ├── Payment model
-│   │   │   ├── Transaction model
-│   │   │   ├── Refund model
-│   │   │   └── Payout model
-│   │   ├── 📄 subscription.py                # 💎 Subscription Models
-│   │   │   ├── Subscription model
-│   │   │   ├── SubscriptionPlan model
-│   │   │   └── SubscriptionFeature model
-│   │   ├── 📄 notification.py                # 🔔 Notification Models
-│   │   │   ├── Notification model
-│   │   │   ├── NotificationTemplate model
-│   │   │   └── NotificationPreference model
-│   │   ├── 📄 analytics.py                   # 📊 Analytics & Metrics Models
-│   │   │   ├── AnalyticsEvent model
-│   │   │   ├── UserAnalytics model
-│   │   │   ├── ContentAnalytics model
-│   │   │   └── RevenueAnalytics model
-│   │   ├── 📄 view_count.py                  # 👀 View Count Models
-│   │   │   ├── ViewCount model
-│   │   │   ├── ViewSession model
-│   │   │   └── ViewAnalytics model
-│   │   └── 📄 live_stream.py                 # 🔴 Live Streaming Models
-│   │       ├── LiveStream model
-│   │       ├── LiveStreamViewer model
-│   │       ├── LiveChatMessage model
-│   │       └── LiveStreamAnalytics model
-│   │
-│   ├── 📁 services/                          # 🏢 Business Logic Services
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 auth.py                        # 🔐 Authentication Service
-│   │   │   ├── User registration/login
-│   │   │   ├── JWT token management
-│   │   │   ├── OAuth2 social login
-│   │   │   ├── 2FA implementation
-│   │   │   ├── Password management
-│   │   │   └── Session management
-│   │   ├── 📄 video_service.py               # 🎥 Video Management Service
-│   │   │   ├── Video upload processing
-│   │   │   ├── Video transcoding
-│   │   │   ├── Video streaming
-│   │   │   ├── Thumbnail generation
-│   │   │   └── Video analytics
-│   │   ├── 📄 ml_service.py                  # 🤖 Machine Learning Service
-│   │   │   ├── Content recommendation
-│   │   │   ├── Content moderation
-│   │   │   ├── Sentiment analysis
-│   │   │   ├── Viral prediction
-│   │   │   └── User behavior analysis
-│   │   ├── 📄 analytics_service.py           # 📊 Analytics Service
-│   │   │   ├── Event tracking
-│   │   │   ├── User analytics
-│   │   │   ├── Content analytics
-│   │   │   ├── Revenue analytics
-│   │   │   └── Business intelligence
-│   │   ├── 📄 storage_service.py             # 💾 Storage Service
-│   │   │   ├── S3 operations
-│   │   │   ├── File upload/download
-│   │   │   ├── CDN integration
-│   │   │   ├── Backup management
-│   │   │   └── Storage analytics
-│   │   ├── 📄 ads_service.py                 # 📺 Advertisement Service
-│   │   │   ├── Ad serving
-│   │   │   ├── Ad targeting
-│   │   │   ├── Ad analytics
-│   │   │   ├── Revenue sharing
-│   │   │   └── Campaign management
-│   │   ├── 📄 notification_service.py        # 🔔 Notification Service
-│   │   │   ├── Push notifications
-│   │   │   ├── Email notifications
-│   │   │   ├── SMS notifications
-│   │   │   ├── In-app notifications
-│   │   │   └── Notification preferences
-│   │   ├── 📄 payments_service.py            # 💳 Payment Service
-│   │   │   ├── Payment processing
-│   │   │   ├── Subscription management
-│   │   │   ├── Refund handling
-│   │   │   ├── Payout management
-│   │   │   └── Tax calculation
-│   │   └── 📄 live_streaming_service.py      # 🔴 Live Streaming Service
-│   │       ├── Stream creation
-│   │       ├── Viewer management
-│   │       ├── Chat functionality
-│   │       ├── Stream analytics
-│   │       └── Recording management
-│   │
-│   ├── 📁 api/                               # 🌐 API Endpoints
-│   │   ├── 📄 __init__.py
-│   │   └── 📁 v1/                            # 📡 API Version 1
-│   │       ├── 📄 __init__.py
-│   │       ├── 📄 router.py                  # 🛣️ Main API Router
-│   │       │   ├── Route registration
-│   │       │   ├── Middleware configuration
-│   │       │   ├── Error handling
-│   │       │   └── API versioning
-│   │       └── 📁 endpoints/                 # 🎯 Individual Endpoint Modules
-│   │           ├── 📄 __init__.py
-│   │           ├── 📄 auth.py                # 🔐 Authentication Endpoints
-│   │           │   ├── POST /register
-│   │           │   ├── POST /login
-│   │           │   ├── POST /logout
-│   │           │   ├── POST /refresh
-│   │           │   ├── POST /verify-email
-│   │           │   ├── POST /reset-password
-│   │           │   ├── POST /enable-2fa
-│   │           │   └── GET /profile
-│   │           ├── 📄 videos.py              # 🎥 Video Endpoints
-│   │           │   ├── POST /upload
-│   │           │   ├── GET /{video_id}
-│   │           │   ├── PUT /{video_id}
-│   │           │   ├── DELETE /{video_id}
-│   │           │   ├── POST /{video_id}/like
-│   │           │   ├── POST /{video_id}/view
-│   │           │   ├── GET /feed
-│   │           │   └── GET /search
-│   │           ├── 📄 posts.py               # 📝 Post Endpoints
-│   │           │   ├── POST /create
-│   │           │   ├── GET /{post_id}
-│   │           │   ├── PUT /{post_id}
-│   │           │   ├── DELETE /{post_id}
-│   │           │   ├── POST /{post_id}/like
-│   │           │   └── GET /timeline
-│   │           ├── 📄 comments.py            # 💬 Comment Endpoints
-│   │           │   ├── POST /create
-│   │           │   ├── GET /{comment_id}
-│   │           │   ├── PUT /{comment_id}
-│   │           │   ├── DELETE /{comment_id}
-│   │           │   └── GET /thread/{post_id}
-│   │           ├── 📄 likes.py               # ❤️ Like Endpoints
-│   │           │   ├── POST /like
-│   │           │   ├── DELETE /unlike
-│   │           │   └── GET /likes/{content_id}
-│   │           ├── 📄 follows.py             # 👥 Follow Endpoints
-│   │           │   ├── POST /follow
-│   │           │   ├── DELETE /unfollow
-│   │           │   ├── GET /followers
-│   │           │   └── GET /following
-│   │           ├── 📄 ads.py                 # 📺 Ad Endpoints
-│   │           │   ├── GET /video/{video_id}
-│   │           │   ├── POST /impression
-│   │           │   ├── POST /click
-│   │           │   └── GET /analytics
-│   │           ├── 📄 payments.py            # 💳 Payment Endpoints
-│   │           │   ├── POST /process
-│   │           │   ├── GET /history
-│   │           │   ├── POST /subscription
-│   │           │   └── POST /refund
-│   │           ├── 📄 subscriptions.py       # 💎 Subscription Endpoints
-│   │           │   ├── GET /plans
-│   │           │   ├── POST /subscribe
-│   │           │   ├── PUT /update
-│   │           │   └── DELETE /cancel
-│   │           ├── 📄 notifications.py       # 🔔 Notification Endpoints
-│   │           │   ├── GET /
-│   │           │   ├── POST /{id}/read
-│   │           │   ├── POST /read-all
-│   │           │   └── GET /preferences
-│   │           ├── 📄 analytics.py           # 📊 Analytics Endpoints
-│   │           │   ├── POST /track
-│   │           │   ├── GET /dashboard
-│   │           │   ├── GET /reports
-│   │           │   └── GET /export
-│   │           ├── 📄 search.py              # 🔍 Search Endpoints
-│   │           │   ├── GET /content
-│   │           │   ├── GET /users
-│   │           │   ├── GET /hashtags
-│   │           │   └── GET /trending
-│   │           ├── 📄 admin.py               # 👨‍💼 Admin Endpoints
-│   │           │   ├── GET /users
-│   │           │   ├── POST /ban-user
-│   │           │   ├── GET /content
-│   │           │   └── POST /moderate
-│   │           ├── 📄 moderation.py          # 🛡️ Moderation Endpoints
-│   │           │   ├── POST /report
-│   │           │   ├── GET /reports
-│   │           │   ├── POST /review
-│   │           │   └── POST /action
-│   │           ├── 📄 ml.py                  # 🤖 ML/AI Endpoints
-│   │           │   ├── GET /recommendations
-│   │           │   ├── POST /analyze
-│   │           │   ├── GET /trending
-│   │           │   └── POST /feedback
-│   │           └── 📄 live_streaming.py      # 🔴 Live Streaming Endpoints
-│   │               ├── POST /start
-│   │               ├── POST /end
-│   │               ├── GET /{stream_id}
-│   │               ├── POST /{stream_id}/join
-│   │               └── POST /{stream_id}/chat
-│   │
-│   ├── 📁 schemas/                           # 📋 Pydantic Schemas
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 auth.py                        # 🔐 Authentication Schemas
-│   │   │   ├── UserCreate schema
-│   │   │   ├── UserLogin schema
-│   │   │   ├── Token schema
-│   │   │   ├── UserProfile schema
-│   │   │   └── PasswordReset schema
-│   │   ├── 📄 video.py                       # 🎥 Video Schemas
-│   │   │   ├── VideoCreate schema
-│   │   │   ├── VideoUpdate schema
-│   │   │   ├── VideoResponse schema
-│   │   │   └── VideoUpload schema
-│   │   ├── 📄 post.py                        # 📝 Post Schemas
-│   │   │   ├── PostCreate schema
-│   │   │   ├── PostUpdate schema
-│   │   │   ├── PostResponse schema
-│   │   │   └── PostMedia schema
-│   │   └── 📄 common.py                      # 🔄 Common Schemas
-│   │       ├── Pagination schema
-│   │       ├── ErrorResponse schema
-│   │       ├── SuccessResponse schema
-│   │       └── BaseModel extensions
-│   │
-│   └── 📁 workers/                           # ⚙️ Background Task Workers
-│       ├── 📄 __init__.py
-│       ├── 📄 celery_app.py                  # 🐰 Celery Configuration
-│       │   ├── Celery app setup
-│       │   ├── Task routing
-│       │   ├── Error handling
-│       │   └── Monitoring configuration
-│       ├── 📄 video_processing.py            # 🎥 Video Processing Tasks
-│       │   ├── Video transcoding tasks
-│       │   ├── Thumbnail generation
-│       │   ├── Quality optimization
-│       │   └── Upload completion
-│       ├── 📄 ai_processing.py               # 🤖 AI/ML Processing Tasks
-│       │   ├── Content analysis tasks
-│       │   ├── Recommendation generation
-│       │   ├── Moderation tasks
-│       │   └── Sentiment analysis
-│       ├── 📄 analytics_processing.py        # 📊 Analytics Processing Tasks
-│       │   ├── Event aggregation
-│       │   ├── Report generation
-│       │   ├── Data export
-│       │   └── Metric calculation
-│       ├── 📄 notification_processing.py     # 🔔 Notification Processing Tasks
-│       │   ├── Push notification sending
-│       │   ├── Email delivery
-│       │   ├── SMS sending
-│       │   └── In-app notification creation
-│       └── 📄 email_processing.py            # 📧 Email Processing Tasks
-│           ├── Email template rendering
-│           ├── Email queue management
-│           ├── Delivery tracking
-│           └── Bounce handling
-│
-├── 📁 tests/                                 # 🧪 Comprehensive Test Suite
-│   ├── 📄 conftest.py                        # 🔧 Test Configuration & Fixtures
-│   │   ├── Database test fixtures
-│   │   ├── Mock service fixtures
-│   │   ├── Test data factories
-│   │   └── Test environment setup
-│   ├── 📄 run_tests.py                       # 🏃 Test Runner Script
-│   │   ├── Test execution commands
-│   │   ├── Coverage reporting
-│   │   ├── Performance testing
-│   │   └── Test result aggregation
-│   ├── 📁 unit/                              # 🔬 Unit Tests
-│   │   ├── 📄 test_auth.py                   # 🔐 Authentication unit tests
-│   │   ├── 📄 test_video.py                  # 🎥 Video service unit tests
-│   │   ├── 📄 test_ml.py                     # 🤖 ML service unit tests
-│   │   ├── 📄 test_analytics.py              # 📊 Analytics unit tests
-│   │   ├── 📄 test_payments.py               # 💳 Payment unit tests
-│   │   └── 📄 test_notifications.py          # 🔔 Notification unit tests
-│   ├── 📁 integration/                       # 🔗 Integration Tests
-│   │   ├── 📄 test_auth_integration.py      # 🔐 Auth integration tests
-│   │   ├── 📄 test_video_integration.py     # 🎥 Video integration tests
-│   │   ├── 📄 test_api_integration.py       # 🌐 API integration tests
-│   │   └── 📄 test_database_integration.py  # 🗄️ Database integration tests
-│   ├── 📁 performance/                       # ⚡ Performance Tests
-│   │   ├── 📄 test_performance.py           # 🚀 Performance benchmarks
-│   │   ├── 📄 test_load.py                  # 📈 Load testing
-│   │   └── 📄 test_stress.py                # 💪 Stress testing
-│   ├── 📁 security/                          # 🔒 Security Tests
-│   │   ├── 📄 test_security.py              # 🛡️ Security vulnerability tests
-│   │   ├── 📄 test_auth_security.py         # 🔐 Authentication security
-│   │   └── 📄 test_api_security.py          # 🌐 API security tests
-│   └── 📁 load/                              # 📊 Load Testing
-│       └── 📄 locustfile.py                  # 🦗 Locust load testing
-│
-├── 📁 scripts/                               # 📜 Utility Scripts
-│   ├── 📄 integration_test.py                # 🔗 Integration testing script
-│   ├── 📄 validate_backend.py                # ✅ Backend validation script
-│   ├── 📄 seed_data.py                       # 🌱 Database seeding script
-│   ├── 📄 backup_database.py                 # 💾 Database backup script
-│   ├── 📄 migrate_data.py                    # 🔄 Data migration script
-│   └── 📄 health_check.py                    # 🏥 Health check script
-│
-├── 📁 docs/                                  # 📚 Documentation
-│   ├── 📄 api/                               # 📡 API Documentation
-│   │   ├── 📄 openapi.yaml                  # 📋 OpenAPI specification
-│   │   ├── 📄 postman_collection.json       # 📮 Postman collection
-│   │   └── 📄 api_examples.md               # 💡 API usage examples
-│   ├── 📄 deployment/                        # 🚀 Deployment Guides
-│   │   ├── 📄 aws_deployment.md             # ☁️ AWS deployment guide
-│   │   ├── 📄 docker_deployment.md          # 🐳 Docker deployment guide
-│   │   └── 📄 kubernetes_deployment.md      # ☸️ Kubernetes deployment guide
-│   ├── 📄 development/                       # 👨‍💻 Development Guides
-│   │   ├── 📄 setup_guide.md                # 🛠️ Development setup
-│   │   ├── 📄 coding_standards.md           # 📏 Coding standards
-│   │   └── 📄 testing_guide.md              # 🧪 Testing guidelines
-│   └── 📄 architecture/                      # 🏗️ Architecture Documentation
-│       ├── 📄 system_design.md              # 🎨 System design
-│       ├── 📄 database_schema.md            # 🗄️ Database schema
-│       └── 📄 api_design.md                 # 🌐 API design principles
-│
-├── 📁 .github/                               # 🔧 GitHub Configuration
-│   └── 📁 workflows/                         # ⚙️ GitHub Actions Workflows
-│       ├── 📄 ci.yml                        # 🔄 Continuous Integration
-│       ├── 📄 cd.yml                        # 🚀 Continuous Deployment
-│       ├── 📄 security.yml                  # 🔒 Security scanning
-│       └── 📄 performance.yml               # ⚡ Performance testing
-│
-├── 📁 k8s/                                   # ☸️ Kubernetes Manifests
-│   ├── 📄 namespace.yaml                     # 📦 Namespace definition
-│   ├── 📄 configmap.yaml                    # ⚙️ Configuration map
-│   ├── 📄 secret.yaml                       # 🔐 Secret definitions
-│   ├── 📄 deployment.yaml                   # 🚀 Application deployment
-│   ├── 📄 service.yaml                      # 🌐 Service definition
-│   ├── 📄 ingress.yaml                      # 🚪 Ingress configuration
-│   └── 📄 hpa.yaml                          # 📈 Horizontal Pod Autoscaler
-│
-├── 📁 terraform/                             # 🏗️ Infrastructure as Code
-│   ├── 📄 main.tf                           # 🎯 Main Terraform configuration
-│   ├── 📄 variables.tf                      # 📝 Variable definitions
-│   ├── 📄 outputs.tf                        # 📤 Output definitions
-│   ├── 📁 aws/                              # ☁️ AWS-specific resources
-│   │   ├── 📄 vpc.tf                        # 🌐 VPC configuration
-│   │   ├── 📄 rds.tf                        # 🗄️ RDS database
-│   │   ├── 📄 ecs.tf                        # 🐳 ECS cluster
-│   │   └── 📄 s3.tf                         # 💾 S3 buckets
-│   └── 📁 modules/                           # 🧩 Reusable modules
-│       ├── 📁 database/                      # 🗄️ Database module
-│       ├── 📁 networking/                    # 🌐 Networking module
-│       └── 📁 monitoring/                    # 📊 Monitoring module
-│
-├── 📄 requirements.txt                       # 📦 Production Dependencies
-├── 📄 requirements-dev.txt                   # 🛠️ Development Dependencies
-├── 📄 Dockerfile                            # 🐳 Docker Configuration
-├── 📄 docker-compose.yml                    # 🐳 Docker Compose Configuration
-├── 📄 docker-compose.prod.yml               # 🐳 Production Docker Compose
-├── 📄 pytest.ini                            # 🧪 Pytest Configuration
-├── 📄 .pre-commit-config.yaml               # 🔧 Pre-commit Hooks
-├── 📄 Makefile                              # 🛠️ Development Commands
-├── 📄 .env.example                          # ⚙️ Environment Variables Example
-├── 📄 .gitignore                            # 🚫 Git Ignore Rules
-├── 📄 .dockerignore                         # 🚫 Docker Ignore Rules
-├── 📄 LICENSE                               # 📄 MIT License
-├── 📄 CHANGELOG.md                          # 📝 Change Log
-├── 📄 CONTRIBUTING.md                       # 🤝 Contributing Guidelines
-├── 📄 SECURITY.md                           # 🔒 Security Policy
-├── 📄 CODE_OF_CONDUCT.md                    # 📜 Code of Conduct
-├── 📄 README.md                             # 📖 This file
-├── 📄 API_DOCUMENTATION.md                  # 📚 API Documentation
-├── 📄 FLUTTER_INTEGRATION.md                # 📱 Flutter Integration Guide
-├── 📄 DEPLOYMENT.md                         # 🚀 Deployment Guide
-├── 📄 TESTING.md                            # 🧪 Testing Guide
-├── 📄 MONITORING.md                         # 📊 Monitoring Guide
-├── 📄 TESTING_SUMMARY.md                    # 📋 Testing Summary
-├── 📄 FINAL_SUMMARY.md                      # 🎯 Final Implementation Summary
-└── 📄 PROJECT_STRUCTURE.md                  # 📁 This detailed structure file
+├── alembic/                      # Database migrations (versions/, env.py)
+├── app/                          # FastAPI backend source (modular domains & services)
+├── htmlcov/                      # Coverage HTML output
+├── logs/                         # Runtime / structured logs
+├── results_artifacts/            # Test & analysis result artifacts
+├── tests/                        # Pytest tests (integration, advanced, etc.)
+├── __pycache__/                  # Python bytecode caches
+├── advanced_integration_test.py  # Advanced integration orchestration
+├── advanced_test_results.json    # JSON results from advanced test suite
+├── AI_ML_ARCHITECTURE.md         # Detailed AI/ML architecture documentation
+├── bandit_report.json            # Security static analysis (Bandit) results
+├── check_integration.py          # Helper script for integration verification
+├── CODE_OF_CONDUCT.md            # Community guidelines
+├── COMPLETE_API_DOCUMENTATION.md # Full expanded API reference
+├── comprehensive_test.py         # Comprehensive scenario tests
+├── conftest.py                   # Pytest fixtures & test configuration
+├── docker-compose.yml            # Local dev compose stack
+├── docker-compose.production.yml # Production compose stack (correct name)
+├── Dockerfile                    # Base application container
+├── Dockerfile.production         # Production-optimized Dockerfile
+├── env.example                   # Example environment variables
+├── FINAL_TESTING_REPORT.md       # Final consolidated test report
+├── final_unit_results.txt        # Raw unit test results
+├── fix_uuid_conversions.py       # One-off data/UUID fix script
+├── LICENSE                       # MIT License
+├── Makefile                      # Common dev & quality commands
+├── mypy.ini                      # Static typing configuration
+├── openapi.yaml                  # Generated/maintained OpenAPI spec
+├── postman_collection.json       # Postman collection
+├── postman_environment.json      # Postman environment variables
+├── PRODUCTION_DEPLOYMENT_GUIDE.md# Production deployment instructions
+├── PROJECT_STRUCTURE.md          # (This document)
+├── pytest.ini                    # Pytest config
+├── README.md                     # Project overview & onboarding
+├── requirements.txt              # Prod dependencies
+├── requirements-dev.txt          # Dev/test tooling dependencies
+├── SECURITY.md                   # Security policy & practices
+├── setup-database.ps1            # Windows PowerShell DB setup helper
+├── social_flow.db                # SQLite / dev database artifact
+├── social_flow_dev.db            # Alternate dev DB
+├── START_SERVER_INSTRUCTIONS.md  # Quick start server instructions
+├── test.db                       # Test database artifact
+├── test_api_endpoints.py         # API endpoint validation script
+├── TEST_COMMANDS.md              # Commands cheat‑sheet for testing
+├── test_header.txt               # Test header banner / meta
+├── test_infrastructure.py        # Infra related tests
+├── test_output.txt               # Captured test output log
+└── test_infrastructure.py        # (duplicate reference if present – confirm necessity)
 ```
+
+> NOTE: Some database/test artifacts (e.g., `*.db`, result `.txt` files) are typically excluded in production repos; consider moving them under a dedicated `artifacts/` or ignoring them after CI archiving.
+
+### 🗂️ Key Subdirectory Highlights
+
+| Directory | Purpose |
+|-----------|---------|
+| `app/` | Core FastAPI application (domains, services, routes, schemas, workers) |
+| `alembic/` | Migration environment and versioned migration scripts |
+| `tests/` | Test suites (unit/integration/advanced) and Pytest fixtures |
+| `results_artifacts/` | Generated reports & analysis results (bandit, coverage, etc.) |
+| `htmlcov/` | HTML code coverage output (regenerated) |
+| `logs/` | JSON / structured runtime logs |
+
+### 🔍 App Module Enumeration (Current)
+
+Below is a concise inventory of first-level subpackages under `app/` gathered from the repository:
+
+| Module | Notable Subdirs / Files | Purpose (High-Level) |
+|--------|-------------------------|----------------------|
+| `ai_ml_services/` | content_moderation/, recommendation/, sentiment_analysis/, trending_prediction/, video_analysis/ | High-level orchestration of AI/ML domain-specific services separated by capability cluster |
+| `analytics/` | api/, models/, routes/, services/, tasks/, analytics_processing.py | Analytics API routing & processing tasks |
+| `ads/` | api/, models/, services/ | Advertisement related domain logic and delivery endpoints |
+| `api/` | dependencies.py, v1/ | Root API wiring, dependency injection points, version routing |
+| `application/` | services/ | Higher-level application service layer (shared orchestration) |
+| `auth/` | api/, application/, domain/, infrastructure/, models/, presentation/, schemas/, services/ | Authentication and identity domain (multi-layered clean architecture layout) |
+| `core/` | config*.py, database*.py, redis*.py, logging*.py, security.py, metrics.py, exceptions.py | Cross-cutting platform concerns: configuration, persistence wiring, logging, security primitives |
+| `copyright/` | models/, services/ | Copyright / rights management domain |
+| `domain/` | entities/, repositories/, value_objects.py | Base domain abstractions & base repository patterns |
+| `infrastructure/` | crud/, repositories/, storage/ | Low-level persistence & external integrations |
+| `live/` | api/, models/, schemas/, services/ | Live interaction (possibly lightweight vs livestream) |
+| `livestream/` | application/, domain/, infrastructure/, models/, presentation/, routes/, services/, websocket/ | Full live streaming feature set including websockets |
+| `ml/` | ai_processing.py, api/, ml_tasks.py, schemas/, services/ | ML task entrypoints & lower-level ML services |
+| `ml_pipelines/` | batch_processor.py, orchestration & pipeline dirs | Batch & scheduled ML pipeline orchestration (feature eng, training, inference) |
+| `models/` | ad.py, base.py, livestream.py, notification.py, payment.py, social.py, types.py, user.py, video.py | Core SQLAlchemy (or Pydantic) domain models aggregated |
+| `moderation/` | (init only currently) | Placeholder for future moderation expansion (logic concentrated elsewhere now) |
+| `notifications/` | api/, models/, routes/, services/, tasks/, email_processing.py, notification_processing.py, websocket_handler.py | Notification dispatch & processing across channels |
+| `payments/` | api/, models/, schemas/, services/ | Payment & billing domain |
+| `posts/` | multi-layer (api/, application/, domain/, etc.) | Social posting domain (clean architecture segmentation) |
+| `schemas/` | base.py, social.py, user.py, video.py | Shared Pydantic schemas (top-level consolidated) |
+| `services/` | recommendation_service.py, search_service.py, storage_service*.py | Shared service layer components reused across domains |
+| `shared/` | application/, domain/, infrastructure/ | Shared cross-domain abstractions (pattern library) |
+| `tasks/` | (init only) | Placeholder for future globally-scoped task registrations |
+| `users/` | api/, models/ | User profile & related operations subset (complementing `auth/`) |
+| `videos/` | application/, domain/, infrastructure/, models/, presentation/, routes/, services/, tasks/, video_processing.py, video_tasks.py | Video processing & delivery (encoding, metadata, pipelines) |
+| `workers/` | celery_app.py | Celery or background task bootstrap (if present in earlier state) |
+
+> The distinction between `live/` and `livestream/` suggests potential consolidation; consider merging or documenting their separate scopes explicitly in a future refactor.
+
+## 🧭 **Planned / Future Structure (Roadmap)**
+
+The earlier document showed additional infrastructure & documentation folders that do **not yet exist**. They remain part of the roadmap and are retained here for clarity:
+
+Planned directories:
+
+```
+docs/            # Consolidated developer & architecture docs
+scripts/         # Operational & maintenance scripts (migrations, backups)
+.github/workflows# CI/CD pipelines (if migrated from external automation)
+k8s/             # Kubernetes manifests (deployment, ingress, hpa, etc.)
+terraform/       # Infrastructure as Code for AWS cloud resources
+``` 
+
+If/when these are added, this file should be appended—not replaced—so historical context remains.
+
+## 🧪 **Testing Assets (Current)**
+
+Rather than the previously over-detailed hypothetical breakdown, present state focuses on implemented test orchestration scripts and reports:
+
+- `advanced_integration_test.py` – Composite integration scenario runner
+- `comprehensive_test.py` – Broad functional coverage harness
+- `FINAL_TESTING_REPORT.md` – Curated human-readable summary
+- `advanced_test_results.json` / `final_unit_results.txt` – Raw machine outputs
+- `bandit_report.json` – Static security scan output
+- `htmlcov/` – Regenerated code coverage
+
+## 🔄 **Differences From Previous Version of This Document**
+
+| Category | Previous File Claimed | Actual Status | Action Taken |
+|----------|-----------------------|---------------|--------------|
+| Docker compose | `docker-compose.prod.yml` | Real file is `docker-compose.production.yml` | Corrected reference |
+| Docs folders | `docs/` tree | Not present | Moved to "Planned" section |
+| Infra folders | `k8s/`, `terraform/`, `.github/workflows` | Not present | Marked as roadmap |
+| Extra guides | Multiple (`TESTING.md`, `MONITORING.md`, etc.) | Not present | Removed from current list; can be created later |
+| API doc file | `API_DOCUMENTATION.md` | File name is `COMPLETE_API_DOCUMENTATION.md` | Corrected |
+| Flutter guide | `FLUTTER_INTEGRATION.md` | Not present | Removed (re-add when file exists) |
+| Testing guide link | Non-existent `PHASE_7_8_TESTING_GUIDE.md` | Broken reference in README | Will be fixed in README |
+
+## 📊 **Updated Project Statistics (Realistic)**
+
+| Category | Approx Count | Notes |
+|----------|--------------|-------|
+| Directories | 15+ | Core app modules, migrations, tests, artifacts |
+| Python files | 100+ | Application + tests combined |
+| Test scripts | 10+ | Plus generated result artifacts |
+| Markdown docs | 10 | Core high-value docs only so far |
+| Config / tooling | 8+ | mypy, pytest, docker, compose, Makefile, env example |
+
+> As the project matures, regenerate counts via an automated script (e.g., `make stats`) and embed them here.
+
+## ✅ **Next Maintenance Suggestions**
+
+1. Create a `docs/` directory and migrate large markdown files into thematic sections.
+2. Add a lightweight `CHANGELOG.md` starting from current commit baseline.
+3. Introduce `scripts/` for operational helpers currently at root.
+4. Add automation to produce `PROJECT_STRUCTURE.md` (partial) via a script to reduce drift.
+5. Archive or ignore transient artifacts (`*.db`, raw test output) after CI capture.
+
+---
+
+The sections below (Architecture Patterns, Data Flow, Design Principles) are retained from the original document and remain valid.
 
 ## 📊 **Project Statistics**
 

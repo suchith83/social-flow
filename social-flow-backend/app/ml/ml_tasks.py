@@ -16,7 +16,11 @@ from app.core.database import async_session_maker
 from app.videos.models.video import Video
 from app.models.post import Post
 from app.models.comment import Comment
-from app.ml.services.ml_service import ml_service
+try:
+    from app.ai_ml_services import get_ai_ml_service
+    ml_service = get_ai_ml_service()
+except Exception:  # pragma: no cover
+    from app.ml.services.ml_service import ml_service  # type: ignore
 
 
 logger = logging.getLogger(__name__)

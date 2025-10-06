@@ -28,14 +28,19 @@ from app.auth.api import auth, subscriptions, stripe_connect
 from app.users.api import users, follows
 from app.videos.api import videos
 from app.posts.api import posts, comments, likes
-# Use the newer livestream routes instead of legacy live module
 from app.livestream.routes import livestream_routes as livestream
 from app.ads.api import ads
 from app.payments.api import stripe_payments, stripe_subscriptions, stripe_webhooks
-from app.notifications.api import notifications
 from app.ml.api import ml
-from app.analytics.api import analytics
-from app.analytics.routes import analytics_routes as analytics_enhanced
+
+# NOTE: Duplicate / overlapping routers removed:
+# - notifications (legacy) removed in favor of app.api.v1.endpoints.notifications
+# - analytics_enhanced consolidated into analytics (choose one canonical surface)
+# If advanced analytics required, create /analytics/v2 in future rather than prefix collision.
+
+# from app.notifications.api import notifications  # removed duplicate
+from app.analytics.api import analytics  # canonical analytics router
+# from app.analytics.routes import analytics_routes as analytics_enhanced  # removed duplicate
 
 api_router = APIRouter()
 
@@ -68,9 +73,7 @@ api_router.include_router(ads.router, prefix="/ads", tags=["ads"])
 # Commented out: Conflicts with payments_endpoints.router which is more comprehensive
 # api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
 api_router.include_router(subscriptions.router, prefix="/subscriptions", tags=["subscriptions"])
-api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
-api_router.include_router(analytics_enhanced.router, prefix="/analytics", tags=["analytics-enhanced"])
 api_router.include_router(search.router, prefix="/search", tags=["search"])
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
 api_router.include_router(moderation.router, prefix="/moderation", tags=["moderation"])

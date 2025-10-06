@@ -13,6 +13,7 @@ from app.infrastructure.storage.base import (
     StorageProvider,
 )
 from app.infrastructure.storage.s3_backend import S3Backend
+from app.infrastructure.storage.memory_backend import MemoryBackend
 from app.infrastructure.storage.manager import (
     StorageManager,
     get_storage_manager,
@@ -32,6 +33,7 @@ __all__ = [
     # Implementations
     "S3Backend",
     "StorageManager",
+    "MemoryBackend",
     
     # Utility Functions
     "get_storage_manager",

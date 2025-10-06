@@ -69,11 +69,14 @@ async def readiness_check(
     if not db_healthy:
         all_healthy = False
     
-    # Check Redis
-    redis_healthy, redis_info = await check_redis()
-    checks["redis"] = redis_info
-    if not redis_healthy:
-        all_healthy = False
+    # Check Redis (optional)
+    if settings.FEATURE_REDIS_ENABLED:
+        redis_healthy, redis_info = await check_redis()
+        checks["redis"] = redis_info
+        if not redis_healthy:
+            all_healthy = False
+    else:
+        checks["redis"] = {"status": "skipped", "reason": "feature disabled"}
     
     return {
         "status": "ready" if all_healthy else "not_ready",
@@ -118,17 +121,30 @@ async def detailed_health_check(
     checks = {}
     
     # Run checks in parallel
-    results = await asyncio.gather(
-        check_database(db),
-        check_redis(),
-        check_celery(),
-        check_s3(),
-        check_ml_models(),
-        return_exceptions=True,
-    )
-    
-    # Process results
-    check_names = ["database", "redis", "celery", "s3", "ml_models"]
+    tasks = [check_database(db)]
+    check_names: list[str] = ["database"]
+    if settings.FEATURE_REDIS_ENABLED:
+        tasks.append(check_redis())
+        check_names.append("redis")
+    else:
+        checks["redis"] = {"status": "skipped", "reason": "feature disabled"}
+    if settings.FEATURE_CELERY_ENABLED:
+        tasks.append(check_celery())
+        check_names.append("celery")
+    else:
+        checks["celery"] = {"status": "skipped", "reason": "feature disabled"}
+    if settings.FEATURE_S3_ENABLED:
+        tasks.append(check_s3())
+        check_names.append("s3")
+    else:
+        checks["s3"] = {"status": "skipped", "reason": "feature disabled"}
+    if settings.FEATURE_ML_ENABLED:
+        tasks.append(check_ml_models())
+        check_names.append("ml_models")
+    else:
+        checks["ml_models"] = {"status": "skipped", "reason": "feature disabled"}
+
+    results = await asyncio.gather(*tasks, return_exceptions=True)
     all_healthy = True
     
     for name, result in zip(check_names, results):
@@ -292,7 +308,12 @@ async def check_s3() -> tuple[bool, Dict[str, Any]]:
 async def check_ml_models() -> tuple[bool, Dict[str, Any]]:
     """Check ML model availability."""
     try:
-        from app.ml.services.ml_service import ml_service
+        # Prefer unified AI/ML facade; fallback to legacy singleton
+        try:
+            from app.ai_ml_services import get_ai_ml_service
+            ml_service = get_ai_ml_service()
+        except Exception:  # pragma: no cover - fallback path
+            from app.ml.services.ml_service import ml_service  # type: ignore
         
         # Get model info
         model_info = await ml_service.get_models_status()

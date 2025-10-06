@@ -29,13 +29,19 @@ from app.core.redis import get_cache
 from app.models.video import Video, VideoStatus, VideoVisibility
 from app.models.user import User
 
-# Import ML service for AI-powered video analysis
+# Import unified AI/ML facade (preferred) with graceful fallback
 try:
-    from app.ml.services.ml_service import ml_service
+    from app.ai_ml_services import get_ai_ml_service
+    ml_service = get_ai_ml_service()
     ML_SERVICE_AVAILABLE = True
-except ImportError:
-    ML_SERVICE_AVAILABLE = False
-    ml_service = None
+except Exception:  # pragma: no cover - defensive
+    try:
+        # Fallback to legacy path (will emit deprecation warning once)
+        from app.ml.services.ml_service import ml_service  # type: ignore
+        ML_SERVICE_AVAILABLE = True
+    except Exception:
+        ML_SERVICE_AVAILABLE = False
+        ml_service = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -47,33 +53,58 @@ class VideoService:
         self.db = db
         self.s3_client = None
         self.cache = None
-        self._initialize_services()
-    
-    async def _get_cache(self):
-        """Get Redis cache instance."""
-        if self.cache is None:
-            self.cache = await get_cache()
-        return self.cache
-    
-    def _initialize_services(self):
-        """Initialize video processing services."""
+        # Initialize underlying subsystems (best-effort; failures become degraded mode)
         try:
-            # Initialize S3 client
-            self._init_s3_client()
-            
-            # Initialize video processing modules
+            self._initialize_services()
+        except Exception as e:  # pragma: no cover - defensive fallback
+            logger.warning(f"VideoService started in degraded mode: {e}")
+        # NOTE: If db not supplied and container is desired, caller should
+        # fetch a session explicitly. We avoid implicit session creation here
+        # to prevent unclosed sessions from accumulating.
+
+    @staticmethod
+    def from_container():
+        """Retrieve singleton instance from application container.
+
+        This is a convenience wrapper to avoid importing the container in
+        every endpoint module. Prefer explicit dependency injection in new
+        code; keep for gradual migration.
+        """
+        try:  # local import to avoid cycles
+            from app.application.container import get_container
+            return get_container().video_service()
+        except Exception:  # pragma: no cover
+            return VideoService()
+
+    async def _get_cache(self):
+        """Get (and memoize) Redis cache instance."""
+        if self.cache is None:
+            try:
+                self.cache = await get_cache()
+            except Exception:  # pragma: no cover
+                return None
+        return self.cache
+
+    def _initialize_services(self):
+        """Initialize video processing & streaming helper components."""
+        # Initialize S3 client (non-fatal if missing credentials)
+        self._init_s3_client()
+        # Initialize processing modules
+        try:
             self._init_video_processing()
-            
-            # Initialize streaming modules
+        except Exception as e:  # pragma: no cover - optional modules
+            logger.debug(f"Video processing modules unavailable: {e}")
+        # Initialize streaming modules
+        try:
             self._init_streaming()
-            
-            logger.info("Video Service initialized successfully")
-        except Exception as e:
-            logger.error(f"Failed to initialize Video Service: {e}")
-            raise VideoServiceError(f"Video Service initialization failed: {e}")
-    
+        except Exception as e:  # pragma: no cover
+            logger.debug(f"Streaming modules unavailable: {e}")
+        logger.info("VideoService core helpers initialized")
+
     def _init_s3_client(self):
-        """Initialize S3 client for video storage."""
+        """Initialize S3 client for video storage (graceful if creds absent)."""
+        if self.s3_client is not None:
+            return
         try:
             self.s3_client = boto3.client(
                 's3',
@@ -82,42 +113,59 @@ class VideoService:
                 region_name=settings.AWS_REGION
             )
             logger.info("S3 client initialized")
-        except Exception as e:
-            logger.warning(f"S3 client initialization failed: {e}")
-    
+        except Exception as e:  # pragma: no cover
+            logger.warning(f"S3 client initialization skipped: {e}")
+
     def _init_video_processing(self):
-        """Initialize video processing modules."""
-        try:
-            # Video transcoding
-            from storage.video_storage.processed_videos.transcoder import VideoTranscoder
-            self.transcoder = VideoTranscoder()
-            
-            # Thumbnail generation
-            from storage.video_storage.thumbnails.generator import ThumbnailGenerator
-            self.thumbnail_generator = ThumbnailGenerator()
-            
-            # Metadata extraction
-            from storage.video_storage.processed_videos.metadata_extractor import MetadataExtractor
-            self.metadata_extractor = MetadataExtractor()
-            
-            logger.info("Video processing modules initialized")
-        except ImportError as e:
-            logger.warning(f"Video processing modules not available: {e}")
-    
+        """Attempt to initialize optional video processing modules."""
+        try:  # pragma: no cover - environment dependent
+            from storage.video_storage.processed_videos.transcoder import VideoTranscoder  # type: ignore
+            from storage.video_storage.thumbnails.generator import ThumbnailGenerator  # type: ignore
+            from storage.video_storage.processed_videos.metadata_extractor import MetadataExtractor  # type: ignore
+        except Exception as e:
+            logger.debug(f"Optional processing imports failed: {e}")
+            VideoTranscoder = ThumbnailGenerator = MetadataExtractor = None  # type: ignore
+        # Instantiate only if available
+        if 'VideoTranscoder' in locals() and VideoTranscoder:
+            try:
+                self.transcoder = VideoTranscoder()  # type: ignore
+            except Exception:  # pragma: no cover
+                pass
+        if 'ThumbnailGenerator' in locals() and ThumbnailGenerator:
+            try:
+                self.thumbnail_generator = ThumbnailGenerator()  # type: ignore
+            except Exception:
+                pass
+        if 'MetadataExtractor' in locals() and MetadataExtractor:
+            try:
+                self.metadata_extractor = MetadataExtractor()  # type: ignore
+            except Exception:
+                pass
+        logger.info("Video processing modules initialization attempted")
+
     def _init_streaming(self):
-        """Initialize streaming modules."""
-        try:
-            # Live streaming
-            from storage.video_storage.live_streaming.ingest import LiveStreamIngest
-            self.live_ingest = LiveStreamIngest()
-            
-            # Video packaging
-            from storage.video_storage.live_streaming.packager import VideoPackager
-            self.packager = VideoPackager()
-            
-            logger.info("Streaming modules initialized")
-        except ImportError as e:
-            logger.warning(f"Streaming modules not available: {e}")
+        """Attempt to initialize optional streaming modules."""
+        try:  # pragma: no cover
+            from storage.video_storage.live_streaming.ingest import LiveStreamIngest  # type: ignore
+            from storage.video_storage.live_streaming.packager import VideoPackager  # type: ignore
+        except Exception as e:
+            logger.debug(f"Optional streaming imports failed: {e}")
+            LiveStreamIngest = VideoPackager = None  # type: ignore
+        if 'LiveStreamIngest' in locals() and LiveStreamIngest:
+            try:
+                self.live_ingest = LiveStreamIngest()  # type: ignore
+            except Exception:
+                pass
+        if 'VideoPackager' in locals() and VideoPackager:
+            try:
+                self.packager = VideoPackager()  # type: ignore
+            except Exception:
+                pass
+        logger.info("Streaming modules initialization attempted")
+
+async def get_video_service() -> VideoService:
+    """FastAPI dependency provider for VideoService via application container."""
+    return VideoService.from_container()
     
     async def upload_video(self, file: Any, user: Optional[User] = None, metadata: Optional[Dict[str, Any]] = None, db: AsyncSession = None) -> Dict[str, Any]:
         """Upload a video file to S3 and create database record.

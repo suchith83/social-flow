@@ -301,6 +301,39 @@ class MLServiceError(SocialFlowException):
         )
 
 
+class ModelLoadError(MLServiceError):
+    """Raised when an ML/AI model fails to load or initialize.
+
+    Referenced in AI_ML_ARCHITECTURE.md (Model Orchestration & Lazy Loading section).
+    """
+
+    def __init__(self, message: str = "Model load failure", details: Optional[Dict[str, Any]] = None):
+        super().__init__(message=message, details=details)
+        self.error_code = "MODEL_LOAD_ERROR"
+
+
+class InferenceError(MLServiceError):
+    """Raised when inference/execution of a model or pipeline fails.
+
+    Used to distinguish runtime inference issues from initialization problems.
+    """
+
+    def __init__(self, message: str = "Inference failure", details: Optional[Dict[str, Any]] = None):
+        super().__init__(message=message, details=details)
+        self.error_code = "INFERENCE_ERROR"
+
+
+class PipelineError(MLServiceError):
+    """Raised when a multi-step ML pipeline orchestration fails mid-execution.
+
+    Enables callers to implement compensating actions or fallbacks.
+    """
+
+    def __init__(self, message: str = "Pipeline execution failure", details: Optional[Dict[str, Any]] = None):
+        super().__init__(message=message, details=details)
+        self.error_code = "PIPELINE_ERROR"
+
+
 class AuthServiceError(SocialFlowException):
     """Auth service error exception."""
     
